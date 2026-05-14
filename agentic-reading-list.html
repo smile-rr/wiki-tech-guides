@@ -33,16 +33,12 @@
   }
 
   /* HEADER */
-  
-
-  header::before {
-    content: '';
-    position: absolute;
-    top: -60px; left: -100px;
-    width: 500px; height: 300px;
-    background: radial-gradient(ellipse, rgba(160,130,60,0.07) 0%, transparent 70%);
-    pointer-events: none;
+  header { padding: 1rem 0 0.8rem;
+    position: relative;
+    overflow: hidden;
   }
+
+  
 
   .header-inner {
     max-width: 900px;
@@ -50,14 +46,18 @@
     padding: 0 2rem;
   }
 
-  .eyebrow { font-size: 10px;
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
     letter-spacing: 0.15em;
     color: var(--muted);
     text-transform: uppercase;
     margin-bottom: 1rem;
   }
 
-  h1 { font-size: clamp(16px, 2.5vw, 22px);;
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: font-size: clamp(20px, 3vw, 28px);;
     font-weight: 400;
     line-height: 1.15;
     color: var(--text);
@@ -69,9 +69,20 @@
     color: var(--accent);
   }
 
-  .subtitle{font-size:11px;margin-top:4px;gap:12px}
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
 
-  .subtitle span{font-size:10px}
+  .subtitle span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
 
   .dot {
     width: 6px; height: 6px;
@@ -171,10 +182,12 @@
   }
 
   .cat-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
     border-bottom: 1px solid var(--border);
-    padding: 0.6rem 1.5rem;
-    position: relative;
-    overflow: hidden;
   }
 
   .cat-num {
@@ -304,15 +317,8 @@
 <body>
 
 <header>
-  <div class="header-inner">
-    <p class="eyebrow">Engineering Reading List · 2024–2026</p>
-    <h1>Agentic AI<br><em>开发与研究实践</em></h1>
-    <div class="subtitle">
-      <span><span class="dot dot-anthropic"></span> Anthropic Engineering &amp; Research</span>
-      <span><span class="dot dot-openai"></span> OpenAI Developer Blog</span>
-      <span>24 篇精选 · 8 个类别</span>
-    </div>
-  </div>
+  <div class="eyebrow">Engineering Reading List · 2024–2026</div>
+  <h1>Agentic AI 开发与研究实践</h1>
 </header>
 
 <!-- RECOMMENDED READING ORDER -->
