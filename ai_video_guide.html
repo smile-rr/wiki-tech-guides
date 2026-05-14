@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 技术视频导航 2025/2026</title>
+<style>
+  
+
+  :root {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --border: #d0d7de;
+    --accent-cyan: #0969da;
+    --accent-green: #1a7f37;
+    --accent-orange: #bc4c00;
+    --accent-purple: #6639ba;
+    --accent-yellow: #9a6700;
+    --text: #1f2328;
+    --text-dim: #656d76;
+    --card-bg: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -80px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(9,105,218,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h1 {
+    
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    color: #1f2328;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  h1 span { color: var(--accent-cyan); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    max-width: 600px;
+  }
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-num {
+    
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--accent-green);
+  }
+  .stat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; }
+
+  /* Navigation Pills */
+  .nav {
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nav-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-pill:hover, .nav-pill.active {
+    background: var(--accent-cyan);
+    color: #ffffff;
+    border-color: var(--accent-cyan);
+  }
+
+  /* Main layout */
+  main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* Section */
+  .section { margin-bottom: 52px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2328;
+  }
+  .section-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+  .platform-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* Cards grid */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    border-color: var(--accent-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9,105,218,0.1);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .card-platform {
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .yt { background: rgba(220,0,0,0.08); color: #cc0000; }
+  .bili { background: rgba(9,105,218,0.1); color: var(--accent-cyan); }
+  .course { background: rgba(102,57,186,0.1); color: var(--accent-purple); }
+  .official { background: rgba(26,127,55,0.1); color: var(--accent-green); }
+  .ted { background: rgba(188,76,0,0.1); color: var(--accent-orange); }
+
+  .card-title {
+    
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2328;
+    line-height: 1.3;
+    flex: 1;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .card-channel {
+    font-size: 11px;
+    color: var(--accent-cyan);
+  }
+  .card-sep { color: var(--border); font-size: 11px; }
+  .card-date { font-size: 10px; color: var(--text-dim); }
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.15s;
+  }
+  .card-link:hover { color: #0550ae; }
+  .card-link::after { content: '→'; }
+
+  .card-hot {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-size: 14px;
+  }
+
+  /* Channel cards (wider) */
+  .channels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .channel-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .channel-card:hover { border-color: var(--accent-purple); box-shadow: 0 2px 8px rgba(102,57,186,0.12); }
+  .channel-name {
+    
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2328;
+    margin-bottom: 4px;
+  }
+  .channel-handle {
+    font-size: 10px;
+    color: var(--accent-purple);
+    margin-bottom: 8px;
+  }
+  .channel-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; }
+  .channel-focus {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .focus-tag {
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: rgba(102,57,186,0.08);
+    color: var(--accent-purple);
+  }
+
+  /* Color accents per section */
+  .s-anthropic .card::before { background: var(--accent-green); }
+  .s-openai .card::before { background: var(--accent-cyan); }
+  .s-agent .card::before { background: var(--accent-orange); }
+  .s-engineering .card::before { background: var(--accent-purple); }
+  .s-bilibili .card::before { background: var(--accent-yellow); }
+
+  /* Divider */
+  .bilibili-note {
+    background: rgba(154,103,0,0.06);
+    border: 1px solid rgba(154,103,0,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--accent-yellow);
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    padding: 24px 40px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 8px;
+  }
+  footer span { color: var(--accent-cyan); }
+
+  @media (max-width: 600px) {
+    header, main, .nav, footer { padding-left: 20px; padding-right: 20px; }
+    .cards, .channels { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">// AI Engineering · Video Intelligence</div>
+  <h1>AI 技术视频<span>导航</span></h1>
+  <p class="header-sub">全球最新、最热门的 AI 技术讲解视频精选 — YouTube · Bilibili · TED · 官方课程 · 2025/2026</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">5</span><span class="stat-label">技术专区</span></div>
+    <div class="stat"><span class="stat-num">40+</span><span class="stat-label">精选资源</span></div>
+    <div class="stat"><span class="stat-num">3</span><span class="stat-label">视频平台</span></div>
+    <div class="stat"><span class="stat-num">2026</span><span class="stat-label">最新更新</span></div>
+  </div>
+</header>
+
+<nav class="nav">
+  <a class="nav-pill active" href="#anthropic">🟢 Anthropic / Claude</a>
+  <a class="nav-pill" href="#openai">🔵 OpenAI</a>
+  <a class="nav-pill" href="#agent">🦀 Hermes Agent & OpenClaw</a>
+  <a class="nav-pill" href="#engineering">🧠 AI Engineering</a>
+  <a class="nav-pill" href="#bilibili">📺 哔哩哔哩 Bilibili</a>
+</nav>
+
+<main>
+
+  <!-- ===== ANTHROPIC ===== -->
+  <section id="anthropic" class="section s-anthropic">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(57,211,83,0.1);">🟢</div>
+      <div>
+        <div class="section-title">Anthropic / Claude</div>
+      </div>
+      <span class="section-desc">官方 + 社区 精选</span>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform official">OFFICIAL</span>
+          <div class="card-title">Anthropic 官方 YouTube 频道</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">@anthropic-ai</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">持续更新</span>
+        </div>
+        <p class="card-desc">官方研究视频、Claude 产品演示、AI Safety 讲座。包含 Constitutional AI、Responsible Scaling Policy 深度解析。</p>
+        <div class="card-tags">
+          <span class="tag">AI Safety</span><span class="tag">Claude</span><span class="tag">研究</span>
+        </div>
+        <a class="card-link" href="https://www.youtube.com/@anthropic-ai" target="_blank">访问频道</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform official">OFFICIAL</span>
+          <div class="card-title">Claude Code in Action — 官方免费课程</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">Anthropic Academy</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026 最新</span>
+        </div>
+        <p class="card-desc">Anthropic 官方课程平台 (anthropic.skilljar.com)。涵盖 Claude Code、MCP Server 开发、Sub-agents、GitHub 工作流集成。免费。</p>
+        <div class="card-tags">
+          <span class="tag">Claude Code</span><span class="tag">MCP</span><span class="tag">Sub-agents</span>
+        </div>
+        <a class="card-link" href="https://anthropic.skilljar.com" target="_blank">前往课程</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">Anthropic's Claude Code Just DESTROYED Every AI Workflow Tool</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">AI Engineer</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Jan 2026</span>
+        </div>
+        <p class="card-desc">深度演示 Claude Code 工作流，覆盖 agentic coding 全流程，比较与其他 AI 工具的差异。</p>
+        <div class="card-tags"><span class="tag">Claude Code</span><span class="tag">Agentic</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=_0xa6RVqTC8" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">The Complete Claude Anthropic Tutorial (Updated)</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">AI Master</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Dec 2025</span>
+        </div>
+        <p class="card-desc">完整 Claude 使用指南，从 API 调用到 Artifacts、Projects 功能，适合工程师快速上手。</p>
+        <div class="card-tags"><span class="tag">Claude API</span><span class="tag">入门</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=kyB68hS-vco" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform course">COURSE</span>
+          <div class="card-title">Scrimba: Vibe Coding with Claude Code</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">Scrimba / Maham Codes</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2025/2026</span>
+        </div>
+        <p class="card-desc">交互式 Claude Code 学习课程。Scrimba 特有格式：可直接在视频内编辑代码。适合中级开发者。</p>
+        <div class="card-tags"><span class="tag">Interactive</span><span class="tag">Claude Code</span></div>
+        <a class="card-link" href="https://scrimba.com" target="_blank">访问 Scrimba</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform official">DOCS</span>
+          <div class="card-title">Claude Cookbooks — 官方代码食谱</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">Anthropic</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">月度更新</span>
+        </div>
+        <p class="card-desc">生产级代码示例库。覆盖 RAG、Structured Output、Agent Handoff、Vision Multimodal、Embeddings 语义搜索。</p>
+        <div class="card-tags"><span class="tag">RAG</span><span class="tag">Agents</span><span class="tag">代码示例</span></div>
+        <a class="card-link" href="https://docs.anthropic.com/en/docs/about-claude/models/overview" target="_blank">查看文档</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== OPENAI ===== -->
+  <section id="openai" class="section s-openai">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(0,212,255,0.1);">🔵</div>
+      <div>
+        <div class="section-title">OpenAI</div>
+      </div>
+      <span class="section-desc">官方 + 技术深度</span>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform official">OFFICIAL</span>
+          <div class="card-title">OpenAI 官方 YouTube 频道</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">@OpenAI</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">持续更新</span>
+        </div>
+        <p class="card-desc">GPT-5、o3/o4-mini、Codex、Sora 产品演示、开发团队访谈、API 新特性介绍。是跟进 OpenAI 进展的第一手资料。</p>
+        <div class="card-tags"><span class="tag">GPT-5</span><span class="tag">Codex</span><span class="tag">Agents SDK</span></div>
+        <a class="card-link" href="https://www.youtube.com/@OpenAI" target="_blank">访问频道</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform official">OFFICIAL</span>
+          <div class="card-title">OpenAI Academy — 免费学习平台</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">academy.openai.com</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026 最新</span>
+        </div>
+        <p class="card-desc">包含 Codex on Campus、Prompt Engineering、ChatGPT for Teams 等官方视频教程。从基础 AI Literacy 到工程师级 API 集成。</p>
+        <div class="card-tags"><span class="tag">Prompt Engineering</span><span class="tag">API</span><span class="tag">免费</span></div>
+        <a class="card-link" href="https://academy.openai.com/public/content" target="_blank">前往课程</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">Inside OpenAI: 2026 is the year of agents</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">Dwarkesh Podcast</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Dec 2025</span>
+        </div>
+        <p class="card-desc">OpenAI Codex 产品负责人深度访谈。讲述 Codex agent 20x 增长、AI 最大瓶颈、compute 不是问题所在的核心判断。</p>
+        <div class="card-tags"><span class="tag">Agentic AI</span><span class="tag">Codex</span><span class="tag">战略</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=z1ISq9Ty4Cg" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">Autonomous Agents with OpenAI Functions</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">OpenAI</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2025</span>
+        </div>
+        <p class="card-desc">用 OpenAI Function Calling 构建自主 agent 的官方演示。覆盖 structured output、tool use、agent handoff 模式。</p>
+        <div class="card-tags"><span class="tag">Function Calling</span><span class="tag">Agents SDK</span></div>
+        <a class="card-link" href="https://www.youtube.com/@OpenAI" target="_blank">查看频道</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">OpenAI Cookbook — RAG & Agent 代码实战</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">OpenAI</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Oct 2025 更新</span>
+        </div>
+        <p class="card-desc">覆盖 AgentKit walkthroughs、GPT-5 prompting、Pinecone/Chroma 向量搜索、eval-driven 设计。月度更新。</p>
+        <div class="card-tags"><span class="tag">RAG</span><span class="tag">Evals</span><span class="tag">Production</span></div>
+        <a class="card-link" href="https://cookbook.openai.com" target="_blank">查看 Cookbook</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HERMES AGENT & OPENCLAW ===== -->
+  <section id="agent" class="section s-agent">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(247,129,102,0.1);">🦀</div>
+      <div>
+        <div class="section-title">Hermes Agent & OpenClaw</div>
+      </div>
+      <span class="section-desc">最新 AI 个人 Agent 生态</span>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-hot">🆕</div>
+        <div class="card-top">
+          <span class="card-platform ted">TED</span>
+          <div class="card-title">How I Created OpenClaw, the Breakthrough AI Agent | Peter Steinberger | TED</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">TED</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Apr 2026</span>
+        </div>
+        <p class="card-desc">OpenClaw 创始人 Peter Steinberger 的 TED 演讲。讲述他将 AI agent 放到互联网上运行的转折时刻，以及 OpenClaw 引爆社区的全过程。</p>
+        <div class="card-tags"><span class="tag">OpenClaw</span><span class="tag">创始人</span><span class="tag">TED</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=7rzYDM6vMtI" target="_blank">观看演讲</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">The Ultimate Beginner's Guide to OpenClaw</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">YouTube</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Mar 2026</span>
+        </div>
+        <p class="card-desc">完整 OpenClaw (Clawdbot) 教程。部署、模型路由、Telegram 集成、Skills、Memory、Cron jobs、Voice mode、Sub-agents 全覆盖。</p>
+        <div class="card-tags"><span class="tag">OpenClaw</span><span class="tag">Skills</span><span class="tag">Memory</span><span class="tag">Telegram</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=st534T7-mdE" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">OpenClaw Just Updated: How To Use AI Agents Like a Pro</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">AI Master</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">May 2026</span>
+        </div>
+        <p class="card-desc">最新版 OpenClaw 更新详解，演示 AI 自动化 pipeline 的实际构建过程，适合进阶用户。</p>
+        <div class="card-tags"><span class="tag">OpenClaw</span><span class="tag">Automation</span><span class="tag">进阶</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=8Cb_Zc5_gWo" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">OpenClaw Full Tutorial for Beginners (ClawdBot)</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">YouTube</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Feb 2026</span>
+        </div>
+        <p class="card-desc">零基础教程。专用设备部署、Telegram Bot 配置、OpenRouter 模型接入全流程演示。</p>
+        <div class="card-tags"><span class="tag">入门</span><span class="tag">部署</span><span class="tag">OpenRouter</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=BoC5MY_7aDk" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🆕</div>
+        <div class="card-top">
+          <span class="card-platform yt">YT</span>
+          <div class="card-title">AI-Assisted Coding: OpenClaw + Claude Code + Gemini CLI</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">freeCodeCamp</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Mar 2026</span>
+        </div>
+        <p class="card-desc">整合 OpenClaw、GitHub Copilot、Claude Code、CodeRabbit、Gemini CLI 的完整 AI 开发工作流。AI pair programming 实战。</p>
+        <div class="card-tags"><span class="tag">OpenClaw</span><span class="tag">Claude Code</span><span class="tag">Copilot</span></div>
+        <a class="card-link" href="https://www.youtube.com/watch?v=wlpBCazAY9Q" target="_blank">观看视频</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🆕</div>
+        <div class="card-top">
+          <span class="card-platform official">DOCS</span>
+          <div class="card-title">Hermes Agent — NousResearch 官方 Masterclass</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">Onchain AI Garage</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026 最新</span>
+        </div>
+        <p class="card-desc">Hermes Agent 官方推荐的 Masterclass 视频：安装、setup、基础命令全覆盖。Hermes 是 OpenClaw 的开源替代，支持 Skills、Memory SQLite、RL 训练。</p>
+        <div class="card-tags"><span class="tag">Hermes</span><span class="tag">Nous Research</span><span class="tag">MCP</span><span class="tag">Skills</span></div>
+        <a class="card-link" href="https://hermes-agent.nousresearch.com/docs/getting-started/quickstart" target="_blank">查看文档</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform course">GUIDE</span>
+          <div class="card-title">Hermes Agent Setup & Tutorial — DataCamp</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">DataCamp</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Apr 2026</span>
+        </div>
+        <p class="card-desc">详细对比 Hermes vs OpenClaw vs Nanobot。安装、provider 配置、Memory 机制、内置 RL 训练 pipeline (Tinker-Atropos / GRPO) 全解析。</p>
+        <div class="card-tags"><span class="tag">Hermes</span><span class="tag">对比分析</span><span class="tag">GRPO</span></div>
+        <a class="card-link" href="https://www.datacamp.com/tutorial/hermes-agent" target="_blank">阅读指南</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform course">GUIDE</span>
+          <div class="card-title">The Complete Guide to OpenClaw — Lenny's Newsletter</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">Lenny's Newsletter</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">Mar 2026</span>
+        </div>
+        <p class="card-desc">实践者视角的 OpenClaw 完全指南。真实踩坑经验、Skills 创建、安全配置、多 Claw 协作场景。</p>
+        <div class="card-tags"><span class="tag">OpenClaw</span><span class="tag">实战</span><span class="tag">Skills</span></div>
+        <a class="card-link" href="https://www.lennysnewsletter.com/p/openclaw-the-complete-guide-to-building" target="_blank">阅读指南</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AI ENGINEERING CHANNELS ===== -->
+  <section id="engineering" class="section s-engineering">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(188,140,255,0.1);">🧠</div>
+      <div>
+        <div class="section-title">AI Engineering — YouTube 顶级频道</div>
+      </div>
+      <span class="section-desc">全球工程师必刷</span>
+    </div>
+
+    <div class="channels">
+
+      <div class="channel-card">
+        <div class="channel-name">Andrej Karpathy</div>
+        <div class="channel-handle">@karpathy</div>
+        <p class="channel-desc">前 Tesla AI 总监 / OpenAI 联创。从零构建 GPT、LLM tokenizer、神经网络。工程师视角讲清 why，不只是 how。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">LLM 原理</span><span class="focus-tag">从零实现</span><span class="focus-tag">深度学习</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">DeepLearning.AI</div>
+        <div class="channel-handle">@deeplearningai / 吴恩达</div>
+        <p class="channel-desc">Andrew Ng 的频道。LangChain、RAG、Fine-tuning 系列课程。结构清晰，是转型 AI 工程师的最佳入口。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">LangChain</span><span class="focus-tag">RAG</span><span class="focus-tag">Fine-tuning</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">AI Engineer (Conference)</div>
+        <div class="channel-handle">youtube.com/channel/UCLKPca3...</div>
+        <p class="channel-desc">AI Engineer World's Fair 会议视频。顶级工程师分享 RAG、Agent、LLMOps、Evals 生产级实践。强烈推荐。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">生产级 RAG</span><span class="focus-tag">LLMOps</span><span class="focus-tag">Evals</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">AssemblyAI</div>
+        <div class="channel-handle">@AssemblyAI</div>
+        <p class="channel-desc">LangChain、CrewAI、Voice Agent、Speech-to-Text 的高质量代码教程。构建完整系统，每步解释清楚。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">LangChain</span><span class="focus-tag">CrewAI</span><span class="focus-tag">Voice</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">VoloBuilds</div>
+        <div class="channel-handle">@VoloBuilds</div>
+        <p class="channel-desc">深度聚焦 RAG 系统、AI Agent 架构。不是工具演示，而是挖掘底层技术逻辑。适合有经验的开发者。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">RAG 深度</span><span class="focus-tag">Agent 架构</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">Yannic Kilcher</div>
+        <div class="channel-handle">@YannicKilcher</div>
+        <p class="channel-desc">AI research paper 解读。Transformer、RLHF、Diffusion 等顶会论文的带批判性分析讲解。研究员必看。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">论文解读</span><span class="focus-tag">RLHF</span><span class="focus-tag">批判分析</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">3Blue1Brown</div>
+        <div class="channel-handle">@3blue1brown</div>
+        <p class="channel-desc">Grant Sanderson 的神经网络动画系列。把 Attention 机制、Transformer 可视化到极致。数学直觉必备。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">Transformer 可视化</span><span class="focus-tag">数学直觉</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">Two Minute Papers</div>
+        <div class="channel-handle">@TwoMinutePapers</div>
+        <p class="channel-desc">2-5 分钟解读最新 AI 研究突破。快速了解 OpenAI、DeepMind、Anthropic 最新 paper 的最佳渠道。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">论文速览</span><span class="focus-tag">研究前沿</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">Tiff in Tech</div>
+        <div class="channel-handle">@TiffInTech</div>
+        <p class="channel-desc">NVIDIA / Microsoft / Meta 前工程师。Claude Agent、Cursor、Python AI automation 实战教程，兼顾技术与职业发展。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">Claude Agent</span><span class="focus-tag">Python</span><span class="focus-tag">职业发展</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">AI at Meta</div>
+        <div class="channel-handle">@AIatMeta</div>
+        <p class="channel-desc">Llama 系列模型的开发团队直接出镜。模型架构、Safety 实现、开源生态深度解析。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">Llama 4</span><span class="focus-tag">模型架构</span><span class="focus-tag">开源</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">Dwarkesh Podcast</div>
+        <div class="channel-handle">@DwarkeshPatel</div>
+        <p class="channel-desc">深度访谈 Karpathy、Sam Altman、Geoffrey Hinton 等 AI 领袖。战略与技术并重，不迷于 hype。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">深度访谈</span><span class="focus-tag">AI 战略</span>
+        </div>
+      </div>
+
+      <div class="channel-card">
+        <div class="channel-name">Google Cloud Tech</div>
+        <div class="channel-handle">@GoogleCloudTech</div>
+        <p class="channel-desc">Vertex AI、BigQuery ML、LLM in production 的规模化实践。适合 AI 架构师和 MLOps 工程师。</p>
+        <div class="channel-focus">
+          <span class="focus-tag">Vertex AI</span><span class="focus-tag">MLOps</span><span class="focus-tag">规模化</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BILIBILI ===== -->
+  <section id="bilibili" class="section s-bilibili">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(227,179,65,0.1);">📺</div>
+      <div>
+        <div class="section-title">哔哩哔哩 Bilibili 精选</div>
+      </div>
+      <span class="section-desc">中文 AI 工程精华</span>
+    </div>
+
+    <div class="bilibili-note">
+      💡 以下视频均可在哔哩哔哩直接搜索标题找到。B 站 AI 技术内容质量参差不齐，以下均经筛选，适合中文母语工程师快速吸收。
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【2026年AI大模型】10小时学：Prompt、RAG、Agent、MCP、大模型微调（完整版）</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">B站 UP 主</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026 最新</span>
+        </div>
+        <p class="card-desc">10 小时完整教程。Prompt Engineering → RAG → Agent → MCP → 微调，一条龙讲完，适合 LLM 工程转型。</p>
+        <div class="card-tags"><span class="tag">RAG</span><span class="tag">Agent</span><span class="tag">MCP</span><span class="tag">微调</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">黑马程序员大模型RAG与Agent智能体项目实战（LangChain）</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">黑马程序员</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2025</span>
+        </div>
+        <p class="card-desc">国内顶级培训机构出品。LangChain 技术栈 + 真实企业项目。从提示词工程到完整 RAG 系统落地，代码量充足。</p>
+        <div class="card-tags"><span class="tag">LangChain</span><span class="tag">企业项目</span><span class="tag">实战</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【吴恩达 2026】Agent 智能体教程 — Agentic AI 附课件代码</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">B站搬运整理</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">吴恩达 Agentic AI 课程中文整理版。LangGraph、Multi-agent 架构、Tool Use 最新讲解，附课件代码。</p>
+        <div class="card-tags"><span class="tag">Agentic AI</span><span class="tag">LangGraph</span><span class="tag">吴恩达</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【2026最新版】Qwen3本地部署与微调实战（LoRA + 部署 + 效果展示）</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">B站 UP 主</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">Qwen3 本地微调实战全流程：环境配置、LoRA 微调、模型部署到效果验证。Apple Silicon 和 GPU 均有覆盖。</p>
+        <div class="card-tags"><span class="tag">Qwen3</span><span class="tag">LoRA</span><span class="tag">本地部署</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-hot">🔥</div>
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【2026最新】翻遍B站最好的 Agent 开发教程（入门到进阶）手把手构建 Agent 框架</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">B站 UP 主</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">被广泛推荐的 Agent 教程。从零构建 Agent 框架，全程干货，覆盖 ReAct、Tool Use、Memory、Planning。学完即可就业。</p>
+        <div class="card-tags"><span class="tag">ReAct</span><span class="tag">Tool Use</span><span class="tag">Planning</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【2026 字节大佬】Claude Code 全栈教程 — MCP/SubAgent/Hook/上下文处理</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">字节跳动工程师</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">字节跳动大佬出品的 Claude Code 中文深度教程。MCP / Sub-Agent / Agent Skill / Hook / 图片 / 后台任务全覆盖。</p>
+        <div class="card-tags"><span class="tag">Claude Code</span><span class="tag">MCP</span><span class="tag">Sub-Agent</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【李宏毅 2026】AI Agent 系列课程 — 公认体验感最好的入门课程</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">台湾大学李宏毅</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">台大李宏毅教授 Agent 课程。理论严谨，表达风趣。RAG → Tool Use → Multi-agent → Self-improving agent 体系化讲解。</p>
+        <div class="card-tags"><span class="tag">学术严谨</span><span class="tag">Multi-agent</span><span class="tag">中文</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【清华大佬】AI大模型教程动画版 — 2026 学完即就业</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">清华系列</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">清华大学出品的动画风格 AI 大模型教程。Transformer 架构 → 预训练 → RLHF → Agent，可视化效果好，易理解。</p>
+        <div class="card-tags"><span class="tag">Transformer</span><span class="tag">RLHF</span><span class="tag">动画</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">2025 吃透 LangGraph 大模型全套（LLM+RAG+OpenAI+Agent+LangChain）</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">马士兵 / B站精品</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2025</span>
+        </div>
+        <p class="card-desc">LangGraph 深度实战课。State Graph、Conditional Edges、Checkpointing、Human-in-the-loop 全流程中文讲解。</p>
+        <div class="card-tags"><span class="tag">LangGraph</span><span class="tag">State Machine</span><span class="tag">Checkpoint</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-platform bili">B站</span>
+          <div class="card-title">【闪客】一口气拆穿 Skill/MCP/RAG/Agent/OpenClaw 底层逻辑</div>
+        </div>
+        <div class="card-meta">
+          <span class="card-channel">闪客</span>
+          <span class="card-sep">|</span>
+          <span class="card-date">2026</span>
+        </div>
+        <p class="card-desc">难得一见的中文底层原理拆解。OpenClaw Skill 机制 / MCP 协议 / RAG 向量检索 / Agent 规划底层，一次讲清。</p>
+        <div class="card-tags"><span class="tag">OpenClaw</span><span class="tag">MCP 原理</span><span class="tag">底层逻辑</span></div>
+        <a class="card-link" href="https://www.bilibili.com" target="_blank">B站搜索</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>// AI Video Guide · 2025/2026</span>
+  <span>覆盖 YouTube · Bilibili · TED · 官方学习平台</span>
+  <span style="color:var(--text-dim)">为 AI 工程师精心整理</span>
+</footer>
+
+<script>
+  // Smooth scroll for nav pills
+  document.querySelectorAll('.nav-pill').forEach(pill => {
+    pill.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Update active nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    document.querySelectorAll('.nav-pill').forEach(p => {
+      p.classList.toggle('active', p.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

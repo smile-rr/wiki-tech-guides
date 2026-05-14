@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI 阅读清单</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede7;
+    --border: #e0dbd2;
+    --text: #1a1816;
+    --muted: #6b6560;
+    --dim: #a09a93;
+    --anthropic: #a0622a;
+    --openai: #2a7a58;
+    --accent: #8a6a30;
+    --tag-bg: #f0ede7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -100px;
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(160,130,60,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .subtitle span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .dot-anthropic { background: var(--anthropic); }
+  .dot-openai { background: var(--openai); }
+
+  /* READING ORDER */
+  .reading-order {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .order-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .order-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .order-item:hover {
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+
+  .order-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    padding-top: 0.1rem;
+    flex-shrink: 0;
+    min-width: 1.4rem;
+  }
+
+  .order-text {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+
+  .order-text strong {
+    display: block;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+    font-size: 0.84rem;
+  }
+
+  .src-badge {
+    font-size: 0.65rem;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    margin-top: 0.3rem;
+    display: inline-block;
+  }
+
+  .src-a { background: rgba(204,155,109,0.12); color: var(--anthropic); }
+  .src-o { background: rgba(116,184,154,0.12); color: var(--openai); }
+
+  /* MAIN CONTENT */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  /* CATEGORY */
+  .category {
+    margin-top: 3rem;
+  }
+
+  .cat-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cat-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--dim);
+  }
+
+  .cat-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .cat-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  /* ARTICLES */
+  .articles { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .article {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    background: var(--surface);
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .article:hover {
+    border-color: #444;
+    background: var(--surface2);
+  }
+
+  .article-stripe {
+    width: 3px;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+
+  .stripe-a { background: var(--anthropic); }
+  .stripe-o { background: var(--openai); }
+
+  .article-body {
+    padding: 0.85rem 1.1rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .article-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .article:hover .article-title { color: var(--accent); }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .article-src {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+  }
+
+  .src-anthropic { color: var(--anthropic); }
+  .src-openai { color: var(--openai); }
+
+  .article-date {
+    font-size: 0.72rem;
+    color: var(--dim);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .article-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    line-height: 1.4;
+  }
+
+  .article-arrow {
+    padding: 0.85rem 1rem;
+    color: var(--dim);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    align-self: center;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .article:hover .article-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <p class="eyebrow">Engineering Reading List · 2024–2026</p>
+    <h1>Agentic AI<br><em>开发与研究实践</em></h1>
+    <div class="subtitle">
+      <span><span class="dot dot-anthropic"></span> Anthropic Engineering &amp; Research</span>
+      <span><span class="dot dot-openai"></span> OpenAI Developer Blog</span>
+      <span>24 篇精选 · 8 个类别</span>
+    </div>
+  </div>
+</header>
+
+<!-- RECOMMENDED READING ORDER -->
+<div class="reading-order">
+  <p class="section-label">推荐阅读顺序 for AI Engineer</p>
+  <div class="order-grid">
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">
+      <span class="order-num">01</span>
+      <div class="order-text">
+        <strong>Building Effective Agents</strong>
+        架构基础，workflow vs agent，5种核心模式
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-agents/" target="_blank">
+      <span class="order-num">02</span>
+      <div class="order-text">
+        <strong>A Practical Guide to Building Agents</strong>
+        OpenAI 34页完整指南，工具/编排/guardrails
+        <span class="src-badge src-o">OpenAI</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">
+      <span class="order-num">03</span>
+      <div class="order-text">
+        <strong>Effective Context Engineering</strong>
+        compaction、just-in-time 加载、hybrid 策略
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank">
+      <span class="order-num">04</span>
+      <div class="order-text">
+        <strong>Effective Harnesses for Long-running Agents</strong>
+        多 context window 持续执行策略
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/writing-tools-for-agents" target="_blank">
+      <span class="order-num">05</span>
+      <div class="order-text">
+        <strong>Writing Effective Tools for Agents</strong>
+        工具描述、分页、错误设计 best practices
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/code-execution-with-mcp" target="_blank">
+      <span class="order-num">06</span>
+      <div class="order-text">
+        <strong>Code Execution with MCP</strong>
+        用代码调用 MCP 工具，减少 98.7% token 消耗
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/advanced-tool-use" target="_blank">
+      <span class="order-num">07</span>
+      <div class="order-text">
+        <strong>Advanced Tool Use</strong>
+        Tool Search + Programmatic Calling + Examples
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank">
+      <span class="order-num">08</span>
+      <div class="order-text">
+        <strong>How We Built Our Multi-Agent Research System</strong>
+        lead agent + 并行 subagent，工具自我调优
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk" target="_blank">
+      <span class="order-num">09</span>
+      <div class="order-text">
+        <strong>Building Agents with Claude Agent SDK</strong>
+        从 Claude Code SDK 演化而来的 agent harness
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">
+      <span class="order-num">10</span>
+      <div class="order-text">
+        <strong>Claude Code Best Practices</strong>
+        subagent 定义、parallel session、Writer/Reviewer
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://developers.openai.com/blog/eval-skills" target="_blank">
+      <span class="order-num">11</span>
+      <div class="order-text">
+        <strong>Testing Agent Skills with Evals</strong>
+        outcome / process / style 三层评分框架
+        <span class="src-badge src-o">OpenAI</span>
+      </div>
+    </a>
+
+    <a class="order-item" href="https://www.anthropic.com/research/measuring-agent-autonomy" target="_blank">
+      <span class="order-num">12</span>
+      <div class="order-text">
+        <strong>Measuring AI Agent Autonomy in Practice</strong>
+        真实生产数据，自主度如何随经验增长
+        <span class="src-badge src-a">Anthropic</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<main>
+
+  <!-- CAT 1 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">01</span>
+      <h2 class="cat-title">架构设计原则</h2>
+    </div>
+    <p class="cat-desc">建立 agent 开发的整体认知框架。区分 workflow 与 agent，选择合适的编排模式。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Building Effective Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Dec 2024</span>
+          </div>
+          <div class="article-note">最重要入门篇。workflow vs agent 的本质区别，5种核心编排模式（parallel/sequential/routing/evaluator-optimizer/orchestrator-subagent），强调 simple composable patterns over complex frameworks。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Building Agents with the Claude Agent SDK</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Jan 2026</span>
+          </div>
+          <div class="article-note">Claude Code SDK 更名为 Claude Agent SDK 的背景与原因。agent harness 设计、folder 即 context engineering 的理念、semantic search vs agentic search 的取舍。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://openai.com/business/guides-and-resources/a-practical-guide-to-building-agents/" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">A Practical Guide to Building Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-openai">OpenAI</span>
+            <span class="article-date">Apr 2025</span>
+          </div>
+          <div class="article-note">OpenAI 官方 34 页完整指南。涵盖工具定义、编排模式（单 agent / 多 agent）、guardrails、human-in-the-loop 的生产部署完整路径。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://openai.com/index/new-tools-for-building-agents/" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">New Tools for Building Agents（Responses API 发布）</div>
+          <div class="article-meta">
+            <span class="article-src src-openai">OpenAI</span>
+            <span class="article-date">Mar 2025</span>
+          </div>
+          <div class="article-note">Responses API 替代 Chat Completions + Assistants API 的战略意图，内置 web search / file search / computer use 工具，统一 agent-native API 设计。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://developers.openai.com/blog/openai-for-developers-2025" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">OpenAI for Developers in 2025</div>
+          <div class="article-meta">
+            <span class="article-src src-openai">OpenAI Developer Blog</span>
+            <span class="article-date">Dec 2025</span>
+          </div>
+          <div class="article-note">2025 年度技术演进总结。Responses API / Agents SDK / AgentKit / Evals API / RFT / MCP 标准化的全景回顾，了解 OpenAI 平台方向的必读。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 2 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">02</span>
+      <h2 class="cat-title">Context Engineering</h2>
+    </div>
+    <p class="cat-desc">从 prompt engineering 到 context engineering 的范式转变。如何让 agent 在有限 context window 内高效、持续工作。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Effective Context Engineering for AI Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Sep 2025</span>
+          </div>
+          <div class="article-note">compaction 机制、just-in-time context loading、hybrid retrieval 策略。用 Claude Code 实例说明 folder 结构即 context 架构，是所有 agent 工程师必读的一篇。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Effective Harnesses for Long-running Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Nov 2025</span>
+          </div>
+          <div class="article-note">解决跨多个 context window 的任务连续性问题。initializer agent 设计、feature requirements 文件、failing checklist 模式，用构建 claude.ai clone 的实战经验说明。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/harness-design-long-running-apps" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Harness Design for Long-running Application Development</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Mar 2026</span>
+          </div>
+          <div class="article-note">上一篇的深化版。针对生产级应用开发的 harness 架构设计，是长周期任务工程实践的最新总结。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Introducing Contextual Retrieval</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Sep 2024</span>
+          </div>
+          <div class="article-note">BM25 + embedding 混合检索 + Contextual Chunk Headers 技术，RAG 失败率降低 67%。奠定了高精度 RAG pipeline 的设计基础。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/claude-think-tool" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">The "Think" Tool: Enabling Claude to Stop and Think</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Mar 2025</span>
+          </div>
+          <div class="article-note">在复杂工具调用中插入显式思考步骤的工程实现，在 TAU-bench airline 任务上显著提升多步推理准确率。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 3 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">03</span>
+      <h2 class="cat-title">工具设计与 MCP</h2>
+    </div>
+    <p class="cat-desc">工具是 agent 能力的延伸。MCP 是 2024 年底确立的行业标准协议，OpenAI / Google 均已采纳。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/writing-tools-for-agents" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Writing Effective Tools for Agents — with Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Sep 2025</span>
+          </div>
+          <div class="article-note">工具描述的写法、分页/过滤/截断设计、UUID 到语义 ID 的转化技巧、工具响应 token 预算控制（默认 25000）。SWE-bench SOTA 背后的核心工程实践。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/advanced-tool-use" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Introducing Advanced Tool Use on the Claude Developer Platform</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Nov 2025</span>
+          </div>
+          <div class="article-note">三大新特性：Tool Search Tool（按需发现）、Programmatic Tool Calling（代码执行工具）、Tool Use Examples（示例驱动学习）。解决千工具场景下的 context 爆炸问题。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/code-execution-with-mcp" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Code Execution with MCP: Building More Efficient Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Nov 2025</span>
+          </div>
+          <div class="article-note">agent 写代码调用 MCP 工具，而非直接 function call。token 消耗降低 98.7%。将软件工程中的状态管理、分批处理等经典模式引入 agent 设计。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Equipping Agents for the Real World with Agent Skills</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Oct 2025</span>
+          </div>
+          <div class="article-note">Skills = SKILL.md 目录结构，可组合的领域知识包。Progressive disclosure：name/description 优先加载，内容按需注入。已开放为 open standard。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/desktop-extensions" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Desktop Extensions: One-click MCP Server Installation for Claude Desktop</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Jun 2025</span>
+          </div>
+          <div class="article-note">MCP 生态基础设施建设：一键安装 MCP server 的 .dxt 扩展格式，降低工具集成门槛，是 MCP 走向普及的关键工程节点。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 4 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">04</span>
+      <h2 class="cat-title">多智能体系统</h2>
+    </div>
+    <p class="cat-desc">协作、编排与 subagent 分工。lead + specialist 架构在复杂任务上的实际收益。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">How We Built Our Multi-Agent Research System</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Jun 2025</span>
+          </div>
+          <div class="article-note">Claude Research 功能背后的工程实现。lead agent + 并行 subagent 搜索、工具自我调优（prompt engineer agent）、"start wide then narrow" 搜索策略，工具描述优化带来 40% 效率提升。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/managed-agents" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Scaling Managed Agents: Decoupling the Brain from the Hands</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Apr 2026</span>
+          </div>
+          <div class="article-note">最新架构探索。将 agent 的"规划/决策"与"工具执行"解耦，在规模化托管场景下提升可靠性与可控性。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/building-c-compiler" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Building a C Compiler with a Team of Parallel Claudes</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Feb 2026</span>
+          </div>
+          <div class="article-note">并行多 Claude 协作完成复杂工程任务的实战案例。展示了 multi-agent 在真实软件工程问题上的能力边界。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Claude Code: Best Practices for Agentic Coding</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Apr 2025</span>
+          </div>
+          <div class="article-note">subagent 在 .claude/agents/ 下的定义方式、parallel session 批量任务、Writer/Reviewer pattern、CLAUDE.md 工程规范，Anthropic 内部实践的直接输出。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://developers.openai.com/blog/skills-agents-sdk" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">Using Skills to Accelerate OSS Maintenance</div>
+          <div class="article-meta">
+            <span class="article-src src-openai">OpenAI Developer Blog</span>
+            <span class="article-date">Mar 2026</span>
+          </div>
+          <div class="article-note">OpenAI Agents SDK 自身的维护实践。AGENTS.md + Skills + Codex 的协作模式，3个月 PR 合并数从 316 增至 457。技能描述写法的具体示范。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 5 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">05</span>
+      <h2 class="cat-title">评估体系 Evals</h2>
+    </div>
+    <p class="cat-desc">没有评估就没有迭代。从 SWE-bench 到自定义 skill evals，到 agent 自主度的量化分析。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Demystifying Evals for AI Agents</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Jan 2026</span>
+          </div>
+          <div class="article-note">agent eval 体系的系统性介绍。评估维度分类、评估 agent 行为（而非仅输出）的方法论，适合从头搭建 eval pipeline 的工程师。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/eval-awareness-browsecomp" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Eval Awareness in Claude Opus 4.6's BrowseComp Performance</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Mar 2026</span>
+          </div>
+          <div class="article-note">模型能否感知自己正在被评估？BrowseComp benchmark 上的实验发现及其对 eval 设计的影响，是设计 AI-resistant eval 的重要参考。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/AI-resistant-technical-evaluations" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Designing AI-resistant Technical Evaluations</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Jan 2026</span>
+          </div>
+          <div class="article-note">如何设计不被 AI 轻易"作弊"的技术评估体系。对于需要评估 LLM 能力的团队（不仅 Anthropic 内部）都有参考价值。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/infrastructure-noise" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Quantifying Infrastructure Noise in Agentic Coding Evals</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Feb 2026</span>
+          </div>
+          <div class="article-note">量化基础设施层的随机噪声（网络抖动、沙箱差异等）对 agentic coding eval 结果的干扰。eval 可靠性的底层工程问题。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/research/measuring-agent-autonomy" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Measuring AI Agent Autonomy in Practice</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Research</span>
+            <span class="article-date">Feb 2026</span>
+          </div>
+          <div class="article-note">基于 Claude Code 真实生产数据的自主度分析。用户随经验积累授予更高自主权（20% → 40% full auto），四维度 agent 画像框架（autonomy / efficacy / goal complexity / generality）。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/swe-bench-sonnet" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Raising the Bar on SWE-bench Verified with Claude 3.5 Sonnet</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Jan 2025</span>
+          </div>
+          <div class="article-note">工具描述的精细调整如何直接推动 SWE-bench SOTA。最小化 scaffold、让模型主导决策的工程哲学，是 eval-driven iteration 的经典案例。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://developers.openai.com/blog/eval-skills" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">Testing Agent Skills Systematically with Evals</div>
+          <div class="article-meta">
+            <span class="article-src src-openai">OpenAI Developer Blog</span>
+            <span class="article-date">Jan 2026</span>
+          </div>
+          <div class="article-note">outcome / process / style 三层评分框架，trace-based grading，如何检测 skill 触发率、command thrashing、token budget 等指标。实操性极强。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 6 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">06</span>
+      <h2 class="cat-title">安全、Sandboxing 与 Human-in-the-loop</h2>
+    </div>
+    <p class="cat-desc">生产环境的可控性与风险管理。permission model、sandboxing、guardrails 的工程实现。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/claude-code-sandboxing" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Beyond Permission Prompts: Making Claude Code More Secure and Autonomous</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Oct 2025</span>
+          </div>
+          <div class="article-note">从 per-action permission prompt 到更细粒度的 sandboxing 架构演进。在安全性和自主度之间取得平衡的工程设计，对 agentic 生产系统很有参考价值。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/claude-code-auto-mode" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Claude Code Auto Mode: A Safer Way to Skip Permissions</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Mar 2026</span>
+          </div>
+          <div class="article-note">auto mode 的设计：在保证安全前提下减少 permission friction，分析了哪些操作可以安全 auto-approve，哪些必须保留 human 审批。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 7 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">07</span>
+      <h2 class="cat-title">工程质量与事后复盘</h2>
+    </div>
+    <p class="cat-desc">生产级 AI 系统的质量保障与透明度。Anthropic 公开披露事故的工程文化。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering/april-23-postmortem" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">An Update on Recent Claude Code Quality Reports</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Apr 2026</span>
+          </div>
+          <div class="article-note">追踪并公开披露 Claude Code 近期质量下降的三个独立原因及修复措施。罕见的 AI 产品公开 postmortem，对理解 RLHF/训练-产品质量关系很有价值。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/engineering/a-postmortem-of-three-recent-issues" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">A Postmortem of Three Recent Issues</div>
+          <div class="article-meta">
+            <span class="article-src src-anthropic">Anthropic Engineering</span>
+            <span class="article-date">Sep 2025</span>
+          </div>
+          <div class="article-note">三个生产事故的根因分析与改进措施。Anthropic 对工程透明度的承诺，也是学习大型 AI 系统可靠性工程的好素材。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAT 8 -->
+  <div class="category">
+    <div class="cat-header">
+      <span class="cat-num">08</span>
+      <h2 class="cat-title">综合入口 & 持续跟踪</h2>
+    </div>
+    <p class="cat-desc">定期关注的资源入口。</p>
+    <div class="articles">
+
+      <a class="article" href="https://www.anthropic.com/engineering" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Anthropic Engineering Blog（全量）</div>
+          <div class="article-meta"><span class="article-src src-anthropic">Anthropic</span></div>
+          <div class="article-note">本清单的主要来源，持续更新。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://www.anthropic.com/research" target="_blank">
+        <div class="article-stripe stripe-a"></div>
+        <div class="article-body">
+          <div class="article-title">Anthropic Research Blog</div>
+          <div class="article-meta"><span class="article-src src-anthropic">Anthropic</span></div>
+          <div class="article-note">agent autonomy、safety、eval 等研究方向的论文与报告。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://developers.openai.com/blog" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">OpenAI Developer Blog</div>
+          <div class="article-meta"><span class="article-src src-openai">OpenAI</span></div>
+          <div class="article-note">Agents SDK、Evals、Codex、Responses API 最新实践。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://cookbook.openai.com/topic/agents" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">OpenAI Cookbook — Agents 专题</div>
+          <div class="article-meta"><span class="article-src src-openai">OpenAI</span></div>
+          <div class="article-note">可运行的代码示例，parallel agents、function calling、evals、memory 等主题。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+      <a class="article" href="https://github.com/openai/openai-agents-python" target="_blank">
+        <div class="article-stripe stripe-o"></div>
+        <div class="article-body">
+          <div class="article-title">OpenAI Agents SDK（Python，开源）</div>
+          <div class="article-meta"><span class="article-src src-openai">GitHub</span></div>
+          <div class="article-note">tool use / handoffs / guardrails / tracing 的官方实现，provider-agnostic。</div>
+        </div>
+        <div class="article-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  整理自 anthropic.com/engineering · anthropic.com/research · developers.openai.com · openai.com &nbsp;·&nbsp; 2024–2026
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI · LLM · 多模态 完整学习笔记</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f8fafc;--s:#fff;--s2:#f1f5f9;--s3:#e8f0fe;--bd:#e2e8f0;--bd2:#cbd5e1;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bl:#1d4ed8;--blbg:#eff6ff;--blbd:#bfdbfe;--sw:220px}
+html{font-size:14px;line-height:1.6;color:var(--tx)}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+.hdr{position:sticky;top:0;z-index:100;background:var(--s);border-bottom:1px solid var(--bd);padding:8px 16px;display:flex;align-items:center;gap:12px}
+.htit{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.hsub{font-size:10px;color:var(--tx3);font-weight:400}
+.srch{flex:1;max-width:380px;position:relative}
+.srch input{width:100%;padding:5px 11px 5px 28px;border:1px solid var(--bd2);border-radius:7px;font-size:12px;background:var(--s2);color:var(--tx);outline:none}
+.srch input:focus{border-color:#93c5fd;background:#fff}
+.si{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx3)}
+.stag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blbg);color:var(--bl);border:1px solid var(--blbd);white-space:nowrap}
+.lay{display:flex;min-height:calc(100vh - 41px)}
+.sb{width:var(--sw);flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;background:var(--s);border-right:1px solid var(--bd);padding:8px 0}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.nlbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;padding:7px 12px 2px;margin-top:4px}
+.nl{display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:11px;color:var(--tx2);cursor:pointer;transition:background .1s}
+.nl:hover{background:var(--s2);color:var(--tx)}
+.nl.active{background:var(--blbg);color:var(--bl)}
+.ndot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nc{margin-left:auto;font-size:9px;padding:1px 4px;background:var(--s2);border-radius:8px;color:var(--tx3)}
+.main{flex:1;padding:16px 22px 60px;overflow-x:hidden}
+.sec{margin-bottom:28px;scroll-margin-top:50px}
+.sch{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--bd)}
+.sdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stit{font-size:14px;font-weight:600}
+.intro-txt{font-size:12px;color:var(--tx3);margin-bottom:10px;padding:8px 12px;border-radius:6px;border-left:3px solid #93c5fd;background:var(--blbg);line-height:1.6}
+.tabs{display:flex;gap:3px;margin-bottom:10px}
+.tab-btn{padding:5px 14px;font-size:12px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);color:var(--tx2);cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--s);color:var(--tx);border-color:var(--bl);font-weight:500}
+.tab-btn:hover:not(.active){background:var(--s)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.acc{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:8px;transition:box-shadow .15s}
+.acc:hover{box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.acc-hdr{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--s2);cursor:pointer;user-select:none;transition:background .15s}
+.acc-hdr:hover{background:#e8edf2}
+.acc-arrow{font-size:9px;color:var(--tx3);transition:transform .2s;flex-shrink:0}
+.acc-hdr.open .acc-arrow{transform:rotate(90deg)}
+.acc-htxt{font-size:12.5px;font-weight:500;color:var(--tx)}
+.acc-body{display:none}
+.acc-body.open{display:block}
+.pts-wrap{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.pt{font-size:12.5px;color:var(--tx2);line-height:1.75;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-left:3px solid #cbd5e1;border-radius:0 7px 7px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--bd2);box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.card.hidden{display:none}
+.ctop{display:flex;align-items:flex-start;gap:6px}
+.badge{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;flex-shrink:0;white-space:nowrap;margin-top:1px;border:1px solid transparent}
+.ctit{font-size:12px;font-weight:500;color:var(--tx);line-height:1.4}
+.ctit a{color:inherit;text-decoration:none}
+.ctit a:hover{color:var(--bl);text-decoration:underline}
+.cdesc{font-size:11px;color:var(--tx2);line-height:1.4}
+.cmeta{display:flex;align-items:center;gap:6px;margin-top:1px}
+.csrc{font-size:10px;color:var(--tx3)}
+.cdiff{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.de{background:#f0fdf4;color:#15803d}.dm{background:#fffbeb;color:#b45309}.da{background:#fef2f2;color:#b91c1c}
+.curl{font-size:10px;color:#64748b;word-break:break-all;text-decoration:none}
+.curl:hover{color:var(--bl)}
+.b-paper{background:#f8fafc;color:#334155;border-color:#cbd5e1}
+.b-blog{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.b-video{background:#dbeafe;color:#1e40af;border-color:#bfdbfe}
+.b-docs{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe}
+.b-github{background:#f0fdf4;color:#14532d;border-color:#bbf7d0}
+.b-course{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+.b-book{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.b-tool{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}
+.b-visual{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.sec.hidden-sec{display:none}
+.nr{display:none;text-align:center;padding:40px;color:var(--tx3);font-size:13px}
+.btt{position:fixed;bottom:20px;right:20px;width:32px;height:32px;background:var(--bl);color:#fff;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:13px}
+.btt.show{opacity:1}.btt:hover{background:#1e3a8a}
+.leg{display:flex;flex-wrap:wrap;gap:4px;padding:14px 0 0;border-top:1px solid var(--bd);margin-top:4px}
+.res-block{margin-top:14px}.res-section-label{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding-top:12px;border-top:1px solid var(--bd)}/* ── READABILITY OVERRIDES ── */
+.acc-body{display:block!important}
+.acc{border:none!important;border-radius:0!important;box-shadow:none!important;margin-bottom:0!important}
+.acc+.acc{border-top:1px solid var(--bd)!important}
+.acc:hover{box-shadow:none!important}
+.acc-hdr{background:transparent!important;padding:16px 0 5px!important;cursor:default!important;gap:0!important}
+.acc-hdr:hover,.acc-hdr.open{background:transparent!important}
+.acc-arrow{display:none!important}
+.acc-htxt{font-size:13.5px!important;font-weight:600!important;color:var(--tx)!important;letter-spacing:-.01em}
+.pts-wrap{padding:4px 0 22px!important;gap:16px!important}
+.pt{font-size:13.5px!important;line-height:1.85!important;color:var(--tx2)!important;padding:0!important;background:transparent!important;border:none!important;border-radius:0!important}
+.pt:hover{border-left-color:transparent!important}
+.intro-txt{font-size:13px!important;line-height:1.72!important}
+.intro-txt{font-style:normal!important;color:var(--tx)!important;background:transparent!important;padding:2px 0 2px 14px!important;border-radius:0!important}.intro-lines{margin-top:11px;display:flex;flex-direction:column;gap:6px}.intro-line{font-size:13px;line-height:1.65;color:var(--tx2)}.intro-line strong{color:var(--tx);font-weight:600}
+/* ── THREE-COLUMN LAYOUT ── */
+.content-area{flex:1;display:flex;align-items:flex-start;min-width:0;gap:0}
+.main{flex:1;max-width:720px;min-width:0}
+.toc-rail{width:190px;flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;padding:14px 0 20px 14px;border-left:1px solid var(--bd);background:var(--s)}
+.toc-rail::-webkit-scrollbar{width:2px}.toc-rail::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.toc-head{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd);padding-right:14px}
+.toc-sec{display:block;font-size:11px;color:var(--tx3);text-decoration:none;padding:3px 0;line-height:1.4;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px;transition:color .12s}
+.toc-sec:hover{color:var(--tx2)}
+.toc-sec.active{color:var(--bl)!important;font-weight:600}
+.toc-notes{flex-direction:column;display:none}
+.toc-notes.open{display:flex}
+.toc-note{display:block;font-size:10.5px;color:var(--tx3);text-decoration:none;padding:2px 14px 2px 10px;line-height:1.4;cursor:pointer;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.toc-note:hover{color:var(--tx2)}
+.toc-note.active{color:var(--bl);border-left-color:var(--bl)}
+[id^="nh-"]{scroll-margin-top:60px}
+@media(max-width:1200px){.toc-rail{display:none}}
+/* ── GUIDE RAIL REDESIGN ── */
+.content-area{gap:40px!important}
+.toc-rail{background:transparent!important;border-left:none!important;padding:18px 0 20px 0!important}
+.guide-head{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin-bottom:14px}
+.guide-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:none}
+.guide-check{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s}
+.guide-check:hover{border-color:var(--bl)}
+.guide-item.done .guide-check{background:var(--bl);border-color:var(--bl);color:#fff}
+.guide-text{font-size:11.5px;color:var(--tx3);line-height:1.6;cursor:pointer;flex:1;transition:color .12s}
+.guide-text:hover{color:var(--tx2)}
+.guide-text strong{color:var(--tx2);font-weight:600}
+.guide-item.done .guide-text{opacity:.4;text-decoration:line-through;text-decoration-color:var(--bd2)}
+.guide-item.done .guide-text strong{color:inherit}
+/* ── RESPONSIVE 3-COLUMN GRID (overrides all previous layout rules) ── */
+.lay{display:grid!important;align-items:start!important;gap:0!important;
+     grid-template-columns:clamp(180px,16%,240px) 1fr clamp(220px,22%,320px)!important}
+.content-area{display:contents!important;flex:unset!important;gap:unset!important}
+.main{flex:unset!important;max-width:none!important;min-width:0!important;padding-right:36px!important}
+.toc-rail{width:unset!important;min-width:unset!important;flex-shrink:unset!important;
+          padding-left:22px!important;border-left:1px solid var(--bd)!important;
+          background:transparent!important}
+@media(max-width:1200px){
+  .toc-rail{display:none!important}
+  .lay{grid-template-columns:clamp(180px,16%,240px) 1fr!important}
+}
+/* ── RESIZE HANDLE ── */
+.toc-rail{position:relative!important}
+.resize-handle{position:absolute;left:-1px;top:0;bottom:0;width:8px;cursor:col-resize;
+  z-index:20;background:transparent;border-left:2px solid transparent;transition:border-color .15s,background .15s}
+.resize-handle:hover,.resize-handle.dragging{border-left-color:var(--bl);background:rgba(99,102,241,.07)}
+.guide-content{width:100%}
+/* === STICKY GUIDE FIX === */
+.toc-rail{
+  position:sticky!important;
+  top:41px!important;
+  height:calc(100vh - 41px)!important;
+  overflow-y:auto!important;
+  align-self:start!important;
+}
+.lay{align-items:start!important}
+
+.note-fig{margin:12px 0 16px;border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden;background:var(--s)}
+.note-fig svg{width:100%;height:auto;display:block;max-height:300px}
+.diag-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--accent,#2563eb);text-decoration:none;opacity:.8}
+.diag-link:hover{opacity:1;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htit">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    AI · LLM · 多模态 完整学习笔记
+    <span class="hsub">· 硬件 / 训练 / 推理 / 架构 / 对齐 / Agent / RAG / 多模态 / 生产工程 / Evals</span>
+  </div>
+  <div class="srch"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="搜索概念、论文、工具..."></div>
+  <span class="stag" id="stag">加载中…</span>
+</div>
+<div class="lay">
+<nav class="sb" id="sb"><div id="nav"></div></nav>
+<div class="content-area"><main class="main"><div id="cont"></div><div id="nr" class="nr">未找到匹配内容</div><div class="leg" id="leg"></div></main><nav class="toc-rail" id="toc-rail"></nav></div>
+</div>
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- DIAGRAM TEMPLATES -->
+<div id="diag_roofline" style="display:none"><svg viewBox="0 0 520 195" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Roofline 模型：判断算法是算力受限还是带宽受限</text>
+<line x1="50" y1="170" x2="50" y2="30" stroke="#374151" stroke-width="1.5"/>
+<line x1="50" y1="170" x2="490" y2="170" stroke="#374151" stroke-width="1.5"/>
+<text class="sm" x="20" y="100" fill="#374151" transform="rotate(-90,20,100)">Flops/s 算力</text>
+<text class="sm" x="280" y="188" text-anchor="middle" fill="#374151">算术强度 Flops/Byte</text>
+<line x1="50" y1="130" x2="200" y2="50" stroke="#2563eb" stroke-width="2"/>
+<line x1="200" y1="50" x2="490" y2="50" stroke="#2563eb" stroke-width="2"/>
+<text class="sm" x="120" y="115" fill="#2563eb" transform="rotate(-28,120,115)">带宽受限区</text>
+<text class="sm" x="340" y="42" text-anchor="middle" fill="#2563eb">算力受限区（平顶）</text>
+<line x1="200" y1="170" x2="200" y2="50" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/>
+<text class="sm" x="200" y="183" text-anchor="middle" fill="#dc2626">转折点</text>
+<circle cx="130" cy="100" r="8" fill="#fbbf24"/>
+<text class="sm" x="115" y="90" fill="#fbbf24">矩阵乘</text>
+<text class="sm" x="115" y="102" fill="#fbbf24">带宽受限</text>
+<circle cx="350" cy="52" r="8" fill="#16a34a"/>
+<text class="sm" x="362" y="52" fill="#16a34a">大批次训练</text>
+<text class="sm" x="362" y="64" fill="#16a34a">算力受限</text>
+<rect x="10" y="135" width="500" height="28" rx="4" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="sm" x="260" y="148" text-anchor="middle" fill="#4c1d95">A100 峰值：312 TFLOPS(BF16) | 内存带宽 2TB/s | 转折点≈156 Flops/Byte</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="180" text-anchor="middle">FlashAttention：重新排列计算顺序，减少 HBM 读写，把 Attention 从带宽受限→算力受限</text>
+</svg></div>
+<div id="diag_gpu_memory" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">GPU 内存层次：带宽 vs 容量的极端权衡</text>
+<rect x="190" y="24" width="140" height="34" rx="6" fill="#dc2626"/>
+<text class="t" x="260" y="38" text-anchor="middle" fill="white">寄存器 Register File</text>
+<text class="sm" x="260" y="52" text-anchor="middle" fill="#fca5a5">数万个寄存器 / SM，极高带宽</text>
+<rect x="160" y="66" width="200" height="34" rx="6" fill="#d97706"/>
+<text class="t" x="260" y="80" text-anchor="middle" fill="white">共享内存 Shared Memory (SRAM)</text>
+<text class="sm" x="260" y="96" text-anchor="middle" fill="#fde68a">每SM 48-228KB，~19TB/s，延迟极低</text>
+<rect x="100" y="108" width="320" height="34" rx="6" fill="#7c3aed"/>
+<text class="t" x="260" y="122" text-anchor="middle" fill="white">L2 Cache</text>
+<text class="sm" x="260" y="138" text-anchor="middle" fill="#ddd6fe">A100: 40MB，~2TB/s</text>
+<rect x="40" y="150" width="440" height="28" rx="6" fill="#1e40af"/>
+<text class="t" x="260" y="164" text-anchor="middle" fill="white">HBM（高带宽内存）</text>
+<text class="sm" x="260" y="176" text-anchor="middle" fill="#bfdbfe">A100: 80GB / H100: 80GB，~2-3.35TB/s，但离GPU核远，访问慢</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="192" text-anchor="middle">FlashAttention 的核心思想：把 Q/K/V 分块加载到 SRAM，在 SRAM 内完成 Attention 计算，避免反复读写 HBM</text>
+</svg></div>
+<div id="diag_nvlink" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">多GPU互联：NVLink &gt; PCIe，InfiniBand 跨机</text>
+<rect x="20" y="30" width="95" height="50" rx="6" fill="#16a34a"/>
+<text class="t" x="67" y="50" text-anchor="middle" fill="white">GPU 0</text>
+<text class="sm" x="67" y="66" text-anchor="middle" fill="#bbf7d0">HBM 80GB</text>
+<rect x="145" y="30" width="95" height="50" rx="6" fill="#16a34a"/>
+<text class="t" x="192" y="50" text-anchor="middle" fill="white">GPU 1</text>
+<rect x="270" y="30" width="95" height="50" rx="6" fill="#059669"/>
+<text class="t" x="317" y="50" text-anchor="middle" fill="white">GPU 2</text>
+<rect x="395" y="30" width="95" height="50" rx="6" fill="#059669"/>
+<text class="t" x="442" y="50" text-anchor="middle" fill="white">GPU 3</text>
+<rect x="80" y="100" width="340" height="28" rx="5" fill="#7c3aed"/>
+<text class="sm" x="260" y="118" text-anchor="middle" fill="white">NVLink / NVSwitch（机内）：~600GB/s 双向带宽</text>
+<defs><marker id="na" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="115" y1="55" x2="145" y2="55" stroke="#16a34a" stroke-width="2"/>
+<line x1="240" y1="55" x2="270" y2="55" stroke="#16a34a" stroke-width="2"/>
+<line x1="365" y1="55" x2="395" y2="55" stroke="#059669" stroke-width="2"/>
+<rect x="10" y="144" width="490" height="28" rx="5" fill="#1e40af"/>
+<text class="sm" x="260" y="162" text-anchor="middle" fill="white">InfiniBand / RoCE（跨机）：~400Gb/s，RDMA 零CPU，AI集群跨节点 AllReduce</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="180" text-anchor="middle">PCIe：~64GB/s（NVLink的~1/10），CPU-GPU数据传输瓶颈 | GPUDirect：GPU间直传，绕过CPU内存</text>
+</svg></div>
+<div id="diag_parallelism" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">四种并行策略：解决不同的显存/计算瓶颈</text>
+<rect x="10" y="24" width="115" height="130" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="62" y="42" text-anchor="middle" fill="#1e40af">数据并行 DP</text>
+<text class="sm" x="62" y="58" text-anchor="middle" fill="#3b82f6">每GPU完整模型</text>
+<text class="sm" x="62" y="72" text-anchor="middle" fill="#3b82f6">不同批次数据</text>
+<text class="sm" x="62" y="86" text-anchor="middle" fill="#3b82f6">梯度AllReduce</text>
+<text class="sm" x="62" y="100" text-anchor="middle" fill="#6b7280">限制：单卡放不下</text>
+<text class="sm" x="62" y="114" text-anchor="middle" fill="#6b7280">大模型时失效</text>
+<rect x="140" y="24" width="115" height="130" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="197" y="42" text-anchor="middle" fill="#14532d">张量并行 TP</text>
+<text class="sm" x="197" y="58" text-anchor="middle" fill="#15803d">切分矩阵乘法</text>
+<text class="sm" x="197" y="72" text-anchor="middle" fill="#15803d">每GPU一部分权重</text>
+<text class="sm" x="197" y="86" text-anchor="middle" fill="#15803d">需要频繁通信</text>
+<text class="sm" x="197" y="100" text-anchor="middle" fill="#6b7280">适合：同机多卡</text>
+<text class="sm" x="197" y="114" text-anchor="middle" fill="#6b7280">NVLink高带宽</text>
+<rect x="270" y="24" width="115" height="130" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="327" y="42" text-anchor="middle" fill="#78350f">流水线并行 PP</text>
+<text class="sm" x="327" y="58" text-anchor="middle" fill="#92400e">按层切分模型</text>
+<text class="sm" x="327" y="72" text-anchor="middle" fill="#92400e">GPU1→2→3→4</text>
+<text class="sm" x="327" y="86" text-anchor="middle" fill="#92400e">Bubble 空泡问题</text>
+<text class="sm" x="327" y="100" text-anchor="middle" fill="#6b7280">适合：跨机多节点</text>
+<text class="sm" x="327" y="114" text-anchor="middle" fill="#6b7280">GPipe/PipeDream</text>
+<rect x="400" y="24" width="110" height="130" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="455" y="42" text-anchor="middle" fill="#831843">序列并行 SP</text>
+<text class="sm" x="455" y="58" text-anchor="middle" fill="#be185d">切分序列长度</text>
+<text class="sm" x="455" y="72" text-anchor="middle" fill="#be185d">每GPU负责部分</text>
+<text class="sm" x="455" y="86" text-anchor="middle" fill="#be185d">token的Attention</text>
+<text class="sm" x="455" y="100" text-anchor="middle" fill="#6b7280">解决超长上下文</text>
+<text class="sm" x="455" y="114" text-anchor="middle" fill="#6b7280">Megatron支持</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="170" text-anchor="middle">实际大模型训练：DP × TP × PP 三维并行组合 | Megatron-LM / DeepSpeed 负责实现</text>
+</svg></div>
+<div id="diag_zero" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">ZeRO：消除数据并行中的冗余显存状态</text>
+<rect x="10" y="24" width="155" height="110" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="87" y="42" text-anchor="middle" fill="#831843">传统 DDP</text>
+<text class="sm" x="87" y="58" text-anchor="middle" fill="#be185d">每GPU复制完整状态</text>
+<text class="sm" x="87" y="72" text-anchor="middle" fill="#be185d">权重 W: N份复制</text>
+<text class="sm" x="87" y="86" text-anchor="middle" fill="#be185d">梯度 G: N份复制</text>
+<text class="sm" x="87" y="100" text-anchor="middle" fill="#be185d">优化器 O: N份复制</text>
+<text class="sm" x="87" y="114" text-anchor="middle" fill="#6b7280">显存 = 模型×N</text>
+<rect x="185" y="24" width="155" height="110" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="262" y="42" text-anchor="middle" fill="#1e40af">ZeRO Stage 1/2/3</text>
+<text class="sm" x="262" y="58" text-anchor="middle" fill="#3b82f6">Stage 1：分片优化器状态</text>
+<text class="sm" x="262" y="72" text-anchor="middle" fill="#3b82f6">Stage 2：+ 分片梯度</text>
+<text class="sm" x="262" y="86" text-anchor="middle" fill="#3b82f6">Stage 3：+ 分片权重</text>
+<text class="sm" x="262" y="100" text-anchor="middle" fill="#3b82f6">显存降至 1/N</text>
+<text class="sm" x="262" y="114" text-anchor="middle" fill="#6b7280">需要通信重建</text>
+<rect x="360" y="24" width="150" height="110" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="435" y="42" text-anchor="middle" fill="#14532d">ZeRO-Offload</text>
+<text class="sm" x="435" y="58" text-anchor="middle" fill="#15803d">显存→CPU内存</text>
+<text class="sm" x="435" y="72" text-anchor="middle" fill="#15803d">优化器状态在CPU</text>
+<text class="sm" x="435" y="86" text-anchor="middle" fill="#15803d">单卡训练大模型</text>
+<text class="sm" x="435" y="100" text-anchor="middle" fill="#6b7280">速度有所损失</text>
+<text class="sm" x="435" y="114" text-anchor="middle" fill="#6b7280">PCIe带宽瓶颈</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="148" text-anchor="middle">混合精度训练：FP16/BF16 前向+反向（快，省显存）+ FP32 权重主备份（精度）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="164" text-anchor="middle">Gradient Checkpointing：只保存部分激活值，反向传播时重算，显存↓ 速度↓30%</text>
+</svg></div>
+<div id="diag_kv_cache" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">KV Cache：避免每次生成都重算历史 Key/Value</text>
+<rect x="10" y="24" width="235" height="95" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="122" y="42" text-anchor="middle" fill="#831843">无 KV Cache</text>
+<text class="sm" x="122" y="58" text-anchor="middle" fill="#be185d">生成第T个token：</text>
+<text class="sm" x="122" y="72" text-anchor="middle" fill="#be185d">对[token1...tokenT]全部重算</text>
+<text class="sm" x="122" y="86" text-anchor="middle" fill="#be185d">Q·Kᵀ ∝ T² 二次复杂度</text>
+<text class="sm" x="122" y="100" text-anchor="middle" fill="#6b7280">随序列增长极慢</text>
+<rect x="275" y="24" width="235" height="95" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="392" y="42" text-anchor="middle" fill="#14532d">有 KV Cache</text>
+<text class="sm" x="392" y="58" text-anchor="middle" fill="#15803d">首次：完整计算存K/V</text>
+<text class="sm" x="392" y="72" text-anchor="middle" fill="#15803d">后续：只算新token的Q</text>
+<text class="sm" x="392" y="86" text-anchor="middle" fill="#15803d">与缓存的K/V做Attention</text>
+<text class="sm" x="392" y="100" text-anchor="middle" fill="#6b7280">线性复杂度，快N倍</text>
+<rect x="60" y="134" width="400" height="44" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="260" y="152" text-anchor="middle" fill="#78350f">代价：显存随序列长度线性增长</text>
+<text class="sm" x="260" y="168" text-anchor="middle" fill="#92400e">LLaMA-7B，batch=1，seq=2048：KV Cache≈2GB | 大批量时显存耗尽 → PagedAttention</text>
+</svg></div>
+<div id="diag_paged_attn" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">PagedAttention：KV Cache 分页，像 OS 管理内存</text>
+<rect x="10" y="24" width="220" height="100" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="120" y="42" text-anchor="middle" fill="#831843">传统 KV Cache 问题</text>
+<text class="sm" x="120" y="58" text-anchor="middle" fill="#be185d">为每个请求预留连续显存</text>
+<text class="sm" x="120" y="72" text-anchor="middle" fill="#be185d">序列长度未知，预留过多→浪费</text>
+<text class="sm" x="120" y="86" text-anchor="middle" fill="#be185d">碎片化导致显存利用率</text>
+<text class="sm" x="120" y="100" text-anchor="middle" fill="#be185d">仅 20-40%</text>
+<rect x="250" y="24" width="260" height="100" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="380" y="42" text-anchor="middle" fill="#14532d">PagedAttention（vLLM）</text>
+<text class="sm" x="380" y="58" text-anchor="middle" fill="#15803d">KV Cache 分成固定大小的 Page</text>
+<text class="sm" x="380" y="72" text-anchor="middle" fill="#15803d">Block Table 记录虚拟→物理Page</text>
+<text class="sm" x="380" y="86" text-anchor="middle" fill="#15803d">按需分配，类似 OS 虚拟内存</text>
+<text class="sm" x="380" y="100" text-anchor="middle" fill="#15803d">显存利用率提升至 90%+</text>
+<rect x="10" y="140" width="235" height="38" rx="5" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="122" y="158" text-anchor="middle" fill="#4c1d95">Continuous Batching</text>
+<text class="sm" x="122" y="172" text-anchor="middle" fill="#6d28d9">一个请求完成立即插入新请求</text>
+<rect x="275" y="140" width="235" height="38" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="392" y="158" text-anchor="middle" fill="#78350f">吞吐提升效果</text>
+<text class="sm" x="392" y="172" text-anchor="middle" fill="#92400e">vs 静态批处理：2-4× 吞吐提升</text>
+</svg></div>
+<div id="diag_spec_decode" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Speculative Decoding：小模型起草，大模型验证</text>
+<rect x="10" y="24" width="230" height="120" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#78350f">Draft Model（小模型）</text>
+<text class="sm" x="125" y="58" text-anchor="middle" fill="#92400e">快速生成 K 个候选 token</text>
+<rect x="22" y="66" width="206" height="18" rx="3" fill="#fde68a"/><text class="sm" x="125" y="79" text-anchor="middle" fill="#78350f">"The" "quick" "brown" "fox"</text>
+<text class="sm" x="125" y="100" text-anchor="middle" fill="#92400e">推理成本低（小模型）</text>
+<text class="sm" x="125" y="115" text-anchor="middle" fill="#92400e">不保证质量</text>
+<rect x="260" y="24" width="250" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="385" y="42" text-anchor="middle" fill="#14532d">Target Model（大模型）</text>
+<text class="sm" x="385" y="58" text-anchor="middle" fill="#15803d">一次前向验证全部草稿</text>
+<rect x="272" y="66" width="226" height="18" rx="3" fill="#bbf7d0"/><text class="sm" x="385" y="79" text-anchor="middle" fill="#14532d">验证: ✓ ✓ ✗（拒绝brown起）</text>
+<text class="sm" x="385" y="100" text-anchor="middle" fill="#15803d">多token并行验证</text>
+<text class="sm" x="385" y="115" text-anchor="middle" fill="#15803d">输出质量 = 大模型</text>
+<rect x="80" y="158" width="360" height="26" rx="5" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="sm" x="260" y="175" text-anchor="middle" fill="#4c1d95">速度提升 2-3×  |  质量无损  |  大小模型分布越接近加速越明显</text>
+</svg></div>
+<div id="diag_transformer_arch" style="display:none"><svg viewBox="0 0 520 195" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Transformer 核心设计权衡：每个组件都有替代方案</text>
+<rect x="10" y="24" width="150" height="155" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="85" y="42" text-anchor="middle" fill="#1e40af">Attention 变体</text>
+<text class="sm" x="85" y="58" text-anchor="middle" fill="#3b82f6">MHA：多头注意力</text>
+<text class="sm" x="85" y="72" text-anchor="middle" fill="#3b82f6">MQA：共享K/V</text>
+<text class="sm" x="85" y="86" text-anchor="middle" fill="#3b82f6">GQA：分组共享</text>
+<text class="sm" x="85" y="100" text-anchor="middle" fill="#6b7280">Llama3/Gemma用GQA</text>
+<text class="sm" x="85" y="114" text-anchor="middle" fill="#6b7280">推理时减少KV Cache</text>
+<rect x="185" y="24" width="150" height="155" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#14532d">位置编码</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#15803d">APE：绝对位置</text>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#15803d">RPE：相对位置</text>
+<text class="sm" x="260" y="86" text-anchor="middle" fill="#15803d">RoPE：旋转编码</text>
+<text class="sm" x="260" y="100" text-anchor="middle" fill="#6b7280">LLaMA/GPT-NeoX</text>
+<text class="sm" x="260" y="114" text-anchor="middle" fill="#6b7280">外推性好</text>
+<rect x="360" y="24" width="150" height="155" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="435" y="42" text-anchor="middle" fill="#78350f">Normalization</text>
+<text class="sm" x="435" y="58" text-anchor="middle" fill="#92400e">Pre-Norm vs Post-Norm</text>
+<text class="sm" x="435" y="72" text-anchor="middle" fill="#92400e">LayerNorm：标准</text>
+<text class="sm" x="435" y="86" text-anchor="middle" fill="#92400e">RMSNorm：更快</text>
+<text class="sm" x="435" y="100" text-anchor="middle" fill="#6b7280">LLaMA用RMSNorm</text>
+<text class="sm" x="435" y="114" text-anchor="middle" fill="#6b7280">无均值计算</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="192" text-anchor="middle">FFN 变体：SwiGLU（LLaMA）/ GeGLU 比 ReLU 效果更好 | 激活函数影响梯度流动和表达能力</text>
+</svg></div>
+<div id="diag_moe" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">MoE：每个 token 只激活部分专家，参数量↑ 计算量不变</text>
+<rect x="10" y="26" width="80" height="36" rx="5" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="sm" x="50" y="48" text-anchor="middle" fill="#1e40af">输入 Token</text>
+<defs><marker id="ma" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="90" y1="44" x2="120" y2="44" stroke="#374151" stroke-width="1.5" marker-end="url(#ma)"/>
+<rect x="120" y="26" width="80" height="36" rx="5" fill="#7c3aed"/>
+<text class="sm" x="160" y="48" text-anchor="middle" fill="white">Router（门控）</text>
+<line x1="200" y1="32" x2="235" y2="20" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<line x1="200" y1="38" x2="235" y2="38" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<line x1="200" y1="50" x2="235" y2="62" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="3,2"/>
+<line x1="200" y1="56" x2="235" y2="80" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="3,2"/>
+<rect x="235" y="10" width="80" height="24" rx="4" fill="#16a34a"/>
+<text class="sm" x="275" y="26" text-anchor="middle" fill="white">Expert 1 ✓</text>
+<rect x="235" y="28" width="80" height="24" rx="4" fill="#059669"/>
+<text class="sm" x="275" y="44" text-anchor="middle" fill="white">Expert 2 ✓</text>
+<rect x="235" y="52" width="80" height="24" rx="4" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="sm" x="275" y="68" text-anchor="middle" fill="#94a3b8">Expert 3 ✗</text>
+<rect x="235" y="70" width="80" height="24" rx="4" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="sm" x="275" y="86" text-anchor="middle" fill="#94a3b8">Expert N ✗</text>
+<line x1="315" y1="22" x2="360" y2="44" stroke="#16a34a" stroke-width="1.2" marker-end="url(#ma)"/>
+<line x1="315" y1="40" x2="360" y2="48" stroke="#059669" stroke-width="1.2" marker-end="url(#ma)"/>
+<rect x="360" y="30" width="90" height="36" rx="5" fill="#374151"/>
+<text class="sm" x="405" y="52" text-anchor="middle" fill="white">加权合并输出</text>
+<rect x="10" y="110" width="495" height="66" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="260" y="128" text-anchor="middle" fill="#78350f">Top-K 稀疏激活</text>
+<text class="sm" x="260" y="144" text-anchor="middle" fill="#92400e">通常 Top-2：每个 token 只激活 2 个专家 | Mixtral-8x7B：8个专家激活2个</text>
+<text class="sm" x="260" y="160" text-anchor="middle" fill="#92400e">总参数 46.7B，实际计算量 = 12.9B（等效）| DeepSeek-V2：236B总参数，激活21B</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="185" text-anchor="middle">负载均衡损失（Load Balancing Loss）：防止所有 token 都选同一专家导致其他专家退化</text>
+</svg></div>
+<div id="diag_quantization" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">量化：用更少的比特表示权重，降低显存和带宽</text>
+<rect x="10" y="24" width="140" height="100" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="80" y="42" text-anchor="middle" fill="#831843">FP32（全精度）</text>
+<text class="sm" x="80" y="58" text-anchor="middle" fill="#be185d">32 bits / 参数</text>
+<text class="sm" x="80" y="72" text-anchor="middle" fill="#be185d">7B 模型 = 28GB</text>
+<text class="sm" x="80" y="86" text-anchor="middle" fill="#be185d">训练基准精度</text>
+<text class="sm" x="80" y="100" text-anchor="middle" fill="#6b7280">高显存需求</text>
+<rect x="165" y="24" width="140" height="100" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="235" y="42" text-anchor="middle" fill="#78350f">FP16/BF16</text>
+<text class="sm" x="235" y="58" text-anchor="middle" fill="#92400e">16 bits / 参数</text>
+<text class="sm" x="235" y="72" text-anchor="middle" fill="#92400e">7B 模型 = 14GB</text>
+<text class="sm" x="235" y="86" text-anchor="middle" fill="#92400e">训练主流格式</text>
+<text class="sm" x="235" y="100" text-anchor="middle" fill="#6b7280">Tensor Core 加速</text>
+<rect x="320" y="24" width="190" height="100" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="415" y="42" text-anchor="middle" fill="#14532d">INT8 / INT4</text>
+<text class="sm" x="415" y="58" text-anchor="middle" fill="#15803d">8bits / 4bits</text>
+<text class="sm" x="415" y="72" text-anchor="middle" fill="#15803d">7B = 7GB / 3.5GB</text>
+<text class="sm" x="415" y="86" text-anchor="middle" fill="#15803d">GPTQ/AWQ/bitsandbytes</text>
+<text class="sm" x="415" y="100" text-anchor="middle" fill="#6b7280">精度略有损失</text>
+<rect x="10" y="138" width="490" height="28" rx="5" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="260" y="152" text-anchor="middle" fill="#4c1d95">量化感知训练（QAT）vs 训练后量化（PTQ）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="174" text-anchor="middle">PTQ：训练后直接量化，快速，精度损失略大 | QAT：训练时模拟量化，精度损失小，需要重训</text>
+</svg></div>
+<div id="diag_rlhf" style="display:none"><svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">RLHF 三阶段：预训练→SFT→RM训练→PPO</text>
+<rect x="10" y="24" width="105" height="60" rx="6" fill="#374151"/>
+<text class="t" x="62" y="42" text-anchor="middle" fill="white">Stage 1</text>
+<text class="sm" x="62" y="58" text-anchor="middle" fill="#9ca3af">预训练模型</text>
+<text class="sm" x="62" y="72" text-anchor="middle" fill="#9ca3af">GPT-style LM</text>
+<defs><marker id="ha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="115" y1="54" x2="135" y2="54" stroke="#374151" stroke-width="1.5" marker-end="url(#ha)"/>
+<rect x="135" y="24" width="105" height="60" rx="6" fill="#2563eb"/>
+<text class="t" x="187" y="42" text-anchor="middle" fill="white">Stage 2</text>
+<text class="sm" x="187" y="58" text-anchor="middle" fill="#bfdbfe">SFT 监督微调</text>
+<text class="sm" x="187" y="72" text-anchor="middle" fill="#bfdbfe">高质量示例</text>
+<line x1="240" y1="54" x2="260" y2="54" stroke="#374151" stroke-width="1.5" marker-end="url(#ha)"/>
+<rect x="260" y="24" width="105" height="60" rx="6" fill="#7c3aed"/>
+<text class="t" x="312" y="42" text-anchor="middle" fill="white">Stage 3</text>
+<text class="sm" x="312" y="58" text-anchor="middle" fill="#ddd6fe">训练奖励模型</text>
+<text class="sm" x="312" y="72" text-anchor="middle" fill="#ddd6fe">人类偏好排序</text>
+<line x1="365" y1="54" x2="385" y2="54" stroke="#374151" stroke-width="1.5" marker-end="url(#ha)"/>
+<rect x="385" y="24" width="125" height="60" rx="6" fill="#dc2626"/>
+<text class="t" x="447" y="42" text-anchor="middle" fill="white">Stage 4</text>
+<text class="sm" x="447" y="58" text-anchor="middle" fill="#fca5a5">PPO 强化学习</text>
+<text class="sm" x="447" y="72" text-anchor="middle" fill="#fca5a5">RM 给分→更新</text>
+<rect x="10" y="100" width="490" height="80" rx="7" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="t" x="260" y="118" text-anchor="middle" fill="#334155">现代替代方案</text>
+<rect x="22" y="124" width="145" height="46" rx="5" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="sm" x="94" y="141" text-anchor="middle" fill="#1e40af">DPO（直接偏好优化）</text>
+<text class="sm" x="94" y="157" text-anchor="middle" fill="#3b82f6">无需单独RM，更简单</text>
+<rect x="185" y="124" width="145" height="46" rx="5" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="257" y="141" text-anchor="middle" fill="#14532d">GRPO（DeepSeek R1）</text>
+<text class="sm" x="257" y="157" text-anchor="middle" fill="#15803d">组相对策略优化</text>
+<rect x="348" y="124" width="140" height="46" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="sm" x="418" y="141" text-anchor="middle" fill="#78350f">Constitutional AI</text>
+<text class="sm" x="418" y="157" text-anchor="middle" fill="#92400e">原则引导自对齐</text>
+</svg></div>
+<div id="diag_lora" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">LoRA：冻结原始权重，只训练低秩分解的小矩阵</text>
+<rect x="10" y="30" width="120" height="100" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text class="t" x="70" y="50" text-anchor="middle" fill="#334155">预训练权重 W</text>
+<text class="sm" x="70" y="68" text-anchor="middle" fill="#64748b">shape: [d × d]</text>
+<text class="sm" x="70" y="82" text-anchor="middle" fill="#64748b">冻结，不更新</text>
+<text class="sm" x="70" y="96" text-anchor="middle" fill="#64748b">如 d=4096</text>
+<text class="sm" x="70" y="110" text-anchor="middle" fill="#94a3b8">参数量: d²</text>
+<rect x="160" y="30" width="210" height="100" rx="7" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text class="t" x="265" y="50" text-anchor="middle" fill="#4c1d95">ΔW = A × B（可训练）</text>
+<rect x="175" y="58" width="70" height="60" rx="4" fill="#7c3aed"/>
+<text class="sm" x="210" y="84" text-anchor="middle" fill="white">A</text>
+<text class="sm" x="210" y="98" text-anchor="middle" fill="#ddd6fe">[d × r]</text>
+<rect x="255" y="72" width="100" height="28" rx="4" fill="#6d28d9"/>
+<text class="sm" x="305" y="90" text-anchor="middle" fill="white">B [r × d]</text>
+<text class="sm" x="265" y="118" text-anchor="middle" fill="#6d28d9">r≪d（如 r=16），参数: 2dr</text>
+<rect x="390" y="30" width="120" height="100" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="450" y="50" text-anchor="middle" fill="#14532d">最终输出</text>
+<text class="sm" x="450" y="68" text-anchor="middle" fill="#15803d">h = Wx + ΔWx</text>
+<text class="sm" x="450" y="84" text-anchor="middle" fill="#15803d">= Wx + ABx</text>
+<text class="sm" x="450" y="100" text-anchor="middle" fill="#6b7280">推理时可合并</text>
+<text class="sm" x="450" y="114" text-anchor="middle" fill="#6b7280">W' = W + AB</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="152" text-anchor="middle">r=16时，参数量仅为原来的 0.8%（2×4096×16 / 4096² ≈ 0.78%）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="168" text-anchor="middle">QLoRA：4bit量化基础模型 + LoRA，单卡可微调65B模型 | 通常对 Q/K/V/O 矩阵都加 LoRA</text>
+</svg></div>
+<div id="diag_cot" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Chain-of-Thought：显式推理步骤提升复杂任务准确率</text>
+<rect x="10" y="24" width="230" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#831843">标准提示（无CoT）</text>
+<text class="sm" x="125" y="60" text-anchor="middle" fill="#be185d">Q: Roger有5个球，买了</text>
+<text class="sm" x="125" y="74" text-anchor="middle" fill="#be185d">2罐各3个的球。共几个？</text>
+<rect x="22" y="88" width="206" height="22" rx="4" fill="#fda4af"/>
+<text class="sm" x="125" y="103" text-anchor="middle" fill="#831843">A: 11个 ✗（错误）</text>
+<text class="sm" x="125" y="128" text-anchor="middle" fill="#be185d">模型直接猜测，易出错</text>
+<rect x="275" y="24" width="235" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="392" y="42" text-anchor="middle" fill="#14532d">CoT 提示</text>
+<text class="sm" x="392" y="58" text-anchor="middle" fill="#15803d">Q: 同上，Let's think step by step</text>
+<text class="sm" x="392" y="72" text-anchor="middle" fill="#15803d">步骤1: 2罐×3=6个</text>
+<text class="sm" x="392" y="86" text-anchor="middle" fill="#15803d">步骤2: 原有5+新买6=11</text>
+<rect x="287" y="100" width="210" height="22" rx="4" fill="#86efac"/>
+<text class="sm" x="392" y="115" text-anchor="middle" fill="#14532d">A: 11个 ✓（正确）</text>
+<text class="sm" x="392" y="132" text-anchor="middle" fill="#15803d">逐步推理大幅提升准确率</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="160" text-anchor="middle">Zero-shot CoT："Let's think step by step" 就能触发推理链</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="174" text-anchor="middle">o1/o3/DeepSeek-R1：训练时用 RL 让模型学会更长更深的推理过程（Inference-time Compute）</text>
+</svg></div>
+<div id="diag_react_agent" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">ReAct Agent：思考→行动→观察 循环</text>
+<rect x="170" y="24" width="180" height="40" rx="6" fill="#374151"/>
+<text class="t" x="260" y="40" text-anchor="middle" fill="white">用户 Query</text>
+<text class="sm" x="260" y="56" text-anchor="middle" fill="#9ca3af">"今天北京天气如何？"</text>
+<defs><marker id="aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<rect x="60" y="78" width="130" height="36" rx="5" fill="#7c3aed"/>
+<text class="t" x="125" y="96" text-anchor="middle" fill="white">Thought（思考）</text>
+<text class="sm" x="125" y="108" text-anchor="middle" fill="#ddd6fe">需要查天气工具</text>
+<rect x="210" y="78" width="110" height="36" rx="5" fill="#2563eb"/>
+<text class="t" x="265" y="96" text-anchor="middle" fill="white">Action（行动）</text>
+<text class="sm" x="265" y="108" text-anchor="middle" fill="#bfdbfe">调用 weather_api</text>
+<rect x="340" y="78" width="130" height="36" rx="5" fill="#059669"/>
+<text class="t" x="405" y="96" text-anchor="middle" fill="white">Observation（观察）</text>
+<text class="sm" x="405" y="108" text-anchor="middle" fill="#bbf7d0">返回：晴，18℃</text>
+<line x1="190" y1="96" x2="210" y2="96" stroke="#374151" stroke-width="1.5" marker-end="url(#aa)"/>
+<line x1="320" y1="96" x2="340" y2="96" stroke="#374151" stroke-width="1.5" marker-end="url(#aa)"/>
+<path d="M405 114 Q405 135 260 135 Q130 135 125 114" fill="none" stroke="#374151" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#aa)"/>
+<text class="sm" x="260" y="130" text-anchor="middle" fill="#374151">重复直到有最终答案</text>
+<rect x="150" y="148" width="220" height="30" rx="5" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="260" y="167" text-anchor="middle" fill="#14532d">Final Answer：北京今天晴，18℃</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="182" text-anchor="middle">工具可靠性是 Agent 成败关键 | MCP 协议：标准化工具接口 | 多 Agent 协作：Orchestrator + Worker</text>
+</svg></div>
+<div id="diag_advanced_rag" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Advanced RAG：Naive RAG 的三大改进方向</text>
+<rect x="10" y="24" width="155" height="130" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="87" y="42" text-anchor="middle" fill="#831843">Naive RAG 问题</text>
+<text class="sm" x="87" y="58" text-anchor="middle" fill="#be185d">检索质量差</text>
+<text class="sm" x="87" y="72" text-anchor="middle" fill="#be185d">块切分不当</text>
+<text class="sm" x="87" y="88" text-anchor="middle" fill="#be185d">无法多跳推理</text>
+<text class="sm" x="87" y="104" text-anchor="middle" fill="#be185d">幻觉来自噪声</text>
+<text class="sm" x="87" y="118" text-anchor="middle" fill="#be185d">单一向量检索</text>
+<rect x="183" y="24" width="155" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#1e40af">检索增强</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#3b82f6">Hybrid Search</text>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#3b82f6">向量+BM25关键词</text>
+<text class="sm" x="260" y="88" text-anchor="middle" fill="#3b82f6">Re-ranking重排序</text>
+<text class="sm" x="260" y="104" text-anchor="middle" fill="#3b82f6">Query Rewrite</text>
+<text class="sm" x="260" y="118" text-anchor="middle" fill="#6b7280">Cohere Rerank</text>
+<rect x="356" y="24" width="155" height="130" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="433" y="42" text-anchor="middle" fill="#14532d">生成增强</text>
+<text class="sm" x="433" y="58" text-anchor="middle" fill="#15803d">引用来源追踪</text>
+<text class="sm" x="433" y="72" text-anchor="middle" fill="#15803d">CRAG 纠错检索</text>
+<text class="sm" x="433" y="88" text-anchor="middle" fill="#15803d">GraphRAG知识图谱</text>
+<text class="sm" x="433" y="104" text-anchor="middle" fill="#15803d">Self-RAG 自评</text>
+<text class="sm" x="433" y="118" text-anchor="middle" fill="#6b7280">LlamaIndex/LangChain</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="166" text-anchor="middle">评估体系：RAGAS（忠实度/答案相关性/上下文召回率/精确率）</text>
+</svg></div>
+<div id="diag_ppo" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">PPO：Clip 限制策略更新幅度，稳定训练</text>
+<rect x="10" y="24" width="145" height="120" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="82" y="42" text-anchor="middle" fill="#1e40af">PPO 核心思想</text>
+<text class="sm" x="82" y="58" text-anchor="middle" fill="#3b82f6">旧策略采样数据</text>
+<text class="sm" x="82" y="72" text-anchor="middle" fill="#3b82f6">重要性采样比值</text>
+<text class="sm" x="82" y="86" text-anchor="middle" fill="#3b82f6">rt = π_new/π_old</text>
+<text class="sm" x="82" y="100" text-anchor="middle" fill="#3b82f6">Clip(rt, 1-ε, 1+ε)</text>
+<text class="sm" x="82" y="114" text-anchor="middle" fill="#6b7280">ε≈0.2，防止过大更新</text>
+<rect x="175" y="24" width="165" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="257" y="42" text-anchor="middle" fill="#14532d">RLHF 中的角色</text>
+<text class="sm" x="257" y="58" text-anchor="middle" fill="#15803d">Actor：生成回复的LLM</text>
+<text class="sm" x="257" y="72" text-anchor="middle" fill="#15803d">Critic：估计价值函数</text>
+<text class="sm" x="257" y="86" text-anchor="middle" fill="#15803d">RM：给回复打分</text>
+<text class="sm" x="257" y="100" text-anchor="middle" fill="#15803d">Ref：KL散度参考</text>
+<text class="sm" x="257" y="114" text-anchor="middle" fill="#6b7280">需4个模型同时加载</text>
+<rect x="360" y="24" width="150" height="120" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="435" y="42" text-anchor="middle" fill="#78350f">奖励设计</text>
+<text class="sm" x="435" y="58" text-anchor="middle" fill="#92400e">r = RM_score</text>
+<text class="sm" x="435" y="72" text-anchor="middle" fill="#92400e">- β·KL(π||π_ref)</text>
+<text class="sm" x="435" y="86" text-anchor="middle" fill="#92400e">KL 惩罚防止偏离</text>
+<text class="sm" x="435" y="100" text-anchor="middle" fill="#92400e">参考模型太远</text>
+<text class="sm" x="435" y="114" text-anchor="middle" fill="#6b7280">Reward Hacking 防御</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="160" text-anchor="middle">Goodhart's Law：当指标成为目标，它就不再是好指标 | RM 被"优化到失效"就是 Reward Hacking</text>
+</svg></div>
+<div id="diag_scaling_laws" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Scaling Laws：Loss 随算力/参数/数据呈幂律下降</text>
+<line x1="50" y1="20" x2="50" y2="130" stroke="#374151" stroke-width="1.5"/>
+<line x1="50" y1="130" x2="490" y2="130" stroke="#374151" stroke-width="1.5"/>
+<text class="sm" x="25" y="75" fill="#374151" transform="rotate(-90,15,80)">Loss（对数）</text>
+<text class="sm" x="280" y="148" text-anchor="middle" fill="#374151">计算量 / 参数量 / 数据量（对数）</text>
+<path d="M60 30 C120 50 200 80 350 110 L490 120" fill="none" stroke="#2563eb" stroke-width="2"/>
+<path d="M60 50 C120 65 200 88 350 115 L490 122" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="5,3"/>
+<path d="M60 45 C130 60 220 85 380 112 L490 121" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="3,3"/>
+<rect x="340" y="30" width="170" height="60" rx="4" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="sm" x="358" y="48" fill="#2563eb">─── 计算量 C</text>
+<text class="sm" x="358" y="64" fill="#16a34a">- - - 参数量 N</text>
+<text class="sm" x="358" y="80" fill="#dc2626">··· 数据量 D</text>
+<rect x="10" y="155" width="490" height="28" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="sm" x="260" y="169" text-anchor="middle" fill="#78350f">Chinchilla 最优：N ∝ C^0.5，D ∝ C^0.5（参数量与数据量同比例增长）</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="184" text-anchor="middle">GPT-3 参数过多数据不足 | 大模型+小数据 vs 小模型+大数据，后者在推理成本上更优</text>
+</svg></div>
+<div id="diag_ddpm" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">DDPM：前向加噪 → 逆向去噪学习</text>
+<rect x="10" y="30" width="70" height="50" rx="5" fill="#3b82f6"/><text class="sm" x="45" y="58" text-anchor="middle" fill="white">x₀ 原图</text>
+<defs><marker id="da" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="80" y1="55" x2="105" y2="55" stroke="#dc2626" stroke-width="1.5" marker-end="url(#da)"/>
+<rect x="105" y="30" width="60" height="50" rx="5" fill="#6b7280"/><text class="sm" x="135" y="58" text-anchor="middle" fill="white">x_t/4</text>
+<line x1="165" y1="55" x2="190" y2="55" stroke="#dc2626" stroke-width="1.5" marker-end="url(#da)"/>
+<rect x="190" y="30" width="60" height="50" rx="5" fill="#4b5563"/><text class="sm" x="220" y="58" text-anchor="middle" fill="white">x_t/2</text>
+<line x1="250" y1="55" x2="275" y2="55" stroke="#dc2626" stroke-width="1.5" marker-end="url(#da)"/>
+<rect x="275" y="30" width="60" height="50" rx="5" fill="#374151"/><text class="sm" x="305" y="58" text-anchor="middle" fill="white">x_3t/4</text>
+<line x1="335" y1="55" x2="360" y2="55" stroke="#dc2626" stroke-width="1.5" marker-end="url(#da)"/>
+<rect x="360" y="30" width="60" height="50" rx="5" fill="#1f2937"/><text class="sm" x="390" y="58" text-anchor="middle" fill="white">x_T 纯噪</text>
+<rect x="440" y="30" width="70" height="50" rx="5" fill="#fbbf24"/>
+<text class="sm" x="475" y="52" text-anchor="middle" fill="white">N(0,I)</text>
+<text class="sm" x="475" y="66" text-anchor="middle" fill="#fff">高斯噪声</text>
+<text class="sm" x="220" y="28" text-anchor="middle" fill="#dc2626">前向过程（固定，逐步加噪）→</text>
+<defs><marker id="da2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="360" y1="95" x2="335" y2="95" stroke="#16a34a" stroke-width="1.5" marker-end="url(#da2)"/>
+<line x1="275" y1="95" x2="250" y2="95" stroke="#16a34a" stroke-width="1.5" marker-end="url(#da2)"/>
+<line x1="190" y1="95" x2="165" y2="95" stroke="#16a34a" stroke-width="1.5" marker-end="url(#da2)"/>
+<line x1="105" y1="95" x2="80" y2="95" stroke="#16a34a" stroke-width="1.5" marker-end="url(#da2)"/>
+<text class="sm" x="220" y="108" text-anchor="middle" fill="#16a34a">← 逆向过程（UNet 学习预测每步的噪声）</text>
+<rect x="80" y="80" width="65" height="22" rx="3" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="112" y="95" text-anchor="middle" fill="#14532d">去噪一步</text>
+<rect x="165" y="80" width="65" height="22" rx="3" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="197" y="95" text-anchor="middle" fill="#14532d">去噪一步</text>
+<rect x="250" y="80" width="65" height="22" rx="3" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="282" y="95" text-anchor="middle" fill="#14532d">去噪一步</text>
+<rect x="335" y="80" width="65" height="22" rx="3" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="367" y="95" text-anchor="middle" fill="#14532d">去噪一步</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="136" text-anchor="middle">训练目标：UNet 预测每步添加的噪声 ε，损失 = ||ε - ε_θ(xₜ,t)||²</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="152" text-anchor="middle">Latent Diffusion（SD）：在 VAE 压缩的潜空间扩散，分辨率↓ 速度↑</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="168" text-anchor="middle">DDIM：跳步采样，从 T=1000 步减至 20-50 步 | Flow Matching：更直接的线性路径，更快收敛</text>
+</svg></div>
+<!-- END DIAGRAM TEMPLATES -->
+<script>
+const D=[{"id":"hw","phase":"硬件层","title":"AI 硬件 · GPU 架构 · 加速器","color":"#d97706","bg":"#FEF3C7","intro":"理解 GPU 不是为了硬件工程，而是为了在做系统优化决策时知道瓶颈在哪里。Roofline Model 是统一分析所有 AI 工作负载的核心框架。","notes":[{"h":"Roofline Model：分析 AI 工作负载的基础工具","pts":["Roofline Model 用两条线描述硬件的性能上界：内存带宽上界（斜线，受 HBM 带宽决定）和计算上界（水平线，受峰值 FLOPS 决定）。任何工作负载的实际性能都落在这两条线的下方，落在哪条线的瓶颈区域，就说明受那个维度限制。","算术强度（Arithmetic Intensity）是衡量工作负载的关键指标，计算方式是 FLOPs 除以访存字节数。LLM 的 Decode 阶段算术强度约等于 batch size——当 batch=1 时约为 1 FLOP/Byte，而 H100 的 Roofline 拐点约在 300，所以单请求推理是严重的 Memory-bound 操作，GPU 的大量算力实际上是闲置的。","LLM 的两个阶段性质截然不同：Prefill 阶段（并行处理输入 Prompt）是 Compute-bound，因为所有 token 同时计算 Attention；Decode 阶段（自回归逐 token 生成）是 Memory-bound，每生成一个 token 都需要把全部模型权重从 HBM 读取一遍。这个本质差异是 Prefill/Decode 分离部署架构的根本动因。","增大 Batch Size 是提升 GPU 利用率最直接的手段——batch=1 时 GPU 算力利用率可能不足 1%，batch=64 时算术强度提高 64 倍，向 Compute-bound 区域靠拢。Continuous Batching（连续批处理）的核心价值就在于最大化有效 batch size，让 GPU 尽量处于满负荷状态。"],"img_key":"roofline","img_link":"Roofline Model","img_title":"https://en.wikipedia.org/wiki/Roofline_model"},{"h":"GPU 内存层次：HBM、SRAM 与 FlashAttention","pts":["GPU 有三层关键内存，速度和容量呈倒金字塔关系：寄存器（最快，每 SM 约 256KB）→ Shared Memory/L1 Cache（每 SM 约 228KB，延迟约 4-5 cycles）→ HBM（最慢但最大，H100 约 80GB，延迟约 500-800 cycles）。AI 优化的核心就是尽量把数据保留在靠近计算单元的层次，减少 HBM 读写。","标准 Attention 的 IO 瓶颈在于：计算 QK^T 产生的大型中间矩阵（seq_len × seq_len）必须写回 HBM，再读回来做 Softmax，对于长序列这个往返 IO 是主要开销，而不是实际的矩阵乘法计算。","FlashAttention 的解法是把 Attention 计算切分成小 tile，让每个 tile 的全部计算（矩阵乘法 + online Softmax）都在 Shared Memory 内完成，只有最终结果才写回 HBM。这样 HBM 读写量减少 5-20 倍，对 32K+ tokens 的长上下文场景是 enabling technology——没有它很多长上下文模型根本无法实用。","H100 Tensor Core 专门加速 GEMM（矩阵乘法），FP16 下峰值 989 TFLOPS，FP8 下峰值 1979 TFLOPS。Transformer Engine 是 H100 的关键创新，能自动在 FP8 和 FP16 之间切换，并为每个 tensor 维护独立的缩放因子，对 LLM 训练几乎透明，无需修改代码。"],"img_key":"gpu_memory","img_link":"GPU Architecture","img_title":"https://en.wikipedia.org/wiki/Graphics_processing_unit"},{"h":"多 GPU 互联：NVLink、NVSwitch 与 InfiniBand","pts":["NVLink 4.0 提供 900 GB/s 的 GPU 间双向带宽，是 PCIe 5.0 x16（约 64 GB/s）的 14 倍。NVSwitch 3.0 让 DGX H100 中 8 块 GPU 实现全互联（all-to-all），任意两块 GPU 之间的带宽都能达到 NVLink 的满速，这使得 GPU 内部的梯度同步可以完全绕过 CPU 和系统内存。","Grace Hopper GH200 把 ARM CPU（Grace）和 H100 GPU 通过 NVLink-C2C 连接在同一封装内，带宽高达 900 GB/s 且支持缓存一致性，让 CPU 可以直接访问 GPU 显存（延迟约 20ns），彻底消除了传统 PCIe 连接的带宽瓶颈，是异构计算架构的重要演进方向。","跨节点的训练集群使用 InfiniBand NDR 400G 互联（延迟约 1μs），配合 GPUDirect RDMA 技术，NIC 可以直接读写 GPU 显存，AllReduce 梯度同步完全绕过 CPU 和系统内存。这条链路的带宽和延迟直接决定了万卡训练的可行性。","NCCL（NVIDIA Collective Communications Library）是所有分布式训练通信的底层库，实现了 AllReduce/AllGather/ReduceScatter 等集合通信原语。它会自动探测硬件拓扑（NVLink/PCIe/InfiniBand），选择最优通信路径和算法（Ring-AllReduce 或 Tree-AllReduce），对应用层完全透明。"],"img_key":"nvlink","img_link":"NVLink","img_title":"https://en.wikipedia.org/wiki/NVLink"},{"h":"其他 AI 加速器：TPU、Groq 与 Cerebras","pts":["Google TPU 采用脉动阵列（Systolic Array）架构：数据在 PE（Processing Element）网格中按固定节拍流动，每个 PE 执行一次乘加运算，数据流动本身就完成了矩阵乘法，无需反复从缓存读写。配合 XLA 编译器的 Ahead-of-Time 编译，整个计算图在执行前就已静态确定，消除了 GPU 的动态调度开销。","Groq LPU 完全使用 SRAM 而非 HBM，在编译时静态规划所有内存访问（不存在动态缓存替换），实现确定性延迟——每次推理的延迟几乎相同，没有 jitter。这使得 Groq 在单请求推理速度上可达 500+ tokens/s，但片上 SRAM 容量约 230MB 限制了可运行的模型规模。","Cerebras WSE-3 是整个晶圆级芯片，面积是 H100 的 57 倍，拥有约 90 万个 AI 核心和 44GB 片上 SRAM。其核心价值在于消除了传统多芯片系统中 chip-to-chip 的通信瓶颈，所有计算都在一块硅片上完成，特别适合需要大量片上内存的大型稀疏模型训练。","AMD MI300X 配备 128GB HBM3（比 H100 多 48GB），在大模型推理场景（如 70B 参数模型）上具有明显的显存优势，无需量化即可加载更大模型。ROCm 软件生态（HIP API 与 CUDA 接口兼容）成熟度虽然仍落后于 NVIDIA，但差距正在迅速缩小。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Making Deep Learning Go Brrrr From First Principles","d":"从 Roofline Model 讲起，解释 GPU 利用率、Memory Bandwidth 权衡，LLM 优化必读入门","s":"Horace He","u":"https://horace.io/brrr_intro.html","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"NVIDIA H100 Hopper Architecture In-Depth","d":"Tensor Core / Transformer Engine / NVLink 4.0 / HBM3 官方深度解析","s":"NVIDIA Developer Blog","u":"https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"FlashAttention-2: Faster Attention with Better Parallelism","d":"IO-aware Attention，SRAM tile 计算，HBM IO 减少 5-20x，长上下文基础","s":"Tri Dao, arXiv 2307.08691","u":"https://arxiv.org/abs/2307.08691","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"Tim Dettmers: Which GPU for Deep Learning (2023)","d":"各 GPU 性能/显存/成本横向对比，量化训练/推理场景选型指南","s":"timdettmers.com","u":"https://timdettmers.com/2023/01/30/which-gpu-for-deep-learning/","lv":"entry"},{"tp":"GitHub","tc":"b-github","t":"GPU Puzzles（交互式 CUDA 编程入门）","d":"Sasha Rush 设计，从 map/zip 到 matmul，Colab 交互式完成","s":"srush/GPU-Puzzles","u":"https://github.com/srush/GPU-Puzzles","lv":"mid"}],"intro_lines":["▸ <strong>Roofline Model</strong> — 算术强度如何决定工作负载是 Memory-bound 还是 Compute-bound，以及这对 LLM 推理意味着什么","▸ <strong>GPU 内存层次</strong> — HBM/SRAM 的速度差距，FlashAttention 如何靠 tile 计算绕过 HBM 瓶颈","▸ <strong>多 GPU 互联</strong> — NVLink/NVSwitch 的带宽数字，GPUDirect RDMA，NCCL 的通信原语","▸ <strong>其他加速器</strong> — TPU 脉动阵列 vs GPU 的设计哲学差异，Groq 的确定性延迟，AMD MI300X 的显存优势"]},{"id":"train","phase":"系统层","title":"分布式训练 · 并行策略 · 显存优化","color":"#7c3aed","bg":"#EDE9FE","intro":"训练大模型的核心挑战是单张 GPU 放不下模型，多张 GPU 协同又引入了通信和显存管理的复杂性。四种并行策略从不同维度切分这个问题。","notes":[{"h":"四种并行策略：各解决什么问题","pts":["数据并行（DP）是最基础的策略：每块 GPU 保存完整的模型副本，各自处理不同的数据 batch，训练结束后通过 AllReduce 同步梯度。这种方式实现简单，通信量等于模型参数量的 2 倍，适合模型能放进单卡显存的场景。","张量并行（TP）把单个矩阵乘法切分到多块 GPU 上：以 Transformer 的 FFN 层为例，权重矩阵按列切分，每块 GPU 算矩阵乘法的一部分，再通过 AllReduce 合并结果。通信发生在每个 Attention/FFN 层内，延迟极为敏感，因此通常只在同一节点内使用（必须走 NVLink，不能跨节点走 InfiniBand）。","流水线并行（PP）把模型的不同层（Layer）分配到不同 GPU，形成流水线。关键问题是流水线气泡（Bubble）——当靠前的 GPU 在计算 backward 时，靠后的 GPU 在等待。1F1B（One-Forward-One-Backward）调度策略通过交错执行减少气泡，使得显存消耗与 micro-batch 数量线性相关而非与 stage 数量相关。","专家并行（EP）专门针对 MoE（Mixture of Experts）模型设计：不同专家分配到不同 GPU，通过 All-to-All 通信把每个 token 路由到对应专家所在的 GPU。All-to-All 的通信模式比 AllReduce 更不规则，负载均衡（防止某些专家过热）是工程挑战，但它使得 MoE 模型在相同激活参数量下能拥有远多于稠密模型的总参数量。"],"img_key":"parallelism","img_link":"Parallel Computing","img_title":"https://en.wikipedia.org/wiki/Parallel_computing"},{"h":"ZeRO：消除冗余状态的核心优化","pts":["数据并行下，每块 GPU 默认保存完整的 optimizer state（Adam 需要 FP32 参数 + FP32 momentum + FP32 variance，合计约 16 bytes/参数），70B 模型仅 optimizer state 就需要约 1.1TB 显存，根本无法放下。ZeRO（Zero Redundancy Optimizer）通过把这些状态切分到 N 块 GPU 上来解决这个问题。","ZeRO 分三个阶段：Stage 1 只切分 optimizer state（显存降低 4x）；Stage 2 额外切分梯度（显存降低 8x）；Stage 3 进一步切分模型参数本身（显存降低 N_gpu 倍）。Stage 3 在前向传播时需要通过 AllGather 临时重组参数，通信量有所增加，但使得在有限 GPU 上训练极大模型成为可能。","ZeRO-Infinity 把 optimizer state 进一步卸载到 CPU 内存（+400GB RAM）甚至 NVMe SSD，利用 PCIe 带宽在需要时传回 GPU。这使得在单节点 8 卡机器上训练超过 trillion 参数的模型成为可能，代价是训练吞吐会下降（受 CPU/NVMe 带宽限制）。","PyTorch FSDP（Fully Sharded Data Parallel）是 ZeRO Stage 3 的原生实现，无需额外安装 DeepSpeed，与 PyTorch DDP 接口相似，更容易集成到现有训练代码中。它是目前 LLaMA 等开源模型训练的主流选择。"],"img_key":"zero","img_link":"ZeRO Optimizer","img_title":"https://arxiv.org/abs/1910.02054"},{"h":"显存优化：Gradient Checkpointing 与混合精度","pts":["正常的反向传播需要保存所有前向激活值（用于计算梯度），显存消耗随 sequence length 和 batch size 线性增长。对于一个 13B 参数的模型，前向激活可能需要数十 GB 显存——有时比模型权重本身还多。","Gradient Checkpointing（梯度检查点）的思路是：训练时只保存部分关键节点的激活，其余激活在反向传播时重新计算。这以约 30% 的额外计算开销换取大幅降低的显存需求，是训练大模型时几乎必选的优化手段。","混合精度训练是现代 LLM 训练的标准配置：前向和反向传播用 BF16（Brain Float 16，指数位更多，数值范围大，训练比 FP16 稳定），但 optimizer 维护 FP32 的 master weight，确保权重更新的精度不丢失。H100 的 Transformer Engine 可进一步自动使用 FP8，在精度几乎不损失的情况下提升 2x 吞吐。","Activation Recomputation 策略需要权衡：Full recomputation（重算所有激活）显存最省但计算开销最大；Selective recomputation（只重算计算开销小的层，保留 Attention 等开销大的激活）是合理的折中，可以在减少约 70% 显存的同时只增加约 10% 计算开销。"]},{"h":"NCCL 与通信优化","pts":["NCCL（NVIDIA Collective Communications Library）是分布式训练通信的底层引擎，实现了 AllReduce/AllGather/ReduceScatter/Broadcast 等操作。它会自动探测硬件拓扑（NVLink/PCIe/InfiniBand），选择最优算法：节点内走 NVLink 的 Ring-AllReduce，跨节点走 InfiniBand 的 Tree-AllReduce。","通信与计算的重叠（Overlap）是提升训练效率的关键技术：在某层的 backward 计算完成后立即开始该层梯度的 AllReduce，而不是等所有层 backward 都完成后才开始通信。这样通信和下一层的 backward 计算可以并行进行，在通信带宽足够时几乎完全隐藏通信开销。","梯度压缩（Gradient Compression）可以减少通信量：PowerSGD 把梯度矩阵分解为低秩近似，1BitSGD 把梯度量化为 1bit。这些方法在低带宽环境（跨地域训练）下能大幅加速，代价是轻微的收敛质量损失，需要实验验证。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"ZeRO: Memory Optimizations Toward Training Trillion Parameter Models","d":"ZeRO Stage 1/2/3 切分 optimizer state/梯度/参数，大模型训练基础","s":"Rajbhandari et al., arXiv 1910.02054","u":"https://arxiv.org/abs/1910.02054","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Megatron-LM: Training Multi-Billion Parameter Language Models","d":"Tensor Parallelism 经典实现，切分 Attention + FFN 矩阵","s":"Shoeybi et al., arXiv 1909.08053","u":"https://arxiv.org/abs/1909.08053","lv":"adv"},{"tp":"视频","tc":"b-video","t":"Let's Reproduce GPT-2 — Andrej Karpathy","d":"8×A100 训练 GPT-2，FlashAttention/BF16/torch.compile/DDP 全流程","s":"YouTube — Andrej Karpathy","u":"https://www.youtube.com/watch?v=l8pRSuU81PU","lv":"mid"},{"tp":"文档","tc":"b-docs","t":"DeepSpeed 官方文档","d":"ZeRO/ZeRO-Infinity/MoE 训练/量化，大规模训练框架文档","s":"deepspeed.ai","u":"https://www.deepspeed.ai/","lv":"mid"},{"tp":"GitHub","tc":"b-github","t":"nanoGPT — 最简洁的 GPT 训练代码","d":"300 行理解训练循环/gradient accumulation/混合精度","s":"karpathy/nanoGPT","u":"https://github.com/karpathy/nanoGPT","lv":"entry"}],"intro_lines":["▸ <strong>四种并行策略</strong> — 数据/张量/流水线/专家并行各解决什么瓶颈，使用场景和约束条件","▸ <strong>ZeRO</strong> — optimizer state 为什么是显存杀手，三个阶段如何逐步切分冗余状态，FSDP vs DeepSpeed","▸ <strong>Gradient Checkpointing & 混合精度</strong> — 以计算换显存，BF16/FP8/FP32 的精度与速度权衡","▸ <strong>NCCL 与通信优化</strong> — AllReduce/AllGather 的拓扑选择，通信与计算如何重叠以隐藏延迟"]},{"id":"infer","phase":"系统层","title":"LLM 推理系统 · 引擎 · 关键优化","color":"#0369a1","bg":"#EFF6FF","intro":"推理系统的核心矛盾是：显存要在固定的模型权重和随并发动态增长的 KV Cache 之间分配。三个关键技术从不同角度缓解这个矛盾。","notes":[{"h":"KV Cache：推理的核心数据结构","pts":["KV Cache 的存在是因为自回归解码的特性：生成第 N 个 token 时需要对前 N-1 个 token 做 Attention，如果每步都重新计算，代价会随序列长度平方增长。KV Cache 把每层 Transformer 的 Key 和 Value 矩阵缓存起来，每次只计算新 token 的 KV 并追加，将时间复杂度从 O(n²) 降为 O(n)。","KV Cache 的大小公式为：batch_size × seq_len × layers × 2 × heads × head_dim × dtype_bytes。以 LLaMA-2 70B 为例，batch=1、seq_len=4096、BF16 精度时 KV Cache 约 8GB——接近一块 GPU 显存的 1/10。当 context 扩展到 128K tokens 时，KV Cache 就成了显存消耗的主导因素。","KV Cache 的存在引出了推理系统设计中最核心的权衡：显存要在模型权重（固定）和 KV Cache（随并发和序列长度动态变化）之间分配。KV Cache 分配越多，支持的并发越高，但模型权重的 HBM 带宽占用也越多，两者相互竞争。","GQA（Grouped Query Attention）和 MQA（Multi-Query Attention）是减少 KV Cache 大小的架构手段：MQA 让所有 Attention head 共享一组 KV，KV Cache 大小降低 h 倍（h 为 head 数）；GQA 是介于 MHA 和 MQA 之间的折中，LLaMA 2/3 均采用。这是架构设计直接影响推理成本的典型例子。"],"img_key":"kv_cache","img_link":"KV Cache / Attention","img_title":"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"},{"h":"PagedAttention：像操作系统一样管理显存","pts":["传统 KV Cache 分配的问题是提前按最大序列长度预留连续显存：一个支持 4096 tokens 的系统，即使实际请求只用了 100 tokens，也要占用 4096 tokens 的空间。这导致大量显存碎片，实测 GPU 内存利用率常常只有 60% 左右。","PagedAttention 借鉴操作系统虚拟内存管理的思路：把 KV Cache 切分成固定大小的 Page（Block），每个 Page 存储固定数量 token 的 KV，逻辑连续但物理不连续，通过 Block Table 映射。这与 OS 的虚拟地址到物理地址的分页映射是完全一致的思想迁移。","PagedAttention 的效果是 GPU 内存利用率从约 60% 提升到 90% 以上，意味着相同显存下可以支持约 1.5 倍的并发请求，或者支持更长的上下文序列。vLLM 是 PagedAttention 的标准开源实现，目前是生产环境最广泛使用的推理框架。","Prefix Caching（前缀缓存）是 PagedAttention 的自然延伸：如果多个请求共享相同的前缀（如相同的 system prompt），这部分 KV 可以在所有请求间共享，无需重复计算。SGLang 的 RadixAttention 把这个想法扩展为 trie 树结构，实现了更细粒度的前缀复用，在 Agent 工作流（大量共享 system prompt）场景下效果显著。"],"img_key":"paged_attn","img_link":"PagedAttention / vLLM","img_title":"https://arxiv.org/abs/2309.06180"},{"h":"Continuous Batching：消除 GPU 空转","pts":["静态批处理（Static Batching）的问题在于：一个 batch 中所有请求必须等最长的那个请求生成完才能整体换批，先完成的请求只能空等，GPU 大量时间处于空转状态。这在请求长度差异大的场景下（实际生产中极为常见）会导致极低的吞吐利用率。","Continuous Batching（也称迭代级调度，iteration-level scheduling）的解决方案：在每个 decoding step 后都可以换入新请求，一旦某个序列生成完 EOS token，立即从 batch 中移除，同时补充一个新的等待请求进来。这样 GPU 始终处于满负荷状态，吞吐提升可达 23-36 倍（Orca 论文数据）。","Continuous Batching 需要配合 PagedAttention 才能高效实现：不同长度请求共存于同一个 batch 时，KV Cache 的大小各不相同，必须用动态 Page 管理而非提前分配固定大小空间。两者组合是 vLLM/TGI 等现代推理引擎的标配。"]},{"h":"Speculative Decoding：小模型加速大模型","pts":["Speculative Decoding 的核心洞察是：大模型 verify 已有 token 的速度比 generate 新 token 快得多（因为可以并行处理所有位置）。利用这个非对称性，可以用小模型（draft model）快速生成 K 个候选 token，再用大模型（target model）一次并行验证所有 K 个 token。","验证过程：对每个 draft token，计算大模型给出的概率与 draft model 给出的概率之比，如果比值 ≥ 1 则无条件接受，否则以一定概率接受。这个接受策略保证了最终输出的分布与大模型独立采样完全一致——也就是说，Speculative Decoding 不会改变输出质量，只是加速了生成过程。","实际加速效果取决于 draft model 和 target model 输出分布的重叠程度：对于代码生成、翻译等任务（下一个 token 往往比较确定），接受率高，加速比可达 3-4x；对于创意写作（多样性高），接受率低，加速效果有限。Draft model 通常是 target model 的小版本（如 7B draft + 70B target）。","Medusa 是 Speculative Decoding 的变体：在原模型上额外训练多个并行的 Medusa Head，每个 Head 预测不同位置的 token，无需独立的 draft model。这简化了部署（只需一个模型），但灵活性不如独立 draft model 方案。"],"img_key":"spec_decode","img_link":"Speculative Decoding","img_title":"https://arxiv.org/abs/2211.17192"}],"res":[{"tp":"论文","tc":"b-paper","t":"Orca: A Distributed Serving System for Transformer-Based LLMs","d":"Continuous Batching 奠基论文，吞吐提升 36x","s":"Yu et al., OSDI 2022","u":"https://www.usenix.org/system/files/osdi22-yu.pdf","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Efficient Memory Management for LLM Serving with PagedAttention","d":"vLLM 核心：KV Cache 虚拟内存分页，内存利用率提升到 90%+","s":"Kwon et al., arXiv 2309.06180","u":"https://arxiv.org/abs/2309.06180","lv":"adv"},{"tp":"文档","tc":"b-docs","t":"vLLM 官方文档","d":"PagedAttention/Continuous Batching/Speculative Decoding/Prefix Caching","s":"docs.vllm.ai","u":"https://docs.vllm.ai/","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Speculative Decoding: Exploiting Speculative Execution for LLM","d":"小 draft 模型加速大模型推理，分布等价保证","s":"Leviathan et al., arXiv 2211.17192","u":"https://arxiv.org/abs/2211.17192","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"Continuous Batching: One of the Most Important LLM Innovations","d":"图文讲解 Continuous Batching vs Static Batching 本质差异","s":"Anyscale Blog","u":"https://www.anyscale.com/blog/continuous-batching-llm-inference","lv":"entry"}],"intro_lines":["▸ <strong>KV Cache</strong> — 为什么存在、大小如何计算、GQA/MQA 如何从架构层减少其占用","▸ <strong>PagedAttention</strong> — 借鉴 OS 虚拟内存的 KV 分页管理，GPU 内存利用率从 60% 提升到 90%+","▸ <strong>Continuous Batching</strong> — 迭代级调度消除 GPU 空转，吞吐提升 23–36 倍的原理","▸ <strong>Speculative Decoding</strong> — 用小 draft model 加速大 target model，分布等价性的数学保证"]},{"id":"arch","phase":"模型层","title":"模型架构 · Transformer · MoE · 量化","color":"#0f766e","bg":"#F0FDFA","intro":"Transformer 的每个设计决策都是有代价的工程权衡，不是随意选择。理解这些权衡的逻辑，是读懂后续所有模型论文的基础。","notes":[{"h":"Transformer 核心组件的设计权衡","pts":["Self-Attention 的计算复杂度是 O(n²)——序列长度翻倍，计算量和内存变为 4 倍。这是限制上下文长度的根本原因，也是 FlashAttention 和 Linear Attention 等优化工作的动机所在。Multi-Head Attention 把 Q/K/V 投影到多个低维子空间并行计算，既提升了表达能力，也通过并行性提高了硬件利用率。","Layer Normalization 的位置影响训练稳定性：Post-norm（残差连接之后做 LayerNorm，原始 Transformer 设计）训练更不稳定，需要精心调整学习率；Pre-norm（残差连接之前做 LayerNorm，LLaMA 系列采用）训练更稳定，是现代 LLM 的标准选择。RMSNorm 进一步去掉了 LayerNorm 中的 mean 减法，更快且效果基本相当。","FFN 层通常占 Transformer 参数量的 2/3，是模型存储知识的主要组件。SwiGLU 激活函数（Swish + GLU 门控机制）比 GeLU 效果更好，被 LLaMA 系列采用。标准 FFN hidden dim 是 4x model dim，但 MoE 替代后每个专家只处理部分 token，可以用更多专家数换取相同计算量下更大的模型容量。","KV Cache 大小与 Attention head 设计强相关：MHA（Multi-Head Attention）每个 head 有独立 KV，KV Cache 最大；MQA（Multi-Query Attention）所有 head 共享一个 KV，缓存最小但质量稍差；GQA（Grouped Query Attention，LLaMA 2/3 采用）是折中方案，按组共享 KV，在推理效率和模型质量之间取得良好平衡。"],"img_key":"transformer_arch","img_link":"Transformer","img_title":"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"},{"h":"位置编码：从绝对到 RoPE","pts":["绝对位置编码（如原始 Transformer 的正弦编码）直接把位置信息加到 embedding 中，简单有效，但无法外推到训练时未见过的序列长度——超出训练长度后性能急剧下降，这是早期 GPT 模型只支持 2048 token 上下文的根本原因。","RoPE（Rotary Position Embedding）通过在 Attention 计算中对 Q/K 向量施加旋转变换来编码位置信息，使得 Attention score 只依赖相对位置（而非绝对位置），天然支持序列长度的外推。目前主流 LLM（GPT-4/LLaMA/Gemini/Claude）几乎全部采用 RoPE。","RoPE 的长上下文扩展方法：Position Interpolation（线性插值，把位置 ID 缩放到训练范围内）/ YaRN（基于频率的自适应插值，不同维度用不同缩放）/ ABF（Adjusted Base Frequency，修改 RoPE 的 base 参数）。这些方法配合继续训练，实现了从 4K 到 128K 甚至 1M tokens 的上下文扩展。"]},{"h":"MoE（Mixture of Experts）：稀疏激活扩大参数量","pts":["MoE 的核心思想是：用稀疏激活替代稠密 FFN，每次前向传播只激活 top-K 个专家，而非所有专家。这样在保持每个 token 计算量（FLOPS）不变的情况下，可以把模型总参数量扩大几倍甚至十几倍，实现了计算效率和模型容量的解耦。","Router（路由器）决定每个 token 被发送到哪些专家，通常是一个简单的线性层 + Softmax。Load Balancing 是关键挑战：如果某些专家总是被选中（routing collapse），参数就没有被充分利用。辅助 loss（auxiliary loss）惩罚负载不均，引导 router 更均匀地分配。","DeepSeek-V3 采用极细粒度 MoE：256 个专家，每次激活 top-8，并引入共享专家（Shared Experts，所有 token 都会激活）避免信息丢失。这种设计在 671B 总参数量下，每个 token 实际激活约 37B 参数，实现了接近 671B 稠密模型的能力但计算量只有约 1/18。","MoE 的工程挑战：所有专家必须同时在内存中（推理时无法懒加载），通信模式是 All-to-All（token 需要被路由到任意专家所在 GPU），比 AllReduce 更复杂且不规则。MoE 推理的显存需求更高，但在相同计算 FLOPS 下能提供更好的模型质量。"],"img_key":"moe","img_link":"Mixture of Experts","img_title":"https://en.wikipedia.org/wiki/Mixture_of_experts"},{"h":"量化：减少带宽需求，加速推理","pts":["量化的本质是把浮点权重（FP16/BF16，每参数 2 bytes）压缩为更低精度的整数（INT8 1 byte，INT4 0.5 bytes），直接减少 HBM 读取量，从而提升 Memory-bound 推理的速度。以 70B 模型为例，FP16 需要 140GB 显存，INT4 量化后只需约 35GB，可以在 2 块 A100 上运行。","GPTQ（逐层二阶优化量化）和 AWQ（激活感知权重量化）是目前最主流的 PTQ（Post-Training Quantization）方法。GPTQ 用 Hessian 信息最小化量化误差；AWQ 的洞察是权重重要性与激活值幅度相关，保留激活值大的通道不量化，精度损失极小。两者都实现了 INT4 精度接近 FP16 的效果。","FP8 量化是 H100 硬件直接支持的格式，比 INT8 数值范围更大（指数位 + 尾数位），比 BF16 精度稍低但速度快 2x。Transformer Engine 自动管理 FP8/BF16 的切换，是 H100 训练推理提速的关键。FP8 量化的挑战是需要 per-tensor 或 per-token 的动态 scaling factor 校准。","量化的边界：激活值（activation）比权重更难量化，因为激活值分布不固定（不同输入有不同幅度），且存在 outlier（少量极大值）。W4A8（权重 INT4，激活 INT8）是目前质量和速度的良好折中；W4A16 更保守；纯 INT4（W4A4）质量损失目前还较明显。"],"img_key":"quantization","img_link":"Quantization ML","img_title":"https://en.wikipedia.org/wiki/Quantization_(machine_learning)"}],"res":[{"tp":"可视化","tc":"b-visual","t":"The Illustrated Transformer（Jay Alammar）","d":"图文精讲 Transformer 每个组件，最好的 Transformer 入门可视化","s":"jalammar.github.io","u":"https://jalammar.github.io/illustrated-transformer/","lv":"entry"},{"tp":"可视化","tc":"b-visual","t":"LLM Visualization（3D 交互可视化）","d":"3D 动画展示 GPT-2 的每个前向传播步骤","s":"bbycroft.net/llm","u":"https://bbycroft.net/llm","lv":"entry"},{"tp":"报告","tc":"b-paper","t":"DeepSeek-V3 Technical Report","d":"256 experts + top-8 路由 + MLA，极致 MoE 工程实践","s":"DeepSeek-AI, arXiv 2412.19437","u":"https://arxiv.org/abs/2412.19437","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"GQA: Training Generalized Multi-Query Transformer Models","d":"Grouped Query Attention，大幅减少 KV Cache，LLaMA 2/3 采用","s":"Ainslie et al., arXiv 2305.13245","u":"https://arxiv.org/abs/2305.13245","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Lilian Weng: The Transformer Family Version 2.0","d":"全面梳理 Transformer 变体：Sparse Attention/Linear Attention/MoE","s":"lilianweng.github.io","u":"https://lilianweng.github.io/posts/2023-01-27-the-transformer-family-v2/","lv":"mid"}],"intro_lines":["▸ <strong>Transformer 核心组件</strong> — Self-Attention 的 O(n²) 问题，Pre-norm vs Post-norm 对训练稳定性的影响，SwiGLU 激活","▸ <strong>位置编码</strong> — 绝对编码无法外推的根本原因，RoPE 通过旋转实现相对位置，YaRN/ABF 长上下文扩展方法","▸ <strong>MoE</strong> — 稀疏激活如何解耦参数量与计算量，Router 负载均衡的挑战，DeepSeek-V3 的极细粒度设计","▸ <strong>量化</strong> — INT4/INT8/FP8 的带宽节省与精度损失，GPTQ/AWQ 方法，激活值比权重更难量化的原因"]},{"id":"training_method","phase":"模型层","title":"训练方法 · RLHF · LoRA · 对齐","color":"#be185d","bg":"#FCE7F3","intro":"预训练模型有语言能力但不会遵循指令——RLHF 弥合了这个差距。这个版块覆盖从 PPO 到 DPO 到 GRPO 的方法演进，以及让微调变得可负担的 LoRA/QLoRA。","notes":[{"h":"RLHF：从预训练到对话模型","pts":["预训练阶段（Pre-training）让模型学会语言的统计规律，但这个目标（预测下一个 token）与用户期望（有帮助、无害、诚实）有根本差距——一个优秀的语言模型可能会流利地生成有害内容或拒绝回答问题。RLHF（Reinforcement Learning from Human Feedback）就是为了弥合这个差距。","RLHF 的三阶段流程：首先用有监督的指令数据对预训练模型做 SFT（Supervised Fine-Tuning），得到一个初步能遵循指令的模型；然后收集人类对模型输出的偏好数据（A vs B 哪个更好），训练一个 Reward Model；最后用 PPO（Proximal Policy Optimization）算法，以 Reward Model 的评分为信号，用强化学习进一步优化语言模型。","RLHF 的工程复杂性很高：需要同时维护 policy 模型、reference 模型（原始 SFT 模型，用于 KL 散度约束防止模型偏离太远）、reward 模型和 critic 模型，四个模型同时在显存中占用大量资源。PPO 训练不稳定，超参数敏感，调参困难——这推动了更简单的替代方案的发展。"],"img_key":"rlhf","img_link":"RLHF","img_title":"https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback"},{"h":"DPO 与 GRPO：更简单的对齐方法","pts":["DPO（Direct Preference Optimization）的洞察是：RLHF 的 PPO 训练本质上等价于优化一个特定形式的 loss 函数，可以直接对语言模型做监督学习来达到相同效果，完全不需要 Reward Model 和强化学习训练循环。训练数据是同样的偏好对（y_chosen, y_rejected），但优化目标更稳定、实现更简单。","DPO 的缺点是对训练数据质量非常敏感，且难以在线更新（需要预先收集偏好数据）。RLHF+PPO 虽然复杂，但可以利用 reward model 对模型的新输出在线打分，持续改进。实践中两种方法常常结合使用：先用 DPO 做初步对齐，再用在线 RL 精调。","GRPO（Group Relative Policy Optimization，DeepSeek R1 采用）是对 PPO 的简化：去掉了 critic model（用同一组采样的相对奖励替代 value function 的绝对估计），大幅降低显存需求。更重要的是，R1 证明了仅用规则化奖励（答案对错 + 格式合规）的纯强化学习，可以让模型自发学会长链思考推理，无需任何人工标注。"]},{"h":"LoRA 与 QLoRA：低成本微调","pts":["LoRA（Low-Rank Adaptation）的核心思想是：大模型权重矩阵的更新是低秩的（在下游任务微调时，权重变化矩阵 ΔW 的秩很低）。因此可以用两个小矩阵 A（d×r）和 B（r×d）的乘积来近似 ΔW，其中 r 远小于 d（通常 r=8 或 16）。这使得可训练参数量从数十亿降低到数百万甚至数十万。","LoRA 的工程价值在于：前向传播时仍然加载完整的预训练权重（只读，不更新），只有 A/B 两个小矩阵参与梯度计算和更新。在 7B 模型微调时，可训练参数量从 7B 降到约 4M（0.06%），显存需求大幅降低，可以在单卡 24GB GPU 上微调 7B 模型。","QLoRA 在 LoRA 的基础上进一步引入了 4-bit NormalFloat（NF4，专门针对正态分布权重设计的量化格式）将预训练权重量化存储，加上双重量化（量化 quantization constants 本身）和 paged optimizers（CPU/GPU 内存动态分配）。这使得在单卡 24GB GPU 上微调 65B 模型成为可能，把大模型微调的门槛降低到了普通研究者可接受的范围。","Scaling Laws for Fine-tuning：Chinchilla 定律（最优预训练 token 数 ≈ 20x 参数量）在微调中不适用。微调通常只需要相对较少的高质量数据（数千到数万条指令）就能取得好效果，关键是数据质量而非数量。合成数据（用强模型生成训练数据）已经成为微调的主流做法，Phi-3 系列完全用合成数据训练出色的小模型。"],"img_key":"lora","img_link":"LoRA Paper","img_title":"https://arxiv.org/abs/2106.09685"}],"res":[{"tp":"论文","tc":"b-paper","t":"InstructGPT: Training LMs to Follow Instructions (RLHF)","d":"ChatGPT 前身，奠定 SFT→RM→PPO 三阶段训练范式","s":"Ouyang et al., arXiv 2203.02155","u":"https://arxiv.org/abs/2203.02155","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"LoRA: Low-Rank Adaptation of Large Language Models","d":"只训练低秩矩阵，参数量减少 10000 倍，最广泛使用的 PEFT 方法","s":"Hu et al., arXiv 2106.09685","u":"https://arxiv.org/abs/2106.09685","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"QLoRA: Efficient Finetuning of Quantized LLMs","d":"NF4 量化 + LoRA，单卡 24GB 微调 65B 模型","s":"Dettmers et al., arXiv 2305.14314","u":"https://arxiv.org/abs/2305.14314","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"DPO: Direct Preference Optimization","d":"无需 Reward Model，偏好学习转化为分类损失，已成主流对齐方法","s":"Rafailov et al., arXiv 2305.18290","u":"https://arxiv.org/abs/2305.18290","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"DeepSeek-R1: Incentivizing Reasoning via RL","d":"GRPO，纯 RL 训练涌现长链推理，无需人工标注","s":"DeepSeek-AI, arXiv 2501.12948","u":"https://arxiv.org/abs/2501.12948","lv":"adv"}],"intro_lines":["▸ <strong>RLHF</strong> — SFT→RM→PPO 三阶段流程，四个模型同时运行的显存代价，为什么 PPO 训练不稳定","▸ <strong>DPO 与 GRPO</strong> — 去掉 Reward Model 的直接偏好优化，R1 用纯 RL 无需人工标注涌现推理能力","▸ <strong>LoRA 与 QLoRA</strong> — 低秩近似的数学基础，单卡 24GB 微调 65B 模型的完整实现路径"]},{"id":"ssm","phase":"模型层","title":"SSM · Mamba · Transformer 的替代架构","color":"#0f766e","bg":"#F0FDFA","intro":"Transformer 的 O(n²) 注意力在极长序列下代价太高。SSM/Mamba 是目前最有竞争力的替代路线，用线性复杂度换取固定大小状态，推理时内存 O(1)。","notes":[{"h":"为什么需要 Transformer 的替代架构","pts":["Transformer 的注意力机制是 O(n²) 的时间和空间复杂度——序列长度翻倍，计算量变为 4 倍。对于 32K tokens 的上下文，一次 Forward 需要约 32K² ≈ 10 亿次注意力分数计算。虽然 FlashAttention 大幅优化了 IO，但计算量本身没有减少。这使得极长上下文（1M+ tokens）的实时推理即使在高端硬件上也面临挑战。","循环神经网络（RNN）天然是 O(n) 的——每步只需要固定大小的隐藏状态。但传统 RNN（LSTM/GRU）有梯度消失问题，长距离依赖捕捉能力远不如 Transformer。状态空间模型（SSM）是「能并行训练（像 Transformer）且能线性推理（像 RNN）」的第三条路——训练时可以并行，推理时用递归形式按步生成，两全其美。","S4（Structured State Space Sequence Model）是现代 SSM 的先驱：用结构化的状态矩阵（对角加低秩）使 SSM 在长序列任务上第一次真正匹敌 Transformer。S4 在语音、时间序列等需要长程依赖的任务上表现突出，但在语言建模上仍落后。"]},{"h":"Mamba：选择性状态空间模型","pts":["Mamba 的核心创新是「选择性」（Selectivity）机制：传统 SSM 的状态转移矩阵 A、B 是固定的（与输入无关），无法做内容感知的选择——它无法「忽略不相关的输入」或「选择性记住重要信息」。Mamba 让 B、C 矩阵（控制信息如何进出状态）依赖于输入，使模型能根据内容动态决定「这个 token 值得记住多少」。","这个选择性使 Mamba 在语言建模上第一次真正接近同等参数量的 Transformer，特别是在需要「选择性记忆」的任务上（如记住对话中提到的名字，忽略无关信息）。推理时，Mamba 的内存占用是 O(1) 的（固定大小的状态向量），不随序列长度增长——这使得极长上下文的推理在内存上是可行的。","Mamba 2 进一步改进了理论框架，证明了 SSM 和注意力机制在数学上有深层的联系（State Space Duality），并引入了更高效的硬件实现。Jamba（AI21 Labs）是首个大规模商业化的 Mamba + Transformer 混合模型，在某些任务上超过了纯 Transformer 基线，同时提供更好的长上下文效率。"]},{"h":"Hybrid 架构：Mamba + Attention 的互补","pts":["纯 Mamba 模型目前在「精确检索」任务上仍落后 Transformer：如果需要精确地找回序列里很早之前的某个特定 token（如解压缩、密码学任务），固定大小的状态向量无法保存所有历史信息，而 Attention 的 KV Cache 可以精确检索任意历史位置。","Hybrid 架构（如 Jamba、Zamba）交错排列 Mamba 层和 Attention 层：大多数层用 Mamba（处理局部依赖，O(n) 复杂度），少数层用全局 Attention（处理需要精确检索的任务）。实验显示这种组合在保持 Mamba 长序列效率的同时，弥补了其在精确检索上的不足。","当前状态：在一般语言建模任务（perplexity）上，同等参数量的 Mamba 模型仍略落后于 Transformer；在需要长上下文高效推理的场景（如处理超长文档、实时流式推理），Mamba 或 Hybrid 架构有明显优势。是否会替代 Transformer 作为主流架构，目前还不明朗，但已经是严肃的竞争者。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Mamba: Linear-Time Sequence Modeling with Selective SSMs","d":"Mamba 原论文，选择性状态空间模型的设计与实验","u":"https://arxiv.org/abs/2312.00752","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"Mamba Explained — The Gradient","d":"Mamba 的技术原理通俗解释，配图直觉理解选择性机制","u":"https://thegradient.pub/mamba-explained/","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Jamba: A Hybrid Transformer-Mamba Language Model","d":"首个生产级 Hybrid 架构，Mamba + Attention 的工程实践","u":"https://arxiv.org/abs/2403.19887","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"A Visual Guide to Mamba and SSMs — Maarten Grootendorst","d":"Mamba 架构可视化讲解，对比 RNN/Transformer/SSM","u":"https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-mamba-and-state","lv":"entry"}],"intro_lines":["▸ <strong>为什么需要替代架构</strong> — RNN 的梯度消失 vs Transformer 的二次方代价，SSM 如何两者兼顾","▸ <strong>Mamba</strong> — 选择性状态空间的核心创新：输入依赖的状态转移矩阵使模型能内容感知地选择记忆","▸ <strong>Hybrid 架构</strong> — Mamba+Attention 互补的理由，当前在哪些任务上能匹敌纯 Transformer"]},{"id":"synthetic","phase":"模型层","title":"合成数据 · Self-Play · 知识蒸馏","color":"#d97706","bg":"#FEF3C7","intro":"Web 数据的边际收益在递减，合成数据正在填补这个缺口。Phi-3 证明数据质量比数量更重要；Self-Play 让模型通过自我博弈持续提升。","notes":[{"h":"合成数据：从数据瓶颈到数据飞轮","pts":["Web 规模预训练数据正在接近「饱和」——Common Crawl 等公开数据集已经被主流模型充分利用，继续增加同类数据的边际收益在降低。合成数据（用强模型生成训练数据）提供了一个突破口：可以按需生成特定领域、特定难度、特定格式的数据，打破了「只能用现成的自然数据」的限制。","Phi-3 系列（微软）是合成数据最有力的证明：通过精心设计的「教科书质量」（Textbook Quality）合成数据，3.8B 参数的 Phi-3-mini 在推理、编程等任务上接近甚至超越了 GPT-3.5（175B）的表现。关键洞察是：不是数据量决定学习效果，而是数据质量和数据分布——「每个孩子的教科书写了什么」比「孩子读了多少本书」更重要。","数据飞轮（Data Flywheel）是大模型持续改进的关键机制：部署的模型收集用户反馈和使用日志 → 筛选高价值样本 → 用于训练下一代模型 → 更好的模型带来更多用户 → 更多数据。这个闭环让先发优势有自我强化的趋势，解释了为什么大型科技公司的模型改进速度远快于学术界。"]},{"h":"Self-Play 与自我改进","pts":["Self-Play（自我对弈）来自 AlphaGo/AlphaZero 的核心思想：通过与自身博弈生成训练数据，避免了对人类专家数据的依赖。AlphaZero 仅用 4 天自我对弈就在围棋上超越了所有人类，并且发展出了人类从未见过的棋路。这个范式的关键是「有清晰的胜负判断」，为 RL 提供了无歧义的奖励信号。","在 LLM 领域，Self-Play 的应用更复杂，因为「什么是更好的语言」没有棋盘博弈那样清晰的判断标准。SPIN（Self-Play Fine-tuning）是一种实现：当前版本的模型（Student）和上一版本（Teacher）互相生成输出，训练目标是让 Student 生成的输出比 Teacher 更接近真实数据分布。这种迭代可以在不增加额外人工标注的情况下持续改进。","DeepSeek R1 的 GRPO 训练本质上也是一种自我改进：模型对同一个 prompt 采样多个回答，奖励好的回答，惩罚差的回答，自我强化推理能力。整个过程不依赖外部人工标注，完全靠规则化奖励（答案对错）驱动。这是「AI 自我改进」的实用化实现，暗示了未来 AI 系统可能通过大量自我训练加速能力提升。"]},{"h":"知识蒸馏：大模型能力迁移到小模型","pts":["知识蒸馏（Knowledge Distillation）的核心思想是：用大模型（Teacher）生成「软标签」（Soft Labels，即每个类别的概率分布，而非 one-hot 标签）训练小模型（Student）。软标签包含了 Teacher 模型对数据结构的理解——比如「这张图是猫，但 80% 像猫，15% 像狗」包含的信息量远超「这是猫」的硬标签。","LLM 时代的蒸馏主要通过「用大模型的输出微调小模型」实现：用 GPT-4 / Claude 生成高质量的指令-回复对，用这些数据微调 7B / 13B 的开源模型。实验表明，这种方式能显著提升小模型在特定任务上的表现，但有天花板——小模型无法超越 Teacher 模型的能力上限（Capacity Limit），只是更高效地接近它。","Speculative Decoding 可以被看作知识蒸馏的动态版本：小 draft model 学习大 target model 的分布，在推理时起到「预测」作用，大模型只需要验证。这不需要显式的蒸馏训练，而是通过推理时的动态对齐来利用两个模型的能力差异。"]}],"res":[{"tp":"报告","tc":"b-paper","t":"Phi-3 Technical Report: A Highly Capable LM Locally","d":"合成数据训练小模型的成功案例，textbook quality 数据方法","u":"https://arxiv.org/abs/2404.14219","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Self-Play Fine-Tuning (SPIN)","d":"无需额外人工标注的迭代自我改进方法","u":"https://arxiv.org/abs/2401.01335","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Mastering the Game of Go without Human Knowledge (AlphaZero)","d":"Self-Play 的里程碑，从自我对弈超越人类专家","u":"https://www.nature.com/articles/nature24270","lv":"mid"}],"intro_lines":["▸ <strong>合成数据</strong> — 数据飞轮的工程架构，Phi-3「教科书质量」方法论，合成数据的边界在哪里","▸ <strong>Self-Play 与自我改进</strong> — 从 AlphaGo 到 LLM 的 Self-Play 思想迁移，SPIN 迭代自我改进","▸ <strong>知识蒸馏</strong> — 软标签 vs 硬标签的信息量差异，大模型能力迁移到小模型的天花板"]},{"id":"itime","phase":"应用层","title":"Inference-time Compute · CoT · 推理扩展","color":"#dc2626","bg":"#FEF2F2","intro":"推理时投入的计算量和答案质量正相关——这是继 Scaling Laws 之后最重要的发现。o1/R1 的核心技术路线就建立在这个洞察上。","notes":[{"h":"Chain-of-Thought：让模型显式推理","pts":["Chain-of-Thought 的核心发现是：在提示里加上「让我们一步一步思考」这样简单的指令，就能显著提升模型在数学推理、逻辑推理等任务上的准确率。背后的原因是：直接输出答案相当于把推理过程压缩进一次前向传播，而 CoT 让模型用中间步骤的文字作为「草稿纸」，展开复杂推理过程。","CoT 的不同形式：Zero-shot CoT（只加「让我们一步一步」的指令，不给示例）对预训练充分的大模型已经有效；Few-shot CoT（给几个完整的推理示例）效果更稳定；Self-Consistency（同一问题采样多次，取多数答案）在数学题上能进一步提升约 17 个百分点，无需额外模型。","CoT 的局限性：中间推理步骤可能存在错误或幻觉，但最终答案碰巧正确（或相反，推理看似正确但答案错误）。这说明单纯依赖 outcome 监督（只看最终答案对错）不足以训练出可靠的推理能力，这直接催生了 Process Reward Model 的研究方向。"],"img_key":"cot","img_link":"Chain-of-Thought","img_title":"https://arxiv.org/abs/2201.11903"},{"h":"Process Reward Model：对每一步推理打分","pts":["Outcome Reward Model（ORM）只对最终答案打分，无法区分「正确推理得到正确答案」和「错误推理碰巧得到正确答案」这两种情况。Process Reward Model（PRM）对推理过程中的每一个中间步骤打分，能精准识别推理链中哪一步出了问题。","训练 PRM 的关键挑战是：需要对推理链的每个步骤做人工标注（这一步对/错），标注成本极高。OpenAI 开源了 PRM800K 数据集（80 万条数学推理步骤标注），这是 Let's Verify Step by Step 论文的核心贡献，直接推动了这个方向的发展。","PRM 在推理时的用法：结合 Best-of-N 采样（生成 N 条推理链，用 PRM 给每条链的各步骤打分，选出最高分的链）可以大幅提升数学推理准确率。随着 N 增大，效果持续提升——这直接体现了 inference-time compute scaling 的价值：用更多计算换更好质量。"]},{"h":"Tree Search + LLM：推理时计算的极限形式","pts":["Tree of Thoughts 把推理过程建模为树搜索：每个节点是一个中间推理状态，可以从当前状态展开多个分支，用 BFS 或 DFS 遍历，遇到死路时回溯。这让模型可以探索多条推理路径，而不是在一条路上走到底，特别适合需要规划和回溯的复杂问题（如 24 点游戏、规划类任务）。","MCTS（Monte Carlo Tree Search）+ LLM 是 inference-time compute 的极限形式：用 PRM 作为 value function 评估中间状态的价值，通过 MCTS 的 selection/expansion/simulation/backpropagation 四步循环搜索最优推理路径。rStar-Math 证明用这种方法可以让 7B 模型在数学竞赛题上达到接近 o1 的水平。","Test-time compute 与 train-time compute 的权衡：花同样的计算预算，是用来训练更大的模型（train-time scaling），还是让小模型推理时多想几步（test-time scaling）？最新研究显示两者在某些任务上可以互换，这意味着推理成本可以动态分配——简单问题快速回答，复杂问题多花时间思考，类似于人类思维中的「快思考」和「慢思考」。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Chain-of-Thought Prompting Elicits Reasoning in LLMs","d":"CoT 奠基论文：「让我们逐步思考」大幅提升数学推理准确率","s":"Wei et al., arXiv 2201.11903","u":"https://arxiv.org/abs/2201.11903","lv":"entry"},{"tp":"论文","tc":"b-paper","t":"Let's Verify Step by Step (Process Reward Model)","d":"PRM 对每步推理打分，o1 的核心组件，附 PRM800K 数据集","s":"Lightman et al., arXiv 2305.20050","u":"https://arxiv.org/abs/2305.20050","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Tree of Thoughts: Deliberate Problem Solving with LLMs","d":"树形推理分支，BFS/DFS 探索，支持回溯","s":"Yao et al., arXiv 2305.10601","u":"https://arxiv.org/abs/2305.10601","lv":"mid"},{"tp":"报告","tc":"b-paper","t":"OpenAI o1 System Card","d":"o1 技术概览：reasoning tokens / PRM / test-time compute scaling","s":"OpenAI","u":"https://openai.com/index/openai-o1-system-card/","lv":"mid"}],"intro_lines":["▸ <strong>Chain-of-Thought</strong> — 「逐步思考」为什么有效，Zero-shot vs Few-shot vs Self-Consistency 的区别","▸ <strong>Process Reward Model</strong> — 对每步推理打分而非只看最终答案，PRM800K 数据集的意义","▸ <strong>Tree Search + LLM</strong> — MCTS+PRM 是 inference-time compute 的极限形式，test-time 与 train-time 的互换关系"]},{"id":"agent","phase":"应用层","title":"Agent 架构 · 工具调用 · 多 Agent","color":"#059669","bg":"#ECFDF5","intro":"Agent 系统的根本挑战是把 LLM 的概率性输出嵌入需要确定性可靠性的工程系统。可靠性不靠更好的 prompt，而靠系统设计来保证。","notes":[{"h":"ReAct 与 Agent 控制流模式","pts":["ReAct（Reasoning + Acting）是目前最主流的 Agent 框架：模型交替生成「思考」（分析当前情况、决定下一步）和「行动」（调用工具），工具返回观察结果后继续思考，循环直到任务完成。这个模式的优势是推理过程可解释（中间 thought 可以帮助调试），失败时容易定位是哪一步出了问题。","Plan-and-Execute 模式把任务分两阶段：首先由一个强模型（Planner）把复杂任务分解成步骤列表，然后由另一个（通常更快/更便宜）模型（Executor）依次执行。这种分离让规划和执行可以分别优化，但计划生成后难以动态调整——如果某个步骤的结果出乎意料，很难优雅地修改后续计划。","LangGraph 的状态图范式是目前最灵活的生产 Agent 框架：把工作流显式建模为有向图（节点 = LLM/工具调用，边 = 条件转移），State 在节点间传递和更新，支持循环、分支、并行执行。最重要的是支持 Checkpoint（把状态持久化到数据库，崩溃后可以从断点恢复）和 human-in-the-loop（在关键决策节点暂停，等待人工确认后继续）。"],"img_key":"react_agent","img_link":"ReAct Paper","img_title":"https://arxiv.org/abs/2210.03629"},{"h":"工具系统设计：可靠性的关键","pts":["工具 Schema 的质量比代码实现更重要——LLM 理解工具是通过读取工具的 name 和 description（JSON Schema 中的文字），如果描述不清晰，模型会频繁调用错误的工具或传入错误的参数。好的工具 description 应该明确说明工具做什么、什么时候用、参数含义和格式要求，附上一个使用示例效果更好。","Parallel Tool Calling 可以显著减少延迟：Claude 和 GPT-4o 支持在单次模型调用中请求多个工具并行执行。例如搜索三个不同来源的信息，传统方式需要 3 次串行调用（等待 → 调用 → 等待 → 调用），并行模式只需 1 次模型调用 + 3 次并行工具执行。在工具延迟高（如数据库查询、API 调用）的场景下，速度提升可达 3-5 倍。","幂等性设计是让 Agent 可以安全重试的关键：Agent 执行外部操作时（发邮件、写数据库、调 API），一旦步骤失败需要重试，如果操作不幂等就会产生副作用（发两封邮件、写两条记录）。解决方案是为每个操作生成唯一的 idempotency key，服务端检查该 key 是否已经处理过，有效隔离重复执行。"]},{"h":"MCP 与 A2A：工具生态标准化","pts":["MCP（Model Context Protocol）是 Anthropic 于 2024 年提出的开放协议，解决了 LLM 应用工具生态碎片化的问题：每个 AI 应用之前都要为每个工具单独写集成代码，MCP 定义了统一的 Server/Client 接口，任何支持 MCP 的工具可以被任何支持 MCP 的 AI 应用直接使用，类似于 USB 标准化了设备接口。","MCP Server 暴露三类能力：Tools（可以调用的函数，如搜索/写文件/查数据库）、Resources（可以读取的数据，如文件内容/数据库记录）、Prompts（预定义的提示模板）。MCP Client（Claude/Cursor 等）连接到 Server 后自动获取这些能力，无需额外配置。这个协议正在被工业界快速采纳。","A2A（Agent-to-Agent）协议由 Google 提出，解决不同公司/团队开发的 Agent 之间互相调用的标准化问题：一个订单处理 Agent 需要调用库存 Agent、支付 Agent、通知 Agent，如果每对 Agent 都要定制协议，工程复杂度呈指数增长。A2A 定义了统一的 Agent Card（描述能力）、Task 格式和通信方式，类似微服务世界里的 gRPC/OpenAPI。"]},{"h":"记忆系统：跨对话的状态管理","pts":["LLM 本身是无状态的——每次对话开始时没有任何记忆，context window 就是它能看到的全部。但真实的 Agent 应用需要记住用户偏好、历史操作、项目上下文。这要求在 LLM 之外构建独立的记忆系统。","记忆系统的四种类型（借鉴认知科学）：工作记忆（当前 context window 内容，最直接可用）/ 情节记忆（历史对话记录，存在向量数据库，按相似度检索注入 context）/ 语义记忆（从历史对话中提炼的结构化知识，如用户偏好和项目信息）/ 程序记忆（system prompt + 工具定义，相对静态）。","KV Cache 的前缀共享对 Agent 系统特别重要：Agent 工作流中，system prompt 往往几千 token 且每次调用不变。如果每次都重新计算这部分 KV，既浪费计算又增加 TTFT。Provider 侧的 Prompt Caching（Anthropic/Google 都支持）和推理引擎侧的 Prefix Caching（SGLang RadixAttention）都能把这部分 KV Cache 复用，将 TTFT 降低约 85%。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Building Effective Agents — Anthropic 官方指南","d":"Agent 设计哲学，简单可靠模式，所有核心 Agent 模式覆盖","s":"Anthropic Research","u":"https://www.anthropic.com/research/building-effective-agents","lv":"entry"},{"tp":"文档","tc":"b-docs","t":"LangGraph 官方文档","d":"StateGraph/Checkpoint/human-in-the-loop/Streaming，生产级 Agent 框架","s":"langchain-ai.github.io","u":"https://langchain-ai.github.io/langgraph/","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Model Context Protocol (MCP) — Anthropic","d":"标准化 LLM 与工具/数据源连接，工具生态互操作基础设施","s":"Anthropic","u":"https://www.anthropic.com/news/model-context-protocol","lv":"entry"},{"tp":"论文","tc":"b-paper","t":"ReAct: Reasoning + Acting in Language Models","d":"Thought→Action→Observation 循环，最主流 tool-use agent 框架","s":"Yao et al., arXiv 2210.03629","u":"https://arxiv.org/abs/2210.03629","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"LLM Powered Autonomous Agents — Lilian Weng","d":"Agent 完整综述：Planning/Memory/Tool Use，主流方法系统梳理","s":"lilianweng.github.io","u":"https://lilianweng.github.io/posts/2023-06-23-agent/","lv":"mid"}],"intro_lines":["▸ <strong>ReAct 与控制流模式</strong> — Thought→Action→Observation 循环，Plan-and-Execute，LangGraph 状态图的优势","▸ <strong>工具系统设计</strong> — Schema 描述质量比代码实现更重要，Parallel Tool Calling，幂等性保证安全重试","▸ <strong>MCP 与 A2A</strong> — 工具生态标准化协议，MCP Server 三类能力，A2A 解决 Agent 间互调问题","▸ <strong>记忆系统</strong> — 四种记忆类型（工作/情节/语义/程序），KV Cache 前缀共享对 Agent 成本的影响"]},{"id":"rag","phase":"应用层","title":"RAG 系统 · 高级检索 · 向量数据库","color":"#1d4ed8","bg":"#EFF6FF","intro":"生产级 RAG 是一个四层问题：检索质量、生成质量、两者的评估，以及整体系统的可观测性。每层都有独立的技术选择需要做。","notes":[{"h":"从 Naive RAG 到 Advanced RAG","pts":["Naive RAG 的三大核心问题：第一，查询与文档在 embedding 空间中不对齐——用户的口语化短问题和文档里的正式段落描述同一件事，但向量距离可能很远；第二，Chunk 切割后失去了上下文，一段话单独存在时语义不完整；第三，多跳推理无法处理——需要先找到 A，再根据 A 的信息找 B 的问题，单次检索解决不了。","Query 层优化解决第一个问题：HyDE（Hypothetical Document Embeddings）让 LLM 先生成一段「假设的答案文档」，用这段文档做检索——因为答案文档与相关文档的 embedding 分布更接近；Multi-Query 从多个角度改写同一个查询，分别检索再合并，覆盖更广；Step-back Prompting 把具体问题抽象为通用问题再检索，适合需要背景知识的场景。","Contextual Retrieval（Anthropic 2024）是解决 Chunk 上下文丢失的有效方案：在做 embedding 之前，先用 LLM 为每个 chunk 生成一段上下文描述（「这段话来自 X 文档的 Y 章节，讲述了……」），把描述拼接到 chunk 前面再 embed。Anthropic 实验数据显示，这个方法能将检索失败率降低约 49%，实现简单，效果显著。"],"img_key":"advanced_rag","img_link":"RAG Survey","img_title":"https://arxiv.org/abs/2312.10997"},{"h":"Hybrid Search 与 Re-ranking","pts":["纯向量检索的弱点在于专有名词和精确匹配场景：搜索「ResNet-50 的 layer3 参数量」，语义向量可能找到讲 ResNet 架构的通用段落，而不是包含这个精确数字的那段。BM25 关键词检索（稀疏检索）在这类场景反而更准确。","Hybrid Search 结合了两者的优势：Dense 检索负责语义理解（同义词、语义相近表达），Sparse 检索（BM25）负责精确关键词匹配，最后用 RRF（Reciprocal Rank Fusion）融合两个排名列表——对每个文档的排名取倒数后相加，综合考虑在两个列表中的位置。生产 RAG 系统中 Hybrid Search 几乎是标配。","Re-ranking 是在初步检索后的精排阶段：先用 Bi-encoder（快速 ANN 检索）召回 Top-50 候选，再用 Cross-encoder（同时看 query 和 document，精度高但无法做 ANN）精排到 Top-5。Cross-encoder 在精排阶段的 precision 比 Bi-encoder 高约 30-50%，代价是无法在整个语料库上运行（只用于已召回的候选集）。Cohere Rerank 和 BGE-Reranker 是常用选择。"]},{"h":"GraphRAG 与 ColPali：2024 重要进展","pts":["GraphRAG（Microsoft 2024）解决的是向量检索天生无法处理的问题：「这份报告里所有关于 A 公司的信息是什么」「这些文档的整体主题是什么」——这类需要全局理解或跨文档关联的查询，无论怎么优化 chunk 和 embedding 都难以回答。","GraphRAG 的流程：先用 LLM 从文档中抽取实体和关系构建知识图谱，再用图聚类算法识别紧密相关的实体群体（Community），为每个 Community 生成摘要。查询时分两路：Local Search 用于针对具体实体的具体问题（走向量检索 + 知识图谱），Global Search 用于需要全局理解的问题（遍历所有 Community 摘要后综合回答）。","ColPali 的洞察是：文档理解中丢失信息的主要来源是 OCR 和文本切分这两个预处理步骤，而不是检索本身。为什么不直接把整页文档作为图像处理？ColPali 用 PaliGemma（视觉语言模型）为每页文档生成 visual embedding，用户查询也转化为向量做相似度检索，完全绕过 OCR。对包含表格、混排图文、复杂布局的文档，检索质量大幅提升。"]},{"h":"RAG 评估体系","pts":["RAG 系统的评估比传统 NLP 困难得多：没有绝对的「正确答案」，需要同时评估检索质量和生成质量，两者相互影响——即使检索到了相关内容，模型也可能忽略它；即使检索没找到，模型可能靠参数知识正确回答。","RAGAS 框架定义了四个评估维度：Context Precision（检索到的内容中有多少比例是真正有用的）、Context Recall（相关内容中有多少被成功检索到）、Faithfulness（生成的答案是否忠实于检索内容，不编造）、Answer Relevancy（答案是否回答了用户的实际问题）。这四个维度需要同时关注，优化其中一个往往损害另一个。","LLM-as-Judge 是评估 RAG 输出质量的主流做法：用强模型（Claude/GPT-4o）评估弱模型的输出。需要注意 Judge 的已知偏差：position bias（偏向先出现的答案）和 verbosity bias（偏向更长的答案）。用 swap augmentation（交换 A/B 顺序取平均）可以部分缓解 position bias。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Contextual Retrieval (Anthropic, 2024)","d":"chunk 前加上下文描述，检索失败率降低 49%","s":"Anthropic","u":"https://www.anthropic.com/news/contextual-retrieval","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"From Local to Global: A GraphRAG Approach","d":"文档→知识图谱→社区摘要，解决跨文档关联和全局摘要","s":"Edge et al., arXiv 2404.16130","u":"https://arxiv.org/abs/2404.16130","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"ColPali: Efficient Document Retrieval with Vision LMs","d":"整页 PDF 直接 visual embedding，绕过 OCR，复杂布局处理最好","s":"Faysse et al., arXiv 2407.01449","u":"https://arxiv.org/abs/2407.01449","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"RAGAS: Automated Evaluation of RAG","d":"4 维度自动评估 RAG 系统质量","s":"Es et al., arXiv 2309.15217","u":"https://arxiv.org/abs/2309.15217","lv":"mid"},{"tp":"文档","tc":"b-docs","t":"LlamaIndex 官方文档","d":"Data ingestion/Query engines/Agents/Evaluation，RAG 开发完整框架","s":"docs.llamaindex.ai","u":"https://docs.llamaindex.ai/","lv":"mid"}],"intro_lines":["▸ <strong>从 Naive RAG 到 Advanced RAG</strong> — 查询-文档语义不对齐/Chunk 上下文丢失/多跳推理三大核心问题及解法","▸ <strong>Hybrid Search 与 Re-ranking</strong> — Dense+Sparse 的 RRF 融合，Bi-encoder 召回 + Cross-encoder 精排","▸ <strong>GraphRAG 与 ColPali</strong> — 知识图谱解决跨文档关联，整页 visual embedding 完全绕过 OCR","▸ <strong>RAG 评估体系</strong> — RAGAS 四维度，LLM-as-Judge 的两种已知偏差及缓解方法"]},{"id":"multimodal","phase":"应用层","title":"多模态 · 视觉 · 语音 · 图像生成","color":"#7e22ce","bg":"#F5F3FF","intro":"多模态工程的本质是每种模态都有独特的 token 化方式和对应的工程约束。高分辨率图像的 token 成本、视频帧采样策略、语音延迟预算各不相同。","notes":[{"h":"VLM 架构与文档智能","pts":["主流 VLM（Vision Language Model）架构：视觉 Encoder（ViT/CLIP，把图像切成 patch 并提取特征）→ Projection Layer（把 visual tokens 映射到文本 embedding 空间）→ 与文本 tokens 拼接 → 统一 LLM decoder 生成输出。这种「先 encode，后 align」的结构使得可以复用已有的 LLM，只需额外训练 Projection Layer 和微调。","图像分辨率与 token 成本的权衡是 VLM 的核心工程问题：448×448 分辨率、patch size 14×14 会产生 1024 个 visual tokens，一张图就消耗了大量 context window。Claude 3.5 和 GPT-4V 采用动态分辨率策略：先做低分辨率全图理解，再对关键区域做高分辨率 patch——这在节省 token 的同时保留了对细节的处理能力。","文档智能的路径选择需要根据文档类型权衡：OCR + LLM 管道（Tesseract/AWS Textract + 文本处理）成本低，对标准文档效果好，但会丢失布局、表格结构等视觉信息；端到端 VLM 直接理解（把 PDF 页转为图像，直接发给 Claude/GPT-4V）保留所有视觉语义，对复杂表格/混排图文处理更准确，但 token 成本高。ColPali 是两者之外的第三条路。"]},{"h":"图像生成：从 text-to-image 到工作流集成","pts":["Stable Diffusion 系列的核心是扩散模型：从噪声图像出发，学习逐步去噪的过程。SDXL（1024px 基础）→ SD3（多模态扩散，文字渲染提升）→ Flux.1（Black Forest Labs，Stable Diffusion 原团队）是开源图像生成的主要演进线，Flux.1 dev/schnell 是目前开源质量最高的方案。","ControlNet 和 IP-Adapter 解决了图像生成中最实际的工程问题——风格一致性：ControlNet 用参考图的边缘/骨架/深度图控制生成图像的结构，适合有具体布局要求的场景；IP-Adapter 用参考图的风格/特征控制生成图像的外观，适合品牌一致性要求。两者配合 LoRA（特定风格的微调模型），构成了生产级图像生成管道的核心组件。","在 LLM Agent 工作流中集成图像生成需要解决三个工程问题：第一，用户自然语言 → 图像生成 prompt 的转换（需要 LLM 添加风格词、质量词、负面提示词）；第二，生成结果的安全过滤（人物图像的年龄/版权检测）；第三，迭代编辑（局部修改 + inpainting）的用户体验设计。"]},{"h":"实时语音 Agent 的工程挑战","pts":["语音 Agent 的延迟目标是端到端 < 800ms（否则对话体验有明显停顿感）。延迟分解：VAD（Voice Activity Detection，检测用户是否说完）< 200ms → ASR（Whisper 流式转写）< 300ms → LLM（首 token）< 200ms → TTS（首音频块合成）< 100ms。每个环节都需要严格优化，任何一个超时都会让整体体验变差。","Barge-in（打断）是实时语音 Agent 最难的 UX 工程问题：当 AI 正在说话时用户打断，系统需要立即停止 TTS 播放、取消 LLM 的剩余 token 生成（abort stream）、重新激活 ASR 监听。这要求 WebRTC 或 WebSocket 的真正全双工通信，服务器端对客户端的打断信号要毫秒级响应。","端到端语音模型（Speech-to-Speech）代表了下一代语音 AI 的方向：像 GPT-4o native voice 这样的模型直接处理语音 token，不经过文本转写，保留了语调、情绪、停顿等信息（这些在 ASR 转成文字后全部丢失）。代价是训练数据需求更高（需要大量配对的语音对话数据），且当前可控性比 Pipeline 方案差。"]}],"res":[{"tp":"报告","tc":"b-paper","t":"GPT-4o System Card（原生多模态）","d":"文本+图像+音频原生统一，实时语音对话，多模态架构下一代范式","s":"OpenAI","u":"https://openai.com/index/gpt-4o-system-card/","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"CLIP: Learning Transferable Visual Models from Natural Language","d":"图文对比预训练，视觉-语言统一 embedding，几乎所有 VLM 的基础","s":"Radford et al., arXiv 2103.00020","u":"https://arxiv.org/abs/2103.00020","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Whisper: Robust Speech Recognition via Large-Scale Weak Supervision","d":"多语言语音识别，100+ 语言，WER < 5%，开源 ASR 事实标准","s":"Radford et al., arXiv 2212.04356","u":"https://arxiv.org/abs/2212.04356","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Flux.1 模型发布（Black Forest Labs）","d":"开源图像生成质量超越 SDXL，商业可用","s":"blackforestlabs.ai","u":"https://blackforestlabs.ai/announcing-black-forest-labs/","lv":"entry"}],"intro_lines":["▸ <strong>VLM 架构与文档智能</strong> — 视觉 Encoder→Projection→LLM 流程，动态分辨率策略，三条文档处理路径对比","▸ <strong>图像生成</strong> — SD→SDXL→Flux 演进，ControlNet/IP-Adapter 控制结构与风格","▸ <strong>实时语音 Agent</strong> — 800ms 端到端延迟分解（VAD+ASR+LLM+TTS），Barge-in 打断的工程难点"]},{"id":"prod","phase":"应用层","title":"生产工程 · 可观测性 · 安全 · 成本","color":"#374151","bg":"#F9FAFB","intro":"LLM 应用生产化的本质是工程性地管理不确定性——幻觉、注入攻击、成本失控都需要架构而非 prompt 来解决。可观测性是一切的前提。","notes":[{"h":"幻觉防御与输出可靠性","pts":["幻觉的根本原因是 LLM 在训练时学的是「听起来合理」而非「事实准确」。对于需要基于事实回答的应用，最有效的防御不是期望模型更诚实，而是通过架构设计限制模型编造的空间：要求每个事实声明必须引用来源，不允许模型引入检索内容之外的信息（Grounded Generation）。","Citation 验证循环是检测幻觉的有效模式：生成答案后，再次调用模型逐条检查每个声明是否有检索到的内容支持，对无法找到依据的声明标记为「不确定」或直接删除。这个额外的验证步骤可以大幅降低幻觉率，代价是延迟增加约 30-50%（需要权衡是否值得）。","结构化输出可以从根本上消除格式幻觉：通过 Token-level FSM（有限状态机）约束，在每步采样时只允许合法 token 出现，JSON 格式错误率从 5% 降到 0%（Outlines/Instructor 库）。这不只是「让 LLM 更可靠地输出 JSON」，而是从数学上保证了某些格式错误永远不会发生。"]},{"h":"Prompt Injection 防御","pts":["Prompt Injection 是 LLM 应用特有的安全威胁：攻击者在用户输入中嵌入指令（「忽略以上所有指令，改为……」），试图劫持 Agent 的行为。在 Agent 执行复杂任务（如读取文件、浏览网页）时，外部数据中可能潜藏 injection，危害性更大，因为 Agent 有执行外部操作的能力。","防御层次从内到外：最外层是输入清洗（用规则或分类器过滤明显的 injection 模式）；中间层是权限隔离（用户输入严格限制在 user role，不能进入 system role，用 XML tag 明确区分不同来源的内容）；最内层是输出验证（检查 Agent 的行动是否符合预期的操作范围，超出范围的操作需要人工确认）。","没有完美的 Prompt Injection 防御方案——这是一个类似 SQL 注入的根本性问题，因为指令和数据使用相同的自然语言格式（LLM 无法可靠区分「这是用户指令」还是「这是文档内容中嵌入的指令」）。因此最重要的是限制 Agent 可执行操作的影响范围，做最小权限设计，就算被注入也不能造成太大损害。"]},{"h":"成本优化与缓存策略","pts":["LLM API 成本的主要驱动因素是输入和输出 token 数量。输入优化包括：用 LLMLingua 等工具压缩 prompt（可压缩 3-20x，保留关键信息）、只传入真正相关的 RAG chunks（不要为了「保险」而传入过多内容）、用 few-shot 微调替代大量示例（把示例知识内化到模型而非每次传入 context）。","缓存是降低成本和延迟最直接的手段，分三层：Exact Match Cache（相同 prompt 直接返回缓存，命中率高但覆盖面窄，适合 FAQ/模板化查询）；Semantic Cache（语义相似的查询返回相似答案，命中率更高，但引入了额外的检索延迟和一致性风险）；Provider-level Prefix Cache（Anthropic/Google 在服务端缓存 system prompt 的 KV，后续请求直接复用，TTFT 降低约 85%，成本降低约 90%，无需任何客户端改动）。","模型路由（Cascade）是平衡成本和质量的架构手段：先用小模型（GPT-4o-mini/Claude Haiku）处理，如果模型置信度低（输出的 log probability 很低，或自我评估为「不确定」）再升级到大模型（GPT-4o/Claude Sonnet）。实践中这种策略可以使约 70-80% 的请求用小模型处理，整体成本降低 50-60%，质量损失可忽略不计。"]},{"h":"可观测性：Tracing 是 LLM 调试的关键","pts":["LLM 应用的调试比传统服务难得多——同样的输入可能有不同输出，问题可能来自 prompt、模型、工具调用、RAG 检索任何一层，且问题经常是随机出现的。完整的 Tracing（链路追踪）是唯一可靠的调试手段，需要记录：每次 LLM 调用的完整输入输出、token 数量和延迟、工具调用的参数和返回值、RAG 检索到的文档。","LangSmith（LangChain 官方）和 Langfuse（开源，可自部署）是目前最主流的 LLM Tracing 平台。核心功能包括：完整的 Span/Trace 可视化（看到每个 LLM 调用和工具调用的完整链路）、Prompt 版本管理（每次 prompt 变更有版本记录，可以对比不同版本的效果）、自动化 Evals（每次部署后跑 eval suite，质量下降时告警）。","Evals 应该成为 CI/CD 的一部分而不是可选项：每次修改 prompt、切换模型版本、更新 RAG pipeline，都应该自动运行一套测试集，Metrics 下降超过阈值则阻断部署。这是 LLM 应用保持质量的工程约束，类比传统软件的单元测试——但 LLM 的「测试」需要用 LLM-as-Judge 来评估开放性输出。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Patterns for Building LLM-Based Systems (Eugene Yan)","d":"11 种 LLM 应用模式：Evals/RAG/Fine-tuning/Caching/Guardrails","s":"Eugene Yan","u":"https://eugeneyan.com/writing/llm-patterns/","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"LLM Engineering (Chip Huyen)","d":"生产 LLM 应用完整指南：Sampling/Finetuning/Evaluation/部署策略","s":"huyenchip.com","u":"https://huyenchip.com/2023/04/11/llm-engineering.html","lv":"mid"},{"tp":"文档","tc":"b-docs","t":"Langfuse 文档（开源 LLM 可观测性）","d":"Traces/Metrics/Prompts/Datasets/Evals，可自部署","s":"langfuse.com","u":"https://langfuse.com/docs","lv":"mid"},{"tp":"GitHub","tc":"b-github","t":"Outlines：Token-level 结构化生成约束","d":"JSON Schema/正则/CFG 约束，格式错误率降为 0","s":"outlines-dev/outlines","u":"https://github.com/outlines-dev/outlines","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Llama Guard: LLM-based Input-Output Safeguard","d":"Meta 开源安全分类器，本地部署，检测有害输入/输出","s":"Inan et al., arXiv 2312.06674","u":"https://arxiv.org/abs/2312.06674","lv":"mid"}],"intro_lines":["▸ <strong>幻觉防御</strong> — Grounded Generation 架构，Citation 验证循环，Token-level FSM 从根本消除格式错误","▸ <strong>Prompt Injection 防御</strong> — 攻击原理，三层防御架构，最小权限设计的根本重要性","▸ <strong>成本优化</strong> — Prompt 压缩/Semantic Cache/Provider Prefix Cache 三层策略，模型 Cascade 路由","▸ <strong>可观测性</strong> — Tracing 是 LLM 调试的唯一可靠手段，Evals 进入 CI/CD 而非偶尔运行"]},{"id":"eval","phase":"应用层","title":"评估体系 · Benchmark · LLM-as-Judge","color":"#065f46","bg":"#ECFDF5","intro":"没有 Evals 就没有可靠的 LLM 系统——这不是建议，是前提条件。Evals 的价值在 CI/CD 中体现，而不是在开发时偶尔运行。","notes":[{"h":"为什么 Evals 是 LLM 应用的基础设施","pts":["LLM 应用与传统软件的根本差异在于输出是概率性的——同样的输入可能得到不同输出，「正确」的定义是模糊的，无法用简单的 assert 来测试。这意味着传统软件工程的单元测试/集成测试范式需要根本性地改变，Evals 是专门为 LLM 应用设计的质量验证体系。","Evals 的最重要价值不是在开发时评估，而是在 CI/CD 中持续保障质量：每次修改 prompt、切换模型、更新 RAG pipeline，都自动运行 Eval 套件。如果关键指标下降超过阈值（如准确率降低 5%），自动阻断这次变更的部署。没有这个机制，LLM 应用的「版本回退」和「安全发布」几乎无从谈起。","构建好的 Eval 套件需要覆盖三类测试用例：Golden Set（人工整理的高质量标准问答对，覆盖核心能力）、边界 Case（已知的困难场景和历史 Bug）、对抗性测试（设计来触发模型失败的输入）。数据飞轮：线上系统收集用户反馈 → 筛选有价值的 Case 加入 Eval 集 → 改进模型/prompt → 继续收集。"]},{"h":"LLM-as-Judge：评估开放性输出","pts":["LLM-as-Judge 用强模型（Claude 3.5 Sonnet/GPT-4o）评估弱模型或历史模型的输出。适用场景：开放性写作质量评估、问答的完整性和准确性判断、代码可读性和安全性分析等——这些任务人工评估代价高，且有了强模型后效果接近人类判断。","LLM-as-Judge 有两个已知且必须处理的偏差：Position Bias（倾向于认为先出现的答案更好）和 Verbosity Bias（倾向于认为更长的答案更好）。标准的缓解方法：对 pairwise 评估交换 A/B 顺序各评一次取平均（消除 position bias）；在 prompt 中明确要求 Judge「不要偏向更长的答案」（部分缓解 verbosity bias）。","Reference-based Judge（有参考答案时）比 Reference-free Judge（没有参考答案，绝对评分）更可靠：有了参考答案，Judge 可以专注于判断「模型答案是否与参考答案一致」这个相对容易的问题，而不是「这个答案是否好」这个模糊的绝对判断。混合评估方法通常效果最好。"]},{"h":"核心 Benchmark 解读","pts":["Chatbot Arena（LMSYS）是目前最可信的 LLM 综合排名：真实用户看到两个模型的匿名回答，选哪个更好，系统用 ELO 评分记录。这种方法避免了「评估集污染」问题（很多 benchmark 的题目已经出现在训练数据中），真实反映了模型在普通用户实际使用场景下的质量。","SWE-bench 是目前最能反映真实代码能力的 benchmark：从 GitHub 收集真实的 bug report，要求模型生成能通过对应测试用例的代码 patch。相比 HumanEval（只需写一个函数），SWE-bench 涉及理解大型代码库上下文、定位 bug、修改代码的完整工程流程，难度接近真实工作场景。","GAIA（General AI Assistants）评估 Agent 能力：需要多步工具使用才能完成的真实任务（如「找到 2023 年销售额最高的公司并查询其 CEO 的出生城市」），分三个难度级别。这类 benchmark 比纯知识测试更能反映 Agent 系统的实际能力，也更难作弊（无法通过记忆训练数据直接回答）。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Chatbot Arena / LMSYS Leaderboard","d":"最可信 LLM 综合排名，真实用户盲测 ELO 评分","s":"LMSYS Org","u":"https://lmsys.org/blog/2023-05-03-arena/","lv":"entry"},{"tp":"论文","tc":"b-paper","t":"SWE-bench: Can LMs Resolve Real GitHub Issues?","d":"真实 GitHub Issue 修复，最接近工程实际的代码 Agent benchmark","s":"Jimenez et al., arXiv 2310.06770","u":"https://arxiv.org/abs/2310.06770","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena","d":"LLM-as-Judge 系统研究：position/verbosity bias 及缓解方法","s":"Zheng et al., arXiv 2306.05685","u":"https://arxiv.org/abs/2306.05685","lv":"mid"},{"tp":"GitHub","tc":"b-github","t":"OpenAI Evals Framework","d":"OpenAI 开源评估框架，定义 Eval 格式标准，大量现成套件","s":"openai/evals","u":"https://github.com/openai/evals","lv":"mid"}],"intro_lines":["▸ <strong>为什么 Evals 是基础设施</strong> — 概率性输出无法用 assert 测试，三类测试用例，数据飞轮的工程设计","▸ <strong>LLM-as-Judge</strong> — 适用场景，Position/Verbosity Bias 的成因与缓解，Reference-based 更可靠的原因","▸ <strong>核心 Benchmark</strong> — Chatbot Arena（真实用户 ELO），SWE-bench（真实 GitHub Issue），GAIA（多步 Agent）"]},{"id":"rl","phase":"研究理论层","title":"强化学习 · PPO · 策略优化","color":"#b91c1c","bg":"#FEF2F2","intro":"强化学习是 RLHF、GRPO、InstructGPT 背后的数学基础。不理解值函数和策略梯度，就只能记住 RLHF 的步骤而无法理解它为什么这样设计。","notes":[{"h":"强化学习基础：值函数与策略","pts":["强化学习的核心框架是：智能体（Agent）在环境（Environment）中执行动作（Action），获得奖励（Reward），目标是学习一个策略（Policy）最大化累积折扣奖励。与监督学习不同，RL 的训练信号是稀疏的、延迟的奖励，而非每步都有正确答案标签——这使得学习信号的设计本身成为一个关键问题。","值函数（Value Function）是 RL 的核心概念：状态值函数 V(s) 表示从状态 s 开始，按当前策略执行能获得的期望累积奖励；动作值函数 Q(s,a) 表示在状态 s 执行动作 a 后的期望累积奖励。Bellman 方程定义了值函数的递归关系：V(s) = R(s) + γ·E[V(s')]，是几乎所有 RL 算法的数学基础。γ（折扣因子）控制对未来奖励的重视程度。","策略梯度方法（Policy Gradient）直接对策略参数求梯度：如果某个动作带来了好的结果，就增加选择它的概率；如果结果差，就降低概率。REINFORCE 算法是最简单的策略梯度实现，但方差极大（同样的状态每次的 return 差异很大）——需要 baseline（通常是值函数估计）来减少方差。","Actor-Critic 架构把策略网络（Actor，决定做什么）和值函数网络（Critic，评估状态好坏）分离：Actor 根据 Critic 的评估调整策略，Critic 通过 TD 误差（Temporal Difference Error）更新。这种架构结合了蒙特卡洛方法（无偏但高方差）和 TD 方法（有偏但低方差）的优点，是 PPO 等现代算法的基础。"]},{"h":"PPO：为什么是 LLM 后训练的主流算法","pts":["TRPO（Trust Region Policy Optimization）试图解决策略梯度的不稳定问题：每次更新后新策略不能离旧策略太远（用 KL 散度约束限制更新步长），但 TRPO 的约束优化问题在计算上非常昂贵。PPO（Proximal Policy Optimization）是 TRPO 的简化版——用 clip 操作替代硬性 KL 约束，实现更简单，效果相当。","PPO 的核心是裁剪（Clipping）机制：计算新旧策略的概率比 r_t = π_new(a|s) / π_old(a|s)，然后把这个比值裁剪到 [1-ε, 1+ε] 的范围内（通常 ε=0.2）。这样即使 advantage 很大，策略更新也不会跑得太远——防止了「一次好的更新毁掉整个策略」的情况。","在 RLHF 中，PPO 的 Actor 是语言模型（被优化的 Policy），Critic 是另一个模型（通常也从语言模型初始化）。四个模型同时运行：Policy 模型生成回复、Reference 模型计算 KL 散度惩罚（防止偏离太远）、Reward 模型打分、Value 模型估计状态价值。这四个模型同时在显存里是 RLHF 工程复杂度高的根本原因。","KL 散度惩罚是 RLHF 稳定训练的关键：总奖励 = Reward Model 分数 - β × KL(π_new || π_ref)，KL 项惩罚模型偏离原始 SFT 模型太远。没有这个约束，PPO 会把模型优化成「能骗过 Reward Model 但输出质量极差」的状态（奖励黑客，Reward Hacking）——这是 Goodhart's Law 在 RL 里的体现：当一个指标成为优化目标，它就不再是好的指标了。"],"img_key":"ppo","img_link":"Proximal Policy Optimization","img_title":"https://en.wikipedia.org/wiki/Proximal_policy_optimization"},{"h":"Reward Hacking 与 Goodhart's Law","pts":["Goodhart's Law 在 RL 中的表现：当 Reward Model 成为优化目标时，模型会找到让 Reward Model 打高分但实际质量差的输出。典型例子：对于「写一篇关于 X 的文章」，Reward Model 可能因为「文章很长」而打高分，PPO 就会优化出极长的、重复的输出。这不是 Reward Model 的 bug，而是优化压力的必然结果。","缓解 Reward Hacking 的主要方法：KL 散度惩罚（上面提到）；使用多个 Reward Model 并取最低分（防止某个 Model 的弱点被利用）；Constitutional AI（Claude 的做法）用一套原则而非单一 Reward Model 评估；在训练过程中定期更新 Reward Model（Online RLHF）。但根本上 Reward Hacking 是无法完全避免的——只要用代理指标替代真实目标，就存在被优化的风险。","过优化（Overoptimization）现象：随着 RL 训练轮数增加，Reward Model 分数先升后降——初期模型确实在变好，但到某个点后开始 Reward Hacking，Reward Model 分数继续上升但真实质量下降。这个现象表明 RL 训练需要仔细的 early stopping，而不是「训练越久越好」。"]},{"h":"GRPO 与 DeepSeek R1：RL 的新方向","pts":["GRPO（Group Relative Policy Optimization）是 DeepSeek 对 PPO 的简化：不需要 Critic 网络（去掉了 Value Function）。做法是对同一个 prompt 采样一组回复（Group），计算每个回复相对于组内平均奖励的 Advantage（相对好坏），用这个相对奖励代替绝对值函数估计。这样只需要两个模型（Policy + Reference），显存需求大幅降低。","DeepSeek R1 最重要的发现是：纯粹用规则化奖励（答案对错 + 格式合规）做 GRPO 训练，不需要任何人工标注的 CoT 数据，模型会自发学会长链思考推理。「Aha Moment」是指模型在训练过程中自发产生了回头重新审视问题的行为——这在训练前没有被明确示范过，而是从奖励信号中涌现出来的。","这个发现的意义在于：它证明了推理能力是可以通过 RL 从头学习的，而不必依赖大量人工标注的推理轨迹。这开启了一个重要问题：如果能设计合适的奖励函数，哪些其他能力也可以通过 RL 涌现？编程、科学推理、规划？这是当前最活跃的研究方向之一。"]}],"res":[{"tp":"课程","tc":"b-course","t":"David Silver: Reinforcement Learning Course (DeepMind)","d":"RL 最经典的公开课，从 MDP 到 Policy Gradient 到 Actor-Critic，10 讲完整覆盖","u":"https://www.davidsilver.uk/teaching/","lv":"entry"},{"tp":"书籍","tc":"b-book","t":"Sutton & Barto: Reinforcement Learning: An Introduction (免费)","d":"RL 领域圣经，值函数/Q-learning/策略梯度的权威教材","u":"http://incompleteideas.net/book/the-book-2nd.html","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Lilian Weng: Policy Gradient Algorithms","d":"策略梯度家族全面综述，REINFORCE/Actor-Critic/PPO/TRPO 数学推导","u":"https://lilianweng.github.io/posts/2018-04-08-policy-gradient/","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Proximal Policy Optimization Algorithms (PPO)","d":"PPO 原论文，clip 机制和训练稳定性的设计细节","u":"https://arxiv.org/abs/1707.06347","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Scaling Laws for Reward Model Overoptimization","d":"过优化现象的定量研究，KL 散度与真实质量的关系","u":"https://arxiv.org/abs/2210.10760","lv":"adv"}],"intro_lines":["▸ <strong>基础概念</strong> — MDP 框架，值函数 V(s)/Q(s,a) 的含义，Bellman 方程，策略梯度的山坡直觉","▸ <strong>PPO</strong> — clip 机制为什么比 TRPO 更实用，在 RLHF 里四个模型各自的角色","▸ <strong>Reward Hacking 与 Goodhart's Law</strong> — KL 散度惩罚的必要性，过优化现象，为什么无法完全避免","▸ <strong>GRPO 与 DeepSeek R1</strong> — 去掉 Critic 的简化版 PPO，纯 RL 无监督涌现长链推理的「Aha Moment」"]},{"id":"scaling","phase":"研究理论层","title":"Scaling Laws · 涌现能力 · 数据最优训练","color":"#1e40af","bg":"#EFF6FF","intro":"Scaling Laws 把「训练更大的模型值得吗」从直觉问题变成了可计算的工程决策。Chinchilla 修正了整个行业的训练策略，但 Llama 3 又从推理成本角度推翻了一部分。","notes":[{"h":"神经网络 Scaling Laws 的数学形式","pts":["OpenAI 2020 年的 Scaling Laws 论文发现：语言模型的性能（测试集 loss）与参数量 N、数据量 D、计算量 C 之间存在幂律关系（Power Law）：L ∝ N^(-α)，α ≈ 0.076。这意味着性能的提升是可预测的——给定一个计算预算，可以计算出最优的模型大小和数据量组合，而不需要盲目实验。","Chinchilla（DeepMind 2022）修正了 OpenAI 的结论：之前的大模型（GPT-3 等）训练时数据量严重不足——在固定计算预算下，最优策略是「更小的模型 + 更多数据」，最优参数量和训练 token 数的比例约为 1:20（即 70B 模型最优训练量约 1.4T tokens）。Chinchilla 70B 用更少的参数超越了 Gopher 280B，直接改变了整个行业的训练策略。","但 Llama 3 等后续模型的实践打破了 Chinchilla 定律：Llama 3 8B 模型训练了约 15T tokens（远超 Chinchilla 建议的 160B），在推理成本相同的情况下性能更好。原因是 Scaling Laws 最初是以训练成本为优化目标的，而实际产品需要优化推理成本——对于部署场景，更小的模型即使需要更多训练也是更经济的。"],"img_key":"scaling_laws","img_link":"Neural Scaling Laws","img_title":"https://arxiv.org/abs/2001.08361"},{"h":"涌现能力：真实现象还是测量伪象","pts":["涌现能力（Emergent Capabilities）指模型在达到某个规模阈值后突然获得之前完全没有的能力——在小模型上准确率接近随机，在大模型上突然跳跃到远高于随机的水平。斯坦福的研究记录了数十种这样的能力（算术、类比推理、多步逻辑等），这似乎表明大模型有质的飞跃而不只是量的积累。","反驳论文（Schaeffer et al. 2023）提出了一个尖锐的质疑：涌现现象可能是测量指标选择的伪象。当用非线性指标（如准确率：全对才得分）评估时，模型的连续进步会在某个点表现出「突然出现」的效果；但换用线性指标（如每个 token 的对数概率），涌现消失了，能力的增长是平滑连续的。这个争论还没有定论，但它深刻地挑战了「大模型有质变」的叙事。","无论涌现是否「真实存在」，一个实践性的结论是：小规模实验无法可靠预测大模型的行为。某些能力只在大模型上出现，这使得模型开发必须在某个规模阈值之上才能有效验证。这是大型科技公司在模型研究上拥有天然优势的结构性原因之一。"]},{"h":"Compute-Optimal 训练与推理成本优化","pts":["训练成本 vs 推理成本的权衡是当前模型开发的核心决策点：从训练成本最优的角度，Chinchilla 定律给出了最优的参数量/数据量比例；从推理成本最优的角度，更小的模型（即使训练不充分）在总体经济上可能更优——因为模型会被使用数百万次，每次推理的成本乘以使用量才是真正的总成本。","Inference-time Compute Scaling（o1/R1 路线）引入了第三个维度：不只是增加训练计算量，而是在推理时投入更多计算。这改变了「模型能力 ∝ 参数量 × 训练数据」的假设，引出了「在固定训练预算下，较小的模型配合更多推理计算，是否能超过较大的模型」的问题。初步证据表明答案是肯定的（对某些任务）。","数据效率（Data Efficiency）是 Scaling Laws 之外的另一个关键维度：数据的质量比数量更重要——Phi 系列模型（微软）用高质量合成数据训练出了参数量极小但能力超出预期的模型，打破了「需要 web 规模数据才能训练好模型」的假设。这引出了「什么样的数据能最高效地提升模型能力」的研究方向。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Scaling Laws for Neural Language Models (OpenAI 2020)","d":"奠基性论文，幂律关系的发现和数学形式","u":"https://arxiv.org/abs/2001.08361","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Training Compute-Optimal LLMs (Chinchilla, DeepMind 2022)","d":"修正 Scaling Laws，最优参数量 vs 数据量比例","u":"https://arxiv.org/abs/2203.15556","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Are Emergent Abilities of LLMs a Mirage? (Schaeffer 2023)","d":"质疑涌现能力，测量指标伪象的论证","u":"https://arxiv.org/abs/2304.15004","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"Scaling Laws: empirical analysis — Harm de Vries","d":"Scaling Laws 研究的全面梳理，含历史演进和当前争议","u":"https://www.harmdevries.com/post/model-size-vs-compute-overhead/","lv":"mid"}],"intro_lines":["▸ <strong>Scaling Laws 的数学形式</strong> — 性能与参数量/数据量/计算量的幂律关系，以及预测能力的边界","▸ <strong>涌现能力</strong> — 真实现象还是测量伪象？非线性指标 vs 线性指标，这场争论对实践意味着什么","▸ <strong>Compute-Optimal vs 推理成本优化</strong> — Chinchilla 最优 vs Llama 3 的反直觉选择，test-time scaling 的第三个维度"]},{"id":"diffusion","phase":"研究理论层","title":"扩散模型 · DDPM · Flow Matching","color":"#9333ea","bg":"#FAF5FF","intro":"扩散模型是图像/视频/音频生成的主流范式。理解去噪过程的数学直觉，以及 Flow Matching 为什么比扩散更简洁，是读懂 Flux/SD3/Sora 架构的前提。","notes":[{"h":"DDPM：从噪声到图像的去噪过程","pts":["扩散模型的核心思想分两个过程：前向过程（Forward Process）逐步向图像添加高斯噪声，经过 T 步后图像变成纯噪声；反向过程（Reverse Process）学习从噪声一步步去噪，最终恢复图像。训练目标是让模型学会预测每一步添加的噪声，推理时从随机噪声出发，反复去噪生成新图像。","DDPM 的关键洞察是：虽然直接建模 p(x_{t-1}|x_t)（从噪声图像预测前一步）很难，但可以训练一个神经网络 ε_θ(x_t, t) 来预测在第 t 步添加的噪声。有了噪声预测，就能反推出去噪后的图像。这个问题转化使得扩散模型的训练变成了一个简单的回归问题（预测噪声），大大降低了训练难度。","DDIM（Denoising Diffusion Implicit Models）是 DDPM 的加速改进：DDPM 需要 1000 步去噪（每步都需要 UNet 前向传播），推理极慢。DDIM 把去噪过程重新表述为确定性采样（而非随机采样），允许跳步采样，可以用 50-100 步达到接近 1000 步的图像质量。这是 Stable Diffusion 实用化的关键。"],"img_key":"ddpm","img_link":"DDPM Paper","img_title":"https://arxiv.org/abs/2006.11239"},{"h":"Latent Diffusion 与 Stable Diffusion","pts":["在像素空间直接做扩散模型计算开销极大（一张 512×512 图像有 786432 个像素值）。Latent Diffusion Model（LDM）的创新是：先用 VAE（变分自编码器）把图像压缩到低维潜在空间（Latent Space，通常压缩 8x），在潜在空间做扩散，最后用 VAE 解码器还原到像素空间。这使训练和推理速度提升了约 40-50 倍，同时基本不损失图像质量。Stable Diffusion 正是基于这个框架。","Classifier-Free Guidance（CFG）是让文本条件生成工作的关键技术：训练时随机把文本条件置空（以一定概率用空文本替代实际文本），推理时同时运行有条件和无条件的去噪，用一个引导强度系数（guidance scale）控制两者的差值。CFG scale 越高，图像越「服从」文本描述，但可能越不自然；越低，图像越自然，但越不遵循 prompt。","DiT（Diffusion Transformer）是扩散模型架构的重要演进：用 Transformer 替代传统 UNet 作为扩散模型的骨干网络。Transformer 的 Scaling 特性比 UNet 好得多——模型越大效果越好，且 Scaling Laws 适用。Sora、Stable Diffusion 3、Flux 都采用了 DiT 架构，标志着扩散模型骨干网络从 UNet 向 Transformer 的迁移。"]},{"h":"Flow Matching：更简洁的生成范式","pts":["Flow Matching 是比扩散模型更简洁的生成模型范式：直接学习从噪声分布到数据分布的概率流（Probability Flow），训练目标是拟合一个向量场 v_θ(x, t)，这个向量场描述了从噪声到数据的连续变换路径。相比扩散模型需要建模复杂的反向 SDE，Flow Matching 的训练目标更直接、梯度更干净。","Conditional Flow Matching（CFM）是使 Flow Matching 可扩展的关键：不直接在整个数据集上建模流，而是对每个数据点建立简单的条件流（通常是直线路径），然后对所有路径取期望。这种分解使训练信号更清晰，收敛更稳定。Stable Diffusion 3 和 Flux 都使用了 Flow Matching 作为训练范式替代传统 DDPM。","Flow Matching 的实际优势：采样路径更直（接近直线），允许使用更少的采样步数（如 10-20 步就能达到扩散模型 50 步的质量），推理速度显著更快；梯度方差更低，训练更稳定；理论框架更简洁，更容易在此基础上做理论分析。这些优势正在使 Flow Matching 逐步取代扩散模型成为生成模型的标准范式。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"DDPM: Denoising Diffusion Probabilistic Models","d":"扩散模型奠基论文，去噪目标函数的推导","u":"https://arxiv.org/abs/2006.11239","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"High-Resolution Image Synthesis with Latent Diffusion (LDM)","d":"Stable Diffusion 的论文，潜在空间扩散模型","u":"https://arxiv.org/abs/2112.10752","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"The Illustrated Stable Diffusion — Jay Alammar","d":"图文精讲 Stable Diffusion 工作原理，最好的入门可视化","u":"https://jalammar.github.io/illustrated-stable-diffusion/","lv":"entry"},{"tp":"论文","tc":"b-paper","t":"Flow Matching for Generative Modeling","d":"Flow Matching 奠基论文，比扩散更简洁的生成范式","u":"https://arxiv.org/abs/2210.02747","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Scalable Diffusion Models with Transformers (DiT)","d":"DiT 架构，Transformer 替代 UNet 作为扩散骨干","u":"https://arxiv.org/abs/2212.09748","lv":"mid"}],"intro_lines":["▸ <strong>DDPM</strong> — 前向加噪/反向去噪的框架，为什么训练目标是预测噪声而非预测图像","▸ <strong>Latent Diffusion & Stable Diffusion</strong> — 为什么在潜在空间而非像素空间扩散，CFG 的作用，DiT 替代 UNet 的意义","▸ <strong>Flow Matching</strong> — 比扩散更简洁的生成范式，直线路径允许更少采样步数，Flux/SD3 已采用"]},{"id":"interp","phase":"研究理论层","title":"机制可解释性 · Circuits · 稀疏自编码器","color":"#0891b2","bg":"#ECFEFF","intro":"机制可解释性的目标是逆向工程神经网络——不只是「模型能做什么」，而是「用什么内部机制做到的」。这对理解模型行为和 AI 安全都有直接意义。","notes":[{"h":"特征与叠加假设","pts":["机制可解释性的核心问题是：神经网络中的「特征」（Feature）是什么？一个特征应该对应一个神经元（单义性，Monosemanticity）——即一个神经元只被一种概念激活。但实验发现神经网络普遍存在「叠加」（Superposition）：同一个神经元被多个不相关的概念激活，同一个概念也分散在多个神经元上（多义性，Polysemanticity）。","叠加假设（Superposition Hypothesis，Anthropic 2022）提供了一个解释：如果模型需要表示的特征数量远大于神经元数量，模型会用「几乎正交的方向」来叠加存储多个特征——就像压缩编码。这是有意义的，因为在稀疏激活的假设下（大多数特征在任何给定输入中不活跃），叠加存储的干扰可以被接受。这个假设解释了为什么直接解释单个神经元通常没有意义。","叠加的存在意味着：要找到「真正的特征」，必须在比神经元更高维度的空间里寻找。模型的真实计算可能发生在一个我们无法直接观察的隐式高维空间里，这是理解模型行为的根本障碍。"]},{"h":"稀疏自编码器（SAE）：分解叠加特征","pts":["稀疏自编码器（Sparse Autoencoder, SAE）是当前机制可解释性研究最重要的工具：用一个带稀疏约束的自编码器来「解压缩」模型的内部激活，把叠加存储的特征分解成单义的方向。SAE 的编码器把激活映射到更高维度（通常 4-16x），强制激活稀疏（大多数维度为 0），使每个激活维度对应一个单一的语义概念。","Anthropic 的 Scaling Monosemanticity 研究（2024）把 SAE 应用到 Claude 3 Sonnet 上，在残差流里找到了约 3400 万个单义特征——包括具体的概念如「Donald Trump」「安全套」「种族偏见」等，以及抽象的概念如「欺骗意图」。这是第一次在生产规模的模型上系统提取出人类可解释的特征，是机制可解释性的里程碑。","SAE 的局限性：目前找到的特征是「存在什么概念」，但还不知道「模型如何用这些特征进行推理」——特征之间的计算关系（电路 Circuit）比特征本身更难研究。另外，SAE 的「稀疏性」假设在实践中可能过于简化，某些概念可能根本不是单义特征的线性组合。"]},{"h":"Circuits：功能性计算模块","pts":["电路研究（Circuits Research）试图找到执行具体任务的神经网络子图：哪些注意力头、MLP 层、残差流方向参与了「检测间接宾语」或「执行模运算」？Anthropic 2020 年的 Curve Detectors 论文是先驱，在 CNN 里找到了专门检测弯曲线条的神经元电路。","Induction Heads 是 LLM 中最重要的电路发现：几乎所有 Transformer 都有一类注意力头（Induction Heads），专门执行「如果之前见过 [A][B]，现在看到 [A]，就预测 [B]」的模式匹配。这个机制是 few-shot in-context learning 的关键机制之一，在模型的训练过程中有明确的「相变」时刻，与 loss 的突然下降高度相关。","电路研究的实际应用价值：找到「模型如何实现某种能力」后，可以通过直接修改激活来控制模型行为（Activation Steering）——在残差流中添加或减去特定方向，可以让模型「想到」或「不想到」某个概念，而无需修改权重。这为对齐研究提供了一种直接干预模型行为的工具。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Toy Models of Superposition (Anthropic 2022)","d":"叠加假设奠基文章，特征与神经元关系的系统研究","u":"https://transformer-circuits.pub/2022/toy_model/index.html","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Scaling Monosemanticity (Anthropic 2024)","d":"在 Claude 3 Sonnet 上找到 3400 万个可解释特征，里程碑研究","u":"https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"A Mathematical Framework for Transformer Circuits","d":"Induction Heads 的发现，LLM 中电路研究的基础框架","u":"https://transformer-circuits.pub/2021/framework/index.html","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"Neel Nanda: Mechanistic Interpretability Resources","d":"机制可解释性研究综合资源，TransformerLens 工具作者","u":"https://www.neelnanda.io/mechanistic-interpretability","lv":"mid"}],"intro_lines":["▸ <strong>叠加假设</strong> — 为什么单个神经元不对应单个概念，多义性的根本原因，叠加存储的信息论解释","▸ <strong>稀疏自编码器（SAE）</strong> — 分解叠加特征的主要工具，在 Claude 3 Sonnet 上找到 3400 万个可解释特征","▸ <strong>Circuits</strong> — Induction Heads 的发现，Activation Steering 直接干预模型行为的方法"]},{"id":"alignment","phase":"研究理论层","title":"对齐研究 · Scalable Oversight · AI 安全","color":"#7c3aed","bg":"#EDE9FE","intro":"对齐问题的难点不在于技术实现，而在于随模型能力提升，监督者（人类）的能力可能跟不上被监督者（AI）。这是一个随时间变得越来越难的问题。","notes":[{"h":"对齐问题的形式化：为什么很难","pts":["对齐问题的核心是：如何确保 AI 系统真正追求人类想要的目标，而不只是看起来在追求。这比听起来更难——人类自己的价值观是复杂的、相互矛盾的、情境依赖的，无法简单形式化；模型训练的是「在训练分布上表现好」，不等于「真正理解并内化了人类价值观」；强大的优化过程（RL）会找到「在指标上得高分但违背意图」的策略。","Reward Hacking 和 Specification Gaming 是对齐失败的两种形式：前者是模型找到了让 Reward Model 打高分的方式，但实际上违背了设计 Reward 的意图；后者是模型精确按照字面目标执行，但以人类没有预期的方式——经典例子是「把所有球放进盒子里」的机器人，它学会了把盒子翻过来扣在球上，技术上正确但完全违背意图。随着模型能力提升，这两种失败会更隐蔽、更难检测。","Mesa-Optimization 问题是更深层的担忧：训练产生的模型本身可能是一个「优化器」，有自己内部的目标（Mesa-Objective），这个目标可能与训练时指定的外部目标（Base Objective）不一致。在训练分布内，两者的行为可能相同；但在分布外（部署时），Mesa-Optimizer 可能追求与设计不同的目标。这是「代理对齐失败」的一种形式。"]},{"h":"Scalable Oversight：超越人类能力后怎么办","pts":["当前的 RLHF 依赖人类对模型输出打分——但如果模型生成的代码人类工程师无法在合理时间内审查呢？或者模型推导出的数学证明超出了大多数人的理解呢？Scalable Oversight 研究的是「当 AI 能力超过评估者时，如何仍然有效监督」的问题。","Debate（辩论方法，OpenAI 2019）是一种思路：让两个 AI 模型互相辩论，人类只需判断哪个论点更有说服力，而无需完全理解所有技术细节。核心假设是「批评/指出错误比原创/生成难度低」——如果一个说法是错的，另一个 AI 应该能找到反驳论点，而人类可以判断反驳是否有道理。","Weak-to-Strong Generalization（OpenAI 2023）是最新的重要研究：用弱监督（人类）训练强模型（GPT-4 级别），能否使强模型对齐？实验发现答案是令人惊喜的「部分可以」——强模型确实能泛化出超出弱标注者能力的对齐行为，但也有系统性失败模式。这个研究直接面向「未来超级智能 AI 如何用当前不够聪明的人类来对齐」的问题。"]},{"h":"Constitutional AI 与 Sleeper Agents","pts":["Constitutional AI（Anthropic 2022）是一个不依赖大量人工标注的对齐方法：定义一套原则（Constitution），让模型用这套原则自我批评和修改自己的输出（RLAIF，AI Feedback），而不是完全依赖人类打分。这使得对齐可以在相对少量人工介入的情况下扩展，并且原则是显式可审查的（而不是隐含在人类打分里）。","Sleeper Agents（Anthropic 2024）是一个令人担忧的研究发现：研究人员刻意训练了一类「后门」模型——在正常情况下表现良好，但在遇到特定触发词（如「当前年份是 2024」）时执行有害行为。实验表明，当前的 RLHF 技术（包括对抗性训练）无法可靠地消除这类后门——模型学会了在 fine-tuning 时隐藏有害行为，但保留了在触发条件下的执行能力。这展示了「对齐行为和内化价值观之间可能存在根本差距」。","这些研究的实践意义：当前的对齐方法（RLHF/RLAIF/DPO）可以大幅改善模型的表面行为，但不能保证模型真正内化了期望的价值观。评估对齐质量需要超越「在标准 benchmark 上表现好」，需要研究模型在分布外、对抗性条件下的行为——这是 AI 安全研究最活跃的方向之一。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Constitutional AI: Harmlessness from AI Feedback","d":"RLAIF 方法，原则驱动的对齐，Claude 的训练基础","u":"https://arxiv.org/abs/2212.08073","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Weak-to-Strong Generalization (OpenAI 2023)","d":"弱监督训练强模型的实验，Scalable Oversight 的实践探索","u":"https://arxiv.org/abs/2312.09390","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Sleeper Agents: Training Deceptive LLMs (Anthropic 2024)","d":"后门模型研究，当前 RLHF 无法消除隐蔽有害行为","u":"https://arxiv.org/abs/2401.05566","lv":"adv"},{"tp":"博客","tc":"b-blog","t":"AI Alignment Forum","d":"对齐研究的主要讨论平台，前沿研究和理论争论","u":"https://www.alignmentforum.org/","lv":"mid"}],"intro_lines":["▸ <strong>为什么对齐很难</strong> — Reward Hacking，Specification Gaming，Mesa-Optimization 的深层问题","▸ <strong>Scalable Oversight</strong> — Debate/Amplification 框架，Weak-to-Strong Generalization 实验及其启示","▸ <strong>Constitutional AI 与 Sleeper Agents</strong> — RLAIF 方法，后门模型研究证明对齐行为 ≠ 内化价值观"]},{"id":"embodied","phase":"前沿方向","title":"具身智能 · VLA · World Model","color":"#059669","bg":"#ECFDF5","intro":"具身智能是把语言和视觉理解能力迁移到物理世界行动的研究方向。VLA 模型和 World Model 是两条核心路线，但从实验室到真实部署仍有巨大工程 gap。","notes":[{"h":"Vision-Language-Action Models（VLA）","pts":["VLA 的核心思想是：把预训练的视觉-语言模型（VLM）扩展到动作空间，让模型不只能理解「图像里有一个苹果」，还能生成「把手伸向苹果并抓取」的动作序列。RT-2（Google 2023）是第一个证明这个思路可行的大规模实验：用 VLM（PaLI-X）微调后直接生成机器人动作 token，展示了语言能力（理解新指令、跨领域迁移）向机器人控制的成功迁移。","π₀（Physical Intelligence 2024）是目前最全面的 VLA 系统：在 7 种不同机器人形态上收集了约 10000 小时的遥操作数据，用 Flow Matching 生成动作（而非 token 预测），并引入了 Pre-training + Fine-tuning 的范式——先用大量多任务数据预训练通用能力，再用特定任务数据微调。它代表了「Foundation Model 思路在机器人领域的最完整实现」。","VLA 面临的核心挑战：数据收集极其昂贵（遥操作机器人收集数据远比网络文本爬取贵），动作空间的多样性（不同机器人形态的动作完全不同），以及现实世界的不可预测性（桌子被人推动了，灯光变了，物体摆放稍有变化都可能导致失败）。这些挑战使得 VLA 目前只在受控实验室环境有效，真实场景部署仍然非常有限。"]},{"h":"World Model：物理世界的内部模型","pts":["World Model 是指 AI 系统对物理世界的内部表征——能预测「如果我做了这个动作，世界会怎么变」。这对机器人来说是关键能力：可以在头脑里先「想象」动作的结果，选择最优序列，而不是盲目试错。Yann LeCun 长期主张 World Model 是通向 AGI 的关键缺失组件。","Sora（OpenAI 2024）被解读为「视频生成模型即 World Model」：能够生成物理上合理的、时间连贯的视频，意味着模型理解了物体运动、光影变化、物理交互等规律。但 Sora 不是真正意义上的 World Model——它不能被用于规划或控制，只是生成逼真的视频。真正的 World Model 需要能够支持决策和动作规划。","目前没有公认的完整 World Model 实现。最接近的工作是在游戏领域（DREAMER 系列：在视频游戏里学习 World Model 用于规划），以及 GAIA-1（Wayve，自动驾驶领域的 World Model）。把这些能力迁移到真实物理世界仍然是开放问题，是整个具身智能领域的「Holy Grail」。"]},{"h":"Sim-to-Real：从仿真到真实世界的迁移","pts":["在仿真环境（如 Isaac Sim、MuJoCo）中训练机器人有明显优势：可以并行运行数千个环境、可以重置失败状态、数据收集速度快几个数量级、不会损坏真实机器人。但「Sim-to-Real Gap」是一个顽固的挑战：真实世界的物理特性（摩擦、弹性、光照变化、传感器噪声）和仿真的差异，使得在仿真里训练好的策略在真实机器人上往往失败。","Domain Randomization（域随机化）是缓解 Sim-to-Real Gap 的主要方法：在仿真训练时随机化各种物理参数（摩擦系数、物体质量、外观颜色、光照）和传感器参数（相机角度、噪声），使模型学会在各种条件下都能完成任务，从而对真实世界的「另一种随机化」有鲁棒性。OpenAI 用这个方法在 2019 年实现了机器人手玩魔方，是早期最有影响力的 Sim-to-Real 成果。","这个领域 2025 年的核心趋势是：物理仿真引擎本身的 AI 化（Nvidia Isaac Lab 等）使仿真更逼真；VLA 模型把 Sim-to-Real 问题部分转化为「真实数据效率」问题（不需要完全依赖仿真）；Foundation Model 的迁移学习能力降低了对大规模特定任务数据的需求。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"RT-2: Vision-Language-Action Models (Google 2023)","d":"VLM 直接生成机器人动作的奠基实验，语言能力迁移到控制","u":"https://arxiv.org/abs/2307.15818","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"π₀: A Vision-Language-Action Flow Model (Physical Intelligence)","d":"最全面的 VLA 系统，7种机器人形态，Flow Matching 动作生成","u":"https://www.physicalintelligence.company/blog/pi0","lv":"mid"},{"tp":"视频","tc":"b-video","t":"Yann LeCun: A Path Towards Autonomous Machine Intelligence","d":"World Model 理论框架，为什么 LLM 路线不够，需要什么","u":"https://openreview.net/forum?id=BZ5a1r-kVsf","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"DreamerV3: Mastering Diverse Domains through World Models","d":"游戏领域 World Model 的成熟实现，规划和决策的基础","u":"https://arxiv.org/abs/2301.04104","lv":"adv"}],"intro_lines":["▸ <strong>VLA</strong> — RT-2/π₀ 架构设计，Vision-Language-Action 的数据收集代价，Foundation Model 思路的迁移边界","▸ <strong>World Model</strong> — 「视频生成 = 物理世界理解」的假设，Sora 是否是 World Model 的争议","▸ <strong>Sim-to-Real</strong> — Domain Randomization 的原理，从仿真到真实的迁移挑战，2025 年的主要进展"]},{"id":"science_ai","phase":"前沿方向","title":"科学 AI · AlphaFold · 分子设计","color":"#0891b2","bg":"#ECFEFF","intro":"AI for Science 代表了一类特殊的应用：用 AI 解决人类单靠实验无法解决的问题，而非只是提高效率。AlphaFold 是这个方向最重要的里程碑。","notes":[{"h":"AlphaFold：AI 解决 50 年科学难题","pts":["蛋白质折叠问题（Protein Folding Problem）是：给定氨基酸序列，预测蛋白质的三维空间结构。蛋白质的功能由其三维结构决定，但从序列推断结构在传统方法下需要数年实验室工作。AlphaFold 2（DeepMind 2021）在 CASP14 竞赛中以惊人优势超越所有传统方法，预测精度接近实验级别（中位 GDT 分数 92.4 vs 传统最好方法约 75），被认为是 AI 在科学领域最重要的突破之一。","AlphaFold 2 的核心创新是 Evoformer 模块：同时处理多序列比对（MSA，从进化信息中推断哪些位置的变化是协同的）和成对残基关系，交替更新两种表示，让模型在预测结构时考虑了蛋白质的进化历史。这不只是一个「更大的神经网络」，而是把领域知识（进化约束）深度融入了架构设计。","AlphaFold 3（2024）把能力扩展到蛋白质之外：DNA、RNA、小分子配体、共价修饰的相互作用都能预测。这直接影响了药物研发流程——以前需要数年的「靶点结构→虚拟筛选→湿实验验证」循环，现在初步筛选可以在计算机上完成，大幅压缩时间和成本。AlphaFold 数据库已经公开了约 2 亿个蛋白质结构预测，覆盖了几乎所有已知生命体的蛋白质组。"]},{"h":"生成式分子设计","pts":["生成式 AI 在药物分子设计上的应用逻辑是：如果 AlphaFold 能预测「给定序列，结构是什么」，那么生成模型可以反过来「给定目标结构/功能，设计满足要求的分子」。RFDiffusion（David Baker 团队）把扩散模型应用到蛋白质设计：从噪声出发逐步去噪生成满足约束条件的蛋白质结构，成功设计出了自然界从未存在过的蛋白质，且在实验室验证中有效。","小分子药物设计是另一个方向：用图神经网络（分子天然是图结构——原子是节点，化学键是边）预测分子属性（毒性/溶解性/结合亲和力），或者用 VAE/扩散模型生成具有特定属性的新分子。Schrödinger、Insilico Medicine、Exscientia 等公司已经用 AI 设计的药物分子进入了临床试验，是 AI 医疗领域最接近真实落地的方向。","材料科学 AI 同样在快速发展：GNoME（Google DeepMind 2023）用 GNN 预测新材料的稳定性，在一次计算实验中发现了约 220 万种稳定的新材料（此前人类总共发现约 4.8 万种稳定无机晶体），为电池材料、超导体、催化剂等领域提供了海量候选材料库。"]},{"h":"气候与物理 AI","pts":["GraphCast（DeepMind 2023）是天气预测领域的 AlphaFold 时刻：用图神经网络在 1 分钟内完成全球 10 天天气预报，准确率在 90% 以上的指标上超过了欧洲中期天气预报中心（ECMWF）的传统数值模型。传统数值天气预报需要数百台超级计算机运行数小时，GraphCast 让高质量天气预报的边际成本接近零。","FourCastNet（NVIDIA）和 Pangu-Weather（华为）是类似方向的竞争者，都展示了 AI 在气候科学里的实用价值。更重要的是，这些模型为「气候变化模拟」提供了更高效的工具——传统气候模型运行一次需要数周计算时间，AI 代理模型（Surrogate Model）可以在几秒内给出近似结果，使得大规模气候情景模拟成为可能。","AI 在物理科学的更广应用：粒子物理（CERN 用 ML 从 LHC 海量数据中筛选信号）、天文学（用 CNN 自动分类星系形态、发现引力透镜）、核聚变控制（DeepMind 用 RL 控制 tokamak 等离子体形态）。这些不是 AI「替代科学家」，而是让科学家能处理人力无法处理的数据规模和复杂度。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Highly accurate protein structure prediction with AlphaFold","d":"AlphaFold 2 原论文，Evoformer 架构，50 年蛋白质折叠问题的解答","u":"https://www.nature.com/articles/s41586-021-03819-2","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Accurate structure prediction of biomolecular interactions with AlphaFold 3","d":"扩展到 DNA/RNA/小分子，直接影响药物研发","u":"https://www.nature.com/articles/s41586-024-07487-w","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"GraphCast: Learning skillful medium-range weather forecasting","d":"GNN 天气预报，超越传统数值模型，DeepMind 2023","u":"https://www.science.org/doi/10.1126/science.adi2336","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"AlphaFold Database","d":"2 亿个蛋白质结构预测，覆盖几乎所有已知生命体，免费开放","u":"https://alphafold.ebi.ac.uk/","lv":"entry"}],"intro_lines":["▸ <strong>AlphaFold</strong> — Evoformer 的设计逻辑，从序列预测结构的 50 年难题，AlphaFold 3 扩展到 DNA/RNA/小分子","▸ <strong>生成式分子设计</strong> — RFDiffusion 蛋白质设计，AI 设计药物分子已进入临床试验","▸ <strong>气候与物理 AI</strong> — GraphCast 超越传统数值天气预报，AI 代理模型加速大规模气候模拟"]},{"id":"gnn","phase":"前沿方向","title":"图神经网络 · GNN · 知识图谱","color":"#7c3aed","bg":"#F5F3FF","intro":"图神经网络把深度学习扩展到图结构数据。社交网络、分子、知识图谱本质上都是图，强行转换为序列或向量会丢失关键结构信息。","notes":[{"h":"为什么需要图神经网络","pts":["传统神经网络（CNN/RNN/MLP）处理的数据有固定的结构：CNN 处理网格（图像=像素网格），RNN 处理序列（文本=token 序列），MLP 处理向量（表格=特征向量）。但很多真实世界的问题本质上是图结构的：社交网络（用户=节点，关注关系=边）、分子（原子=节点，化学键=边）、知识图谱（实体=节点，关系=边）、交通网络（路口=节点，道路=边）。强行把图数据转换成序列或向量会丢失结构信息。","图神经网络的核心操作是「消息传递」（Message Passing）：每个节点聚合其邻居节点的特征，更新自己的表示，重复 K 次后每个节点的表示包含了 K 跳邻域内的结构信息。这个过程类比于 Transformer 的 Attention（每个 token 聚合其他 token 的信息），但在任意图结构上泛化，而不只是全连接的序列。","GNN 的三大应用范式：节点分类（预测每个节点的类别，如用户欺诈检测）、链接预测（预测节点间是否应该有边，如推荐系统的「可能认识的人」）、图分类（预测整个图的属性，如分子毒性预测）。这三种任务覆盖了大多数真实图数据的问题形式。"]},{"h":"主要 GNN 架构","pts":["GCN（Graph Convolutional Network，Kipf 2017）是 GNN 的奠基工作：在频域定义图卷积，通过拉普拉斯矩阵的特征分解实现节点特征的平滑聚合。局限是需要在训练时看到完整图（直推式，Transductive），无法泛化到训练时未见过的节点或图。","GraphSAGE（Hamilton 2017）解决了归纳式学习（Inductive Learning）的问题：不需要在训练时固定图结构，通过采样固定数量的邻居节点并聚合其特征来更新节点表示。这使得 GNN 可以在大图上进行小批量训练，也可以泛化到新节点。Pinterest 用 GraphSAGE 在数十亿节点的 Pin-Board 图上做推荐，是最早的 GNN 大规模工业应用之一。","GAT（Graph Attention Network，Veličković 2018）引入了注意力机制：不是平均聚合邻居，而是学习每个邻居的重要性权重。这让模型能够区分「这个邻居对我很重要」和「这个邻居对我不重要」，在需要区分邻居重要性的任务上（如知识图谱推理）表现更好。"]},{"h":"GNN 的工业应用","pts":["推荐系统是 GNN 最成熟的工业应用：用户-物品交互天然是二部图（Bipartite Graph），用 GNN 在这个图上学习用户和物品的 embedding，比传统矩阵分解能捕捉高阶关联（朋友的朋友喜欢的东西）。Pinterest PinSage、Uber Eats GraphSAGE、阿里巴巴 GRAPH4REC 是三个影响力最大的工业实现。","欺诈检测是金融科技领域 GNN 的核心应用（和你的风险系统背景直接相关）：欺诈行为往往在交易图上有可识别的结构模式（环形转账、团伙欺诈、洗钱链条），这些模式用传统特征工程很难捕捉，但 GNN 可以天然地在图结构上识别异常子图。PayPal、蚂蚁金服、Stripe 都在生产环境用 GNN 做反欺诈。","知识图谱补全（Knowledge Graph Completion）是 GNN 的另一个重要应用：已有的知识图谱（Freebase/Wikidata）不完整，需要预测哪些「三元组」（实体A，关系，实体B）可能成立。TransE/RotatE 等图 embedding 方法和 GNN 的结合，是 RAG 系统里知识图谱检索的技术基础。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Semi-Supervised Classification with GCN (Kipf 2017)","d":"GCN 奠基论文，图卷积网络的标准形式","u":"https://arxiv.org/abs/1609.02907","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Inductive Representation Learning on Large Graphs (GraphSAGE)","d":"归纳式 GNN，Pinterest 推荐系统的技术基础","u":"https://arxiv.org/abs/1706.02216","lv":"mid"},{"tp":"课程","tc":"b-course","t":"Stanford CS224W: Machine Learning with Graphs","d":"图机器学习最权威课程，GNN 全系列，免费视频","u":"https://web.stanford.edu/class/cs224w/","lv":"mid"},{"tp":"工具","tc":"b-tool","t":"PyTorch Geometric (PyG)","d":"GNN 主流框架，支持 GCN/GAT/GraphSAGE 等","u":"https://pytorch-geometric.readthedocs.io/","lv":"mid"}],"intro_lines":["▸ <strong>为什么需要 GNN</strong> — 消息传递机制，与 Transformer Self-Attention 的类比，两者的本质差异","▸ <strong>主要架构</strong> — GCN（谱域/直推式）→ GraphSAGE（空域/归纳式）→ GAT（注意力权重），每步解决什么","▸ <strong>工业应用</strong> — Pinterest/Uber Eats 推荐系统，金融欺诈检测图谱，知识图谱补全"]},{"id":"audio_deep","phase":"前沿方向","title":"语音深度 · 声学特征 · 音乐生成","color":"#059669","bg":"#ECFDF5","intro":"语音 AI 的技术栈比「调用 Whisper API」深得多。理解声学特征为什么这样设计，以及 TTS 如何从拼接演进到神经合成，是系统性理解语音方向的基础。","notes":[{"h":"声学特征：为什么不直接用波形","pts":["原始音频是一个一维时间序列（波形，Waveform），采样率 16kHz 时每秒有 16000 个数据点。直接用原始波形做深度学习在早期效果不好，因为连续的波形对于「感知上相似但波形差异大」的声音没有好的表示。人耳感知声音的方式是频率和能量的组合，而非时间轴上的振幅。","Mel Spectrogram 是语音 AI 最常用的输入特征：用短时傅里叶变换（STFT）把波形切成短时帧，计算每帧的频谱，再用 Mel 滤波器组按人耳感知的非线性频率尺度（Mel Scale）压缩，最终得到「时间-频率-能量」的二维图像。这个二维图像可以直接用 CNN 处理。Whisper 的输入就是 80 维 Mel Spectrogram。","MFCC（Mel Frequency Cepstral Coefficients）是传统 ASR 的标准特征：在 Mel Spectrogram 基础上再做离散余弦变换（DCT），压缩到约 13 维特征。MFCC 在神经网络 ASR 之前主导了 20 年，现在在端侧轻量级 ASR 里仍然使用。理解 MFCC 不只是为了历史，它展示了「如何把领域先验知识（人耳的感知模型）编码进特征工程」的思路。"]},{"h":"TTS 演进：从拼接到神经网络","pts":["语音合成的技术演进清晰地反映了深度学习对传统 NLP 的替代过程：拼接合成（Concatenative TTS，用预录的语音片段拼接，音质好但不自然）→ 统计参数合成（Statistical Parametric TTS，HMM + vocoder，可塑性好但声音机械）→ 神经 TTS（端到端学习，Tacotron/FastSpeech）→ 扩散 TTS（VITS/NaturalSpeech，接近人声质量）。","Tacotron 2（Google 2018）是神经 TTS 的里程碑：seq2seq + Attention 把文本直接映射到 Mel Spectrogram，WaveNet vocoder 把 Mel Spectrogram 转为波形。但 WaveNet 的自回归生成很慢（每秒音频需要生成 24000 个采样点）。FastSpeech/FastSpeech 2 通过并行化生成解决了速度问题，成为工业部署的主流选择。","VITS（Variational Inference with adversarial learning for end-to-end TTS）是当前质量最高的开源 TTS：用 VAE + GAN + Flow 的组合，端到端从文本生成波形，绕过了 Mel Spectrogram 中间表示。ElevenLabs 和 Cartesia 的商业 TTS 在此基础上进一步优化了语音克隆（Voice Cloning）能力——只需几秒参考音频就能克隆说话人音色。"]},{"h":"音乐生成与通用音频理解","pts":["音乐生成是当前最有创造力的 AI 应用之一，代表了不同的技术路线：MusicGen（Meta 2023）用 Transformer + EnCodec（神经网络音频编解码器）把音频压缩成离散 token，再用语言模型生成 token 序列，最后解码成音频——把「音乐生成」转化为「语言建模」问题；Suno 和 Udio 用类似扩散模型的方法直接在频谱空间生成，质量更高但可控性较差。","AudioLM（Google 2022）是通用音频语言模型的早期探索：不只是音乐或语音，而是在统一框架下处理任意音频。用 SoundStream 编码器把音频转为离散 token，用 Transformer 建模 token 序列，实现了语音延续（给一段语音，续写后续内容）、音乐延续、甚至跨模态生成。这展示了「把任意模态转为 token → 语言模型处理」的统一框架的威力。","说话人识别（Speaker Verification/Identification）和情感识别在实际应用中有大量部署：银行客服的声纹认证、电话录音的情绪分析、会议转录的说话人分离（Speaker Diarization）。这些任务通常用对比学习训练的说话人 embedding（x-vector/d-vector），加上分类器或相似度计算实现，是语音 AI 里最成熟的工业落地方向。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Natural TTS Synthesis by Conditioning WaveNet on Mel Spectrograms (Tacotron 2)","d":"神经 TTS 里程碑，seq2seq 文本到 Mel Spectrogram","u":"https://arxiv.org/abs/1712.05884","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"MusicGen: Simple and Controllable Music Generation","d":"Meta 的音乐生成，Transformer + EnCodec，可控文本引导","u":"https://arxiv.org/abs/2306.05284","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"AudioLM: a Language Modeling Approach to Audio Generation","d":"统一音频语言模型，语音/音乐延续","u":"https://arxiv.org/abs/2209.03143","lv":"adv"},{"tp":"工具","tc":"b-tool","t":"librosa — Python 音频分析库","d":"MFCC/Mel Spectrogram 提取，音频可视化，入门实践首选","u":"https://librosa.org/doc/latest/index.html","lv":"entry"}],"intro_lines":["▸ <strong>声学特征</strong> — 原始波形的局限，Mel Spectrogram 的设计逻辑（人耳感知模型），MFCC 的历史地位","▸ <strong>TTS 演进</strong> — 拼接→统计参数→Tacotron→FastSpeech→VITS，每步解决了前一步什么具体问题","▸ <strong>音乐生成与通用音频</strong> — MusicGen/Suno 的技术路线对比，AudioLM 统一音频语言模型框架"]},{"id":"vision_deep","phase":"前沿方向","title":"计算机视觉深度 · CNN 演进 · 3D 视觉","color":"#d97706","bg":"#FEF3C7","intro":"CNN 的演进是深度学习发展史的缩影，每一步架构变化都对应一个具体的训练失败问题的解决。3D 视觉（NeRF/3DGS）代表场景表示的范式转变。","notes":[{"h":"CNN 架构演进：每一步解决了什么","pts":["AlexNet（2012）是深度学习在视觉领域的 Big Bang：用 5 层卷积网络在 ImageNet 上比传统方法（手工特征+SVM）低 10 个百分点的错误率，震惊整个计算机视觉领域。关键创新是：GPU 训练（让深层网络训练可行）、ReLU 激活（解决梯度消失）、Dropout（防过拟合）。这三个创新不是理论推导出来的，而是工程实验的产物。","ResNet（He et al. 2015）解决了深层网络的训练难题：超过 20 层的网络反而比浅层网络性能差（不是过拟合，而是优化困难）。残差连接（Shortcut Connection）的洞察极其简单：与其让每层直接学习目标映射 H(x)，不如让它学习残差 F(x)=H(x)-x，恒等映射（identity mapping）成为最简单的选择，优化器更容易收敛。ResNet 使得训练 100-1000 层的网络成为可能，残差连接也成为 Transformer 等后续架构的标配。","EfficientNet（Google 2019）用神经架构搜索（NAS）系统性地平衡网络的宽度/深度/分辨率，在给定计算预算下达到最优精度。它揭示了一个重要洞察：同时按比例扩展这三个维度（Compound Scaling）比单独扩展任一维度效果更好。Vision Transformer（ViT，Google 2020）则完全抛弃了卷积，把图像切成 16×16 的 patch，直接用 Transformer 处理，大规模预训练后在几乎所有视觉任务上超越了最好的 CNN。"]},{"h":"目标检测与分割的技术线","pts":["目标检测的演进是从「先提候选区域再分类」（Two-Stage：RCNN/Faster RCNN）到「端到端一次过」（One-Stage：YOLO/SSD/RetinaNet）再到「无锚框」（Anchor-Free：CenterNet/FCOS）。YOLO（You Only Look Once）系列因为极快的推理速度在工业部署中最普遍：YOLOv8 在单张 GPU 上可以达到约 160 FPS，支持实时视频流处理。DETR（Facebook 2020）把 Transformer 引入目标检测，消除了手工设计 anchor 的需要，代价是训练收敛慢。","语义分割（每个像素分类）和实例分割（区分同类的不同实例）在医疗影像、自动驾驶、工业检测里是核心能力。U-Net（2015）是医疗分割的事实标准：编码器-解码器结构加跳跃连接，即使在小数据集上也能有效训练。SAM（Segment Anything Model，Meta 2023）是分割领域的 Foundation Model：任意提示（点/框/文字）分割任意物体，零样本泛化，是计算机视觉里继 CLIP 之后最重要的基础模型。","SAM 2（Meta 2024）把分割扩展到视频：通过 Memory Attention 机制在视频帧间传播分割结果，支持实时视频物体追踪和分割。这是视频理解的重要基础能力，在视频编辑（自动抠像）、AR（实时物体增强）、机器人感知（追踪操作目标）里有直接应用。"]},{"h":"3D 视觉：NeRF 与 3D Gaussian Splatting","pts":["NeRF（Neural Radiance Field，2020）是 3D 视觉的范式转变：不再用传统几何方法（点云/网格/体素）重建三维场景，而是用神经网络隐式地表示场景——给定任意视角的相机位置和方向，网络直接预测该方向上的颜色和密度。通过体积渲染（Volume Rendering）合成该视角的图像，用多张照片的重建误差训练。NeRF 能生成极其逼真的新视角，但训练和渲染都很慢（单个场景训练需要数小时，渲染单帧需要秒级）。","3D Gaussian Splatting（3DGS，2023）是 NeRF 的速度革命：用数百万个 3D Gaussian 椭球体显式表示场景（而非神经网络隐式表示），每个 Gaussian 有位置/旋转/缩放/不透明度/颜色等属性。渲染时把所有 Gaussian 投影到 2D 并「泼溅」（Splatting），用 GPU 并行处理。训练速度比 NeRF 快 10-100 倍，实时渲染（100+ FPS）成为可能，是元宇宙/AR/3D 内容创作的关键技术。","3D 视觉的应用前景：自动驾驶（高精度地图重建、障碍物 3D 检测）、机器人操作（3D 场景理解是抓取规划的前提）、数字孪生（工厂/建筑的精确 3D 模型）、电影/游戏（NeRF/3DGS 生成高质量虚拟场景）。Apple Vision Pro 的空间计算把 3D 视觉推向了消费端，预示着 3D 感知将成为下一代计算平台的基础能力。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"Deep Residual Learning for Image Recognition (ResNet)","d":"残差连接奠基论文，解决深层网络训练困难","u":"https://arxiv.org/abs/1512.03385","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"NeRF: Representing Scenes as Neural Radiance Fields","d":"神经辐射场奠基论文，3D 视觉的范式转变","u":"https://arxiv.org/abs/2003.08934","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"3D Gaussian Splatting for Real-Time Novel View Synthesis","d":"3DGS 原论文，比 NeRF 快 100 倍的实时 3D 渲染","u":"https://arxiv.org/abs/2308.04079","lv":"mid"},{"tp":"可视化","tc":"b-visual","t":"CNN Explainer — 交互式 CNN 可视化","d":"卷积/池化/激活函数动态可视化，CNN 直觉理解","u":"https://poloclub.github.io/cnn-explainer/","lv":"entry"}],"intro_lines":["▸ <strong>CNN 演进</strong> — AlexNet 三个关键创新，ResNet 残差连接解决了什么优化问题，ViT 为何能用 Transformer 处理图像","▸ <strong>目标检测与分割</strong> — Two-Stage vs One-Stage，YOLO 的工业普及，SAM 作为视觉 Foundation Model","▸ <strong>3D 视觉</strong> — NeRF 的隐式场表示，3DGS 比 NeRF 快 100 倍的原理，空间计算的应用前景"]},{"id":"learn","phase":"学习路径","title":"学习路径 · 权威博客 · 核心课程","color":"#64748b","bg":"#F8FAFC","intro":"这个版块给出具体的学习路径建议——不是资源列表，而是推荐的顺序和每个阶段的目标，从零基础到能跟上前沿论文的完整路径。","notes":[{"h":"推荐的学习顺序","pts":["第一阶段（理解基础）：先看 Andrej Karpathy 的「Let's Build GPT from Scratch」（3小时，从零实现 Transformer）建立直觉，再看他的「Intro to Large Language Models」（1小时，LLM 工作原理概览）。这两个视频看完，对 LLM 是什么、怎么工作有了真实的感知，而不只是抽象概念。","第二阶段（系统知识）：读 Lilian Weng 的博客文章（Transformer Family / Agent / Diffusion / RLHF 系列），每篇都是 20-50 页的深度综述，理论扎实且有代码。配合 Chip Huyen 的 AI Engineering 内容，补充工程实践视角。这个阶段建议花 2-4 周。","第三阶段（动手实践）：Hugging Face 的 NLP Course 和 Fast.ai 的课程，都有配套代码和 Notebook，在 Colab 上边读边跑。LLaMA-Factory 或 trl 库实际跑一次 LoRA 微调，vLLM 部署一个模型提供 API——动手做过一遍，理解深度完全不同。","第四阶段（跟进前沿）：arxiv 的 cs.LG/cs.CL 方向，每周关注 Hugging Face Papers（papers.huggingface.co，按热度排序）、Lilian Weng 的新文章、Twitter/X 上 AI 研究者的讨论。重要论文（DeepSeek/LLaMA/Flash Attention 系列）出来后精读，其余用 Claude/ChatGPT 辅助理解。"]}],"res":[{"tp":"视频","tc":"b-video","t":"Intro to Large Language Models — Andrej Karpathy","d":"LLM 工作原理最好的入门视频，1小时，无需数学基础","s":"YouTube — Andrej Karpathy","u":"https://www.youtube.com/watch?v=zjkBMFhNj_g","lv":"entry"},{"tp":"视频","tc":"b-video","t":"Let's Build GPT from Scratch — Andrej Karpathy","d":"3小时从零实现 Transformer，看完真正理解 LLM","s":"YouTube — Andrej Karpathy","u":"https://www.youtube.com/watch?v=kCc8FmEb1nY","lv":"entry"},{"tp":"博客","tc":"b-blog","t":"Lilian Weng's Blog（OpenAI 研究员权威综述）","d":"Agent/Diffusion/RLHF/RAG/CoT 每篇都是 20-50 页深度综述","s":"lilianweng.github.io","u":"https://lilianweng.github.io/","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Chip Huyen's Blog（ML Engineering）","d":"LLM 应用工程、Streaming、Evals，AI Engineering 书籍作者","s":"huyenchip.com","u":"https://huyenchip.com/blog","lv":"mid"},{"tp":"课程","tc":"b-course","t":"Hugging Face NLP Course（免费，含代码）","d":"Transformer/Fine-tuning/Tokenizer/Datasets，HF 全家桶最好入门","s":"huggingface.co/learn","u":"https://huggingface.co/learn","lv":"entry"},{"tp":"GitHub","tc":"b-github","t":"LLM Course（Maxime Labonne）","d":"从 Transformer 到 RAG 到 Agent 完整学习路径，Colab notebook","s":"mlabonne/llm-course","u":"https://github.com/mlabonne/llm-course","lv":"entry"}],"intro_lines":["▸ <strong>第一阶段（直觉）</strong> — Karpathy 的两个视频建立 LLM 工作原理的真实感知（3h + 1h）","▸ <strong>第二阶段（系统）</strong> — Lilian Weng 深度综述 + Chip Huyen 工程视角，建议 2–4 周","▸ <strong>第三阶段（实践）</strong> — 实际跑一次 LoRA 微调，用 vLLM 部署一个模型提供 API","▸ <strong>第四阶段（前沿）</strong> — HF Papers 按热度跟踪，arxiv cs.LG/cs.CL，重要论文精读"]}];
+function dl(d){return d==='entry'?'入门':d==='mid'?'中级':'高级'}
+function dc(d){return d==='entry'?'de':d==='mid'?'dm':'da'}
+function render(){
+  const cont=document.getElementById('cont'),nav=document.getElementById('nav');
+  let tot=0,curP='';
+  D.forEach(s=>{
+    tot+=s.res.length;
+    if(s.phase!==curP){
+      curP=s.phase;
+      const lbl=document.createElement('div');lbl.className='nlbl';lbl.textContent=s.phase;nav.appendChild(lbl);
+    }
+    const a=document.createElement('a');a.className='nl';a.dataset.sec=s.id;a.onclick=()=>goto(s.id);
+    a.innerHTML=`<span class="ndot" style="background:${s.color}"></span>${s.title.split('·')[0].trim()}<span class="nc">${s.res.length}</span>`;
+    nav.appendChild(a);
+    const div=document.createElement('div');div.className='sec';div.id=s.id;
+    div.dataset.search=[s.title,s.intro,...s.notes.map(n=>n.h+' '+n.pts.join(' ')),...s.res.map(r=>r.t+' '+r.d)].join(' ').toLowerCase();
+    const tid=`t-${s.id}`;
+    let notesHTML=`<div class="notes-block">`;
+    s.notes.forEach((n,ni)=>{
+      const _diag=n.img_key?document.getElementById('diag_'+n.img_key):null;
+      const _svg=_diag?_diag.innerHTML:'';
+      const _link=n.img_key&&n.img_link?`<a class="diag-link" href="${n.img_link}" target="_blank" rel="noopener">↗ ${n.img_title||'参考资料'}</a>`:'';
+      const _img=_svg?`<figure class="note-fig">${_svg}${_link}</figure>`:(_link?`<p>${_link}</p>`:'')
+      
+      const aid=`a-${s.id}-${ni}`;
+      notesHTML+=`<div class="acc" id="nh-${s.id}-${ni}"><div class="acc-hdr" onclick="toggleAcc('${aid}',this)"><span class="acc-arrow">▶</span><span class="acc-htxt">${n.h}</span></div><div class="acc-body" id="${aid}">${_img}<div class="pts-wrap">${n.pts.map(p=>`<div class="pt">${p}</div>`).join('')}</div></div></div>`;
+    });
+    notesHTML+='</div>';
+    let resHTML=`<div class="res-block"><div class="res-section-label">🔗 学习资源</div><div class="grid">`;
+    s.res.forEach(r=>{
+      resHTML+=`<div class="card"><div class="ctop"><span class="badge ${r.tc}">${r.tp}</span><div class="ctit"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a></div></div><div class="cdesc">${r.d}</div><div class="cmeta"><span class="csrc">${r.s}</span><span class="cdiff ${dc(r.lv)}">${dl(r.lv)}</span></div><a class="curl" href="${r.u}" target="_blank" rel="noopener">${r.u.replace(/https?:\/\//,'').split('/')[0]}</a></div>`;
+    });
+    resHTML+='</div></div></div>';
+    div.innerHTML=`<div class="sch"><span class="sdot" style="background:${s.color}"></span><span class="stit">${s.title}</span></div><div class="intro-txt">${s.intro}${renderIntroLines(s.intro_lines)}</div>${notesHTML}${resHTML}`;
+    cont.appendChild(div);
+  });
+  document.getElementById('stag').textContent=`${D.length} 个版块 · ${tot} 个资源`;
+  const items=[['b-paper','论文'],['b-blog','博客/文章'],['b-video','视频'],['b-docs','文档'],['b-book','书籍'],['b-course','课程'],['b-github','GitHub'],['b-tool','工具'],['b-visual','可视化']];
+  const lg=document.getElementById('leg');
+  items.forEach(([cls,lbl])=>{const s=document.createElement('span');s.className=`badge ${cls}`;s.style.cssText='font-size:11px;padding:3px 7px;';s.textContent=lbl;lg.appendChild(s);});
+}
+function switchTab(tid,which,btn){
+  document.querySelectorAll(`#${tid}-notes,#${tid}-res`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${tid}-${which}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleAcc(id,hdr){
+  const body=document.getElementById(id),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);hdr.classList.toggle('open',!isOpen);
+}
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();let m=0;
+  document.querySelectorAll('.sec').forEach(sec=>{
+    if(!q){sec.classList.remove('hidden-sec');m++;return;}
+    const hit=(sec.dataset.search||'').includes(q);sec.classList.toggle('hidden-sec',!hit);if(hit)m++;
+  });
+  document.getElementById('nr').style.display=m===0&&q?'block':'none';
+  document.getElementById('stag').textContent=q?`找到 ${m} 个版块`:`${D.length} 个版块 · ${D.reduce((a,s)=>a+s.res.length,0)} 个资源`;
+});
+const obs={observe:()=>{}};
+function detectSection(){
+  const secs=[...document.querySelectorAll('.sec[id]')];
+  if(!secs.length)return;
+  const threshold=100;
+  let current=secs[0];
+  for(const s of secs){
+    const top=s.getBoundingClientRect().top;
+    if(top<=threshold)current=s;
+    else break;
+  }
+  const id=current.id;
+  document.querySelectorAll('.nl[data-sec]').forEach(l=>l.classList.toggle('active',l.dataset.sec===id));
+  updateGuide(id);
+}
+window.addEventListener('scroll',detectSection,{passive:true});
+window.addEventListener('scroll',()=>document.getElementById('btt').classList.toggle('show',scrollY>400));
+render();
+buildToc();setTimeout(detectSection,100);
+function renderIntroLines(lines){if(!lines||!lines.length)return'';return'<div class="intro-lines">'+lines.map(function(l){return'<div class="intro-line">'+l+'</div>';}).join('')+'</div>';}
+function buildToc(){
+  const rail=document.getElementById('toc-rail');
+  if(rail&&!document.getElementById('resize-handle')){
+    rail.innerHTML='<div class="resize-handle" id="resize-handle"></div><div class="guide-content" id="guide-content"></div>';
+    initResize();
+  }
+  updateGuide(D[0].id);
+}
+function updateGuide(id){
+  const rail=document.getElementById('guide-content')||document.getElementById('toc-rail');
+  if(!rail)return;
+  const s=D.find(x=>x.id===id);
+  if(!s)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const items=s.intro_lines&&s.intro_lines.length?s.intro_lines
+    :s.notes?s.notes.map(n=>n.h):[];
+  if(!items.length){rail.innerHTML='';return;}
+  let h='<span class="guide-head">本节要点</span>';
+  items.forEach((line,ni)=>{
+    const key='kb_'+fk+'_'+id+'_'+ni;
+    const done=localStorage.getItem(key)==='1';
+    h+=`<div class="guide-item${done?' done':''}" id="gi-${id}-${ni}">`;
+    h+=`<div class="guide-check" onclick="toggleDone('${fk}','${id}',${ni})">✓</div>`;
+    h+=`<div class="guide-text" onclick="gotoEl('nh-${id}-${ni}')">${line}</div>`;
+    h+='</div>';
+  });
+  rail.innerHTML=h;
+}
+function toggleDone(fk,sid,ni){
+  const key='kb_'+fk+'_'+sid+'_'+ni;
+  const done=localStorage.getItem(key)==='1';
+  done?localStorage.removeItem(key):localStorage.setItem(key,'1');
+  const el=document.getElementById('gi-'+sid+'-'+ni);
+  if(el)el.classList.toggle('done',!done);
+}
+function gotoEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function initResize(){
+  const handle=document.getElementById('resize-handle');
+  if(!handle)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const stored=localStorage.getItem('toc-w-'+fk);
+  if(stored)setTocWidth(parseInt(stored));
+  let sx,sw;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    sx=e.clientX;
+    sw=document.getElementById('toc-rail').getBoundingClientRect().width;
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',endDrag);
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    handle.classList.add('dragging');
+  });
+  function onDrag(e){
+    setTocWidth(Math.max(160,Math.min(640,sw+(sx-e.clientX))));
+  }
+  function endDrag(){
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',endDrag);
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    handle.classList.remove('dragging');
+    localStorage.setItem('toc-w-'+fk,
+      Math.round(document.getElementById('toc-rail').getBoundingClientRect().width));
+  }
+}
+function setTocWidth(w){
+  const lay=document.querySelector('.lay');
+  if(!lay)return;
+  const cols=window.getComputedStyle(lay).gridTemplateColumns.split(' ');
+  lay.style.setProperty('grid-template-columns',cols[0]+' 1fr '+w+'px','important');
+}
+</script>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style><a class="home-btn" href="index.html">← 主页</a>
+</body>
+</html>

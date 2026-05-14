@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Session ERD · wiki · tech</title>
+<meta name="description" content="The data model behind Claude-style assistant sessions: conversations, messages, compacted context, user memories, and document chunks.">
+<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/components.css">
+<script src="assets/site.js" defer></script>
+<style>
+  /* Page-local: mermaid ERD container styling */
+  #erd { background: var(--bg); border: 1px solid var(--rule-2); border-radius: var(--radius-lg); padding: var(--sp-5); margin: var(--sp-5) 0; overflow-x: auto; }
+  #erd svg.erDiagram { max-width: 100%; height: auto; }
+  #erd svg.erDiagram .divider path { stroke-opacity: 0.5; }
+  #erd svg.erDiagram .row-rect-odd path,
+  #erd svg.erDiagram .row-rect-odd rect,
+  #erd svg.erDiagram .row-rect-even path,
+  #erd svg.erDiagram .row-rect-even rect { stroke: none !important; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside id="sidebar" class="sidebar" aria-label="Navigation"></aside>
+
+  <main class="content">
+
+    <article class="prose" style="max-width: var(--content-max);">
+
+      <header class="page-header">
+        <div class="page-eyebrow" style="color: var(--pip-topics)">
+          <span class="pip"></span>Topics · Claude Internals
+        </div>
+        <h1>Session ERD</h1>
+        <p class="standfirst">
+          一份会话系统的数据模型草图：从 <code>USERS</code> 到 <code>CONVERSATIONS</code> 到 <code>MESSAGES</code>，
+          再到压缩出的 <code>SESSION_CONTEXT</code>、长期 <code>USER_MEMORIES</code>，以及 RAG 用的 <code>DOCUMENT_CHUNKS</code>。
+          可作为对话型 AI 系统持久层的参考起点。
+        </p>
+      </header>
+
+      <h2>关系图</h2>
+      <p>下图用 Mermaid 渲染。展开主键、外键、关键字段；省略了审计字段与索引细节。</p>
+
+      <div id="erd"></div>
+
+      <h2>设计要点</h2>
+      <ul>
+        <li><strong>会话即聚合根</strong> — <code>CONVERSATIONS</code> 持有 token、消息数与最后活动时间，便于配额、计费与超时治理。</li>
+        <li><strong>消息是事实表</strong> — <code>MESSAGES</code> 用 <code>seq_no</code> 严格有序，<code>content_type</code> 区分文本 / 工具调用 / 工具返回；<code>input_tokens</code> / <code>output_tokens</code> / <code>latency_ms</code> 作为可观测性的内嵌指标。</li>
+        <li><strong>上下文压缩单独建表</strong> — <code>SESSION_CONTEXT</code> 记录被压缩的消息区间与总结文本，并用 <code>is_active</code> 标记当前生效的那条；多份历史快照可保留以便回放。</li>
+        <li><strong>记忆是用户级别的</strong> — <code>USER_MEMORIES</code> 与会话解耦，按 <code>memory_type</code>（user / feedback / project / reference 等）分类；<code>embedding</code> 与 <code>importance</code> 用于检索与衰减。</li>
+        <li><strong>RAG 与会话分离</strong> — <code>DOCUMENTS</code> / <code>DOCUMENT_CHUNKS</code> 是知识库侧的实体，按 <code>kb_version</code> 管理 reindex，避免污染会话语义。</li>
+      </ul>
+
+      <h2>取舍</h2>
+      <p>把"上下文压缩"和"用户记忆"分开两张表，是因为两者的生命周期与访问模式完全不同：压缩是会话内部的实现细节，频繁写、按会话读；用户记忆是跨会话的、按相似度检索的、生命周期更长（甚至跨产品）。合并到一张表会让查询路径变复杂、索引选择两难。</p>
+
+      <footer class="article-foot">
+        <span>Last reviewed · 2026-05</span>
+        <span class="article-foot__next">Up next · <a href="memory_compact_harness.html">Memory · Compact · Harness →</a></span>
+      </footer>
+
+    </article>
+
+  </main>
+
+</div>
+
+<script type="module">
+  import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+
+  // Pick mermaid theme variables from CSS so it follows light/dark automatically.
+  const cs = getComputedStyle(document.documentElement);
+  const ink   = cs.getPropertyValue('--ink').trim();
+  const ink2  = cs.getPropertyValue('--ink-2').trim();
+  const ink3  = cs.getPropertyValue('--ink-3').trim();
+  const rule  = cs.getPropertyValue('--rule').trim();
+  const bg    = cs.getPropertyValue('--bg').trim();
+  const bg2   = cs.getPropertyValue('--bg-2').trim();
+  const accent = cs.getPropertyValue('--accent').trim();
+  const isDark = matchMedia('(prefers-color-scheme: dark)').matches
+              || document.documentElement.getAttribute('data-theme') === 'dark';
+
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif',
+    themeVariables: {
+      darkMode: isDark,
+      fontSize: '13px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif',
+      lineColor: ink3,
+      textColor: ink2,
+      primaryColor: bg,
+      primaryBorderColor: rule,
+      primaryTextColor: ink,
+      tertiaryColor: bg2
+    }
+  });
+
+  const { svg } = await mermaid.render('erd-svg', `erDiagram
+    USERS ||--o{ CONVERSATIONS : owns
+    USERS ||--o{ USER_MEMORIES : stores
+    CONVERSATIONS ||--o{ MESSAGES : contains
+    CONVERSATIONS ||--o{ SESSION_CONTEXT : compacts
+    DOCUMENTS ||--o{ DOCUMENT_CHUNKS : splits
+
+    CONVERSATIONS {
+      uuid id PK
+      uuid user_id FK
+      varchar model_id
+      varchar status
+      jsonb app_context
+      int token_count
+      int message_count
+      timestamptz last_message_at
+    }
+    MESSAGES {
+      uuid id PK
+      uuid conversation_id FK
+      int seq_no
+      varchar role
+      varchar content_type
+      text content
+      jsonb content_json
+      varchar tool_call_id
+      varchar tool_name
+      int input_tokens
+      int output_tokens
+      int latency_ms
+    }
+    SESSION_CONTEXT {
+      uuid id PK
+      uuid conversation_id FK
+      varchar context_type
+      int messages_from
+      int messages_to
+      text summary_text
+      boolean is_active
+    }
+    USER_MEMORIES {
+      uuid id PK
+      uuid user_id FK
+      text content
+      varchar memory_type
+      vector embedding
+      float importance
+      timestamptz expires_at
+    }
+    DOCUMENT_CHUNKS {
+      uuid id PK
+      uuid doc_id FK
+      int chunk_index
+      varchar chunk_type
+      text content
+      vector embedding
+      varchar kb_version
+    }
+  `);
+
+  document.getElementById('erd').innerHTML = svg;
+
+  // Round entity corners (mermaid renders sharp paths; convert to rounded rect)
+  document.querySelectorAll('#erd svg.erDiagram .node').forEach(n => {
+    const p = n.querySelector('path[d]');
+    if (!p) return;
+    const ns = p.getAttribute('d').match(/-?[\d.]+/g)?.map(Number);
+    if (!ns || ns.length < 8) return;
+    const xs = [ns[0], ns[2], ns[4], ns[6]];
+    const ys = [ns[1], ns[3], ns[5], ns[7]];
+    const x = Math.min(...xs), y = Math.min(...ys);
+    const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', x); r.setAttribute('y', y);
+    r.setAttribute('width', w); r.setAttribute('height', h);
+    r.setAttribute('rx', '8');
+    for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+      if (p.hasAttribute(a)) r.setAttribute(a, p.getAttribute(a));
+    }
+    p.replaceWith(r);
+  });
+  document.querySelectorAll('#erd svg.erDiagram .row-rect-odd path, #erd svg.erDiagram .row-rect-even path')
+    .forEach(p => p.setAttribute('stroke', 'none'));
+</script>
+
+</body>
+</html>

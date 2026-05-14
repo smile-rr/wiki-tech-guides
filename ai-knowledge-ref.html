@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI/LLM 深度知识参考 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg: #f8f9fc;
+  --bg2: #ffffff;
+  --bg3: #f0f2f7;
+  --card: #ffffff;
+  --border: #e2e6ef;
+  --text: #1a1a2e;
+  --text2: #5c6378;
+  --accent: #2563eb;
+  --accent2: #6366f1;
+  --green: #059669;
+  --amber: #d97706;
+  --red: #dc2626;
+  --pink: #db2777;
+  --concise-bg: #eff6ff;
+  --concise-border: #bfdbfe;
+  --deep-bg: #f5f3ff;
+  --deep-border: #ddd6fe;
+  --code-bg: #f1f5f9;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --font: 'Noto Sans SC', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.75; font-size: 15px; }
+
+/* Sidebar */
+.sidebar {
+  position: fixed; left: 0; top: 0; width: 280px; height: 100vh;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  overflow-y: auto; z-index: 100; padding: 20px 0;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sidebar-title {
+  font-size: 18px; font-weight: 900; padding: 0 20px 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  border-bottom: 1px solid var(--border); margin-bottom: 12px;
+}
+.nav-group { margin-bottom: 4px; }
+.nav-group-title {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 20px; font-size: 13px; font-weight: 700;
+  color: var(--accent); cursor: pointer; user-select: none;
+  transition: background 0.2s;
+}
+.nav-group-title:hover { background: var(--bg3); }
+.nav-group-title .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 6px; font-size: 11px;
+  background: rgba(56,189,248,0.15); color: var(--accent); font-weight: 700;
+}
+.nav-items { display: none; padding: 2px 0 8px 0; }
+.nav-items.open { display: block; }
+.nav-item {
+  display: block; padding: 5px 20px 5px 50px; font-size: 12.5px;
+  color: var(--text2); text-decoration: none; transition: all 0.2s;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--accent); background: var(--bg3); border-left-color: var(--accent); }
+
+/* Main — see toolbar-aware rule below */
+
+/* Domain header */
+.domain {
+  margin-bottom: 48px;
+  animation: fadeUp 0.5s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.domain-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px; padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+.domain-num {
+  font-size: 36px; font-weight: 900; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.domain-title { font-size: 22px; font-weight: 700; }
+.domain-title-en { font-size: 13px; color: var(--text2); font-weight: 400; }
+
+/* Topic card */
+.topic {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 20px; overflow: hidden;
+  box-shadow: var(--shadow); transition: border-color 0.3s;
+}
+.topic:hover { border-color: var(--accent); }
+.topic-header {
+  padding: 16px 20px; cursor: pointer; display: flex;
+  justify-content: space-between; align-items: center;
+  user-select: none;
+}
+.topic-header h3 { font-size: 16px; font-weight: 700; }
+.topic-header .en { font-size: 12px; color: var(--text2); font-weight: 400; margin-left: 8px; }
+.topic-header .toggle {
+  font-size: 18px; color: var(--text2); transition: transform 0.3s;
+  flex-shrink: 0; margin-left: 12px;
+}
+.topic.open .topic-header .toggle { transform: rotate(45deg); }
+/* topic-body styling now handled by grid animation below */
+
+/* Concise & Deep */
+.concise {
+  background: var(--concise-bg); border: 1px solid var(--concise-border);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;
+  font-size: 14px; position: relative;
+}
+.concise::before {
+  content: '💡 简洁回答'; display: block; font-size: 11px;
+  font-weight: 700; color: var(--accent); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.deep {
+  background: var(--deep-bg); border: 1px solid var(--deep-border);
+  border-radius: 8px; padding: 16px 18px; margin-bottom: 14px;
+}
+.deep::before {
+  content: '🔬 深度解析'; display: block; font-size: 11px;
+  font-weight: 700; color: var(--accent2); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.deep p { margin-bottom: 10px; }
+.deep ul { padding-left: 20px; margin-bottom: 10px; }
+.deep li { margin-bottom: 4px; font-size: 14px; }
+.deep strong { color: #b45309; }
+.deep em { color: #047857; font-style: normal; }
+
+/* Code */
+code {
+  font-family: var(--mono); font-size: 13px;
+  background: var(--code-bg); padding: 2px 6px; border-radius: 4px;
+  color: #0f766e;
+}
+pre {
+  background: var(--code-bg); border-radius: 8px; padding: 14px;
+  overflow-x: auto; margin: 10px 0; border: 1px solid var(--border);
+}
+pre code { padding: 0; background: none; }
+
+/* SVG diagrams */
+.diagram-wrap {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; margin: 14px 0;
+  text-align: center; overflow-x: auto;
+}
+.diagram-wrap svg { max-width: 100%; height: auto; }
+.diagram-caption {
+  font-size: 11px; color: var(--text2); margin-top: 8px;
+  text-align: center;
+}
+
+/* Refs */
+.refs { margin-top: 12px; }
+.refs-title { font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
+.refs a {
+  display: inline-block; font-size: 12px; color: var(--accent);
+  margin-right: 12px; margin-bottom: 4px; text-decoration: none;
+  border-bottom: 1px dashed var(--accent);
+}
+.refs a:hover { color: var(--accent2); border-color: var(--accent2); }
+
+/* Compare table */
+.cmp-table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  font-size: 13px;
+}
+.cmp-table th {
+  background: var(--bg3); padding: 8px 10px; text-align: left;
+  font-weight: 600; border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+}
+.cmp-table td {
+  padding: 7px 10px; border-bottom: 1px solid var(--border);
+}
+.cmp-table tr:hover td { background: rgba(56,189,248,0.05); }
+
+/* Tags */
+.tag {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  border-radius: 4px; margin-right: 4px; font-weight: 600;
+}
+.tag-hot { background: rgba(248,113,113,0.2); color: var(--red); }
+.tag-new { background: rgba(52,211,153,0.2); color: var(--green); }
+.tag-core { background: rgba(251,191,36,0.2); color: var(--amber); }
+
+/* Active nav highlighting */
+.nav-group-title.active {
+  background: var(--bg3); color: var(--accent2);
+  border-right: 3px solid var(--accent2);
+}
+.nav-item.active {
+  color: var(--accent); background: var(--bg3);
+  border-left: 2px solid var(--accent); font-weight: 600;
+}
+
+/* Sidebar controls */
+.sidebar-controls {
+  padding: 8px 14px 10px;
+  border-bottom: 1px solid var(--border); margin-bottom: 6px;
+}
+.sb-btn {
+  width: 100%; padding: 5px 0; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); border-radius: 5px;
+  background: var(--bg3); color: var(--text2); cursor: pointer;
+  font-family: var(--font); transition: all 0.15s;
+}
+.sb-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.sb-btn:active { transform: scale(0.97); }
+
+/* Toolbar (expand/collapse all + progress) */
+.toolbar {
+  position: fixed; top: 0; left: 280px; right: 0; z-index: 90;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 24px; height: 42px;
+}
+.toolbar-left { display: flex; align-items: center; gap: 10px; }
+.toolbar-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg2); color: var(--text2); font-size: 12px;
+  cursor: pointer; font-family: var(--font); transition: all 0.2s;
+  font-weight: 500;
+}
+.toolbar-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.toolbar-btn:active { transform: scale(0.97); }
+.toolbar-progress {
+  font-size: 12px; color: var(--text2); font-weight: 500;
+}
+.toolbar-progress span { color: var(--accent); font-weight: 700; }
+
+/* Reading progress bar */
+.progress-bar {
+  position: fixed; top: 42px; left: 280px; right: 0;
+  height: 3px; background: var(--bg3); z-index: 89;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.15s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Adjust main for toolbar */
+.main { margin-left: 280px; padding: 58px 40px 80px; max-width: 960px; }
+
+/* Back to top */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px; z-index: 100;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  border: none; cursor: pointer; font-size: 18px;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(16px);
+  transition: all 0.3s ease; pointer-events: none;
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.back-to-top:hover { background: var(--accent2); transform: translateY(-2px); }
+
+/* Smooth topic open/close animation */
+.topic-body {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease, padding 0.35s ease;
+  padding: 0 20px;
+}
+.topic-body > div { overflow: hidden; }
+.topic.open .topic-body {
+  grid-template-rows: 1fr; padding: 0 20px 20px;
+}
+
+/* Mobile sidebar toggle */
+.mobile-menu-btn {
+  display: none; position: fixed; top: 8px; left: 12px; z-index: 200;
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg2); color: var(--text); cursor: pointer;
+  font-size: 18px; align-items: center; justify-content: center;
+}
+
+/* Scroll anchor offset (account for toolbar) */
+.domain { scroll-margin-top: 56px; }
+.topic { scroll-margin-top: 56px; }
+
+/* Keyboard focus styles */
+.topic-header:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 12px 12px 0 0; }
+.nav-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* Responsive */
+@media (max-width: 860px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+  .sidebar.mobile-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
+  .mobile-menu-btn { display: flex; }
+  .toolbar { left: 0; padding-left: 56px; }
+  .progress-bar { left: 0; }
+  .main { margin-left: 0; padding: 58px 16px 80px; }
+}
+
+/* Print */
+@media print {
+  .sidebar, .toolbar, .progress-bar, .back-to-top, .mobile-menu-btn { display: none !important; }
+  .main { margin-left: 0; padding: 10px; }
+  .topic-body { grid-template-rows: 1fr !important; padding: 0 20px 20px !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile sidebar toggle -->
+<button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')" aria-label="菜单">☰</button>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <button class="toolbar-btn" id="toggleAllBtn" onclick="toggleAll()" title="展开/收起全部卡片">
+      📖 收起全部
+    </button>
+    <button class="toolbar-btn" onclick="toggleDeepOnly()" title="只看简洁回答或全部">
+      🎯 只看简洁回答
+    </button>
+  </div>
+  <div class="toolbar-progress">
+    已阅读 <span id="progressPct">0%</span>
+  </div>
+</div>
+
+<!-- Reading progress bar -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0})" aria-label="回到顶部">↑</button>
+
+<!-- Sidebar Navigation -->
+<nav class="sidebar" id="sidebarNav">
+  <div class="sidebar-title">AI/LLM 知识参考 2026</div>
+
+  <!-- Sidebar controls -->
+  <div class="sidebar-controls">
+    <button class="sb-btn" onclick="toggleAllNavGroups()" id="sbToggleBtn" title="展开/收起所有导航">▸ 展开全部</button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">1</span>LLM 应用开发基础</div>
+    <div class="nav-items"><a class="nav-item" href="#t1-1">Python AI 生态</a><a class="nav-item" href="#t1-2">LangChain vs LlamaIndex vs LangGraph</a><a class="nav-item" href="#t1-3">Hugging Face 生态</a><a class="nav-item" href="#t1-4">Tokenization 与注意力机制</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">2</span>模型交互与编排</div>
+    <div class="nav-items"><a class="nav-item" href="#t2-1">主流 LLM API 对比</a><a class="nav-item" href="#t2-2">Prompt Engineering 策略</a><a class="nav-item" href="#t2-3">Function Calling / Tool Use</a><a class="nav-item" href="#t2-4">MCP 模型上下文协议</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">3</span>RAG 检索增强生成</div>
+    <div class="nav-items"><a class="nav-item" href="#t3-1">Embedding 模型选型</a><a class="nav-item" href="#t3-2">向量数据库对比</a><a class="nav-item" href="#t3-3">分块策略与混合检索</a><a class="nav-item" href="#t3-4">高级 RAG 架构</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">4</span>Agent 智能体系统</div>
+    <div class="nav-items"><a class="nav-item" href="#t4-1">Agent 框架对比</a><a class="nav-item" href="#t4-2">Agent 设计模式</a><a class="nav-item" href="#t4-3">记忆系统</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">5</span>模型微调与适配</div>
+    <div class="nav-items"><a class="nav-item" href="#t5-1">LoRA / QLoRA 原理</a><a class="nav-item" href="#t5-2">对齐方法对比</a><a class="nav-item" href="#t5-3">决策框架: 何时微调</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">6</span>LLMOps 可观测性</div>
+    <div class="nav-items"><a class="nav-item" href="#t6-1">可观测性工具链</a><a class="nav-item" href="#t6-2">评测框架与 LLM-as-Judge</a><a class="nav-item" href="#t6-3">Tracing 与成本监控</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">7</span>部署与基础设施</div>
+    <div class="nav-items"><a class="nav-item" href="#t7-1">推理引擎对比</a><a class="nav-item" href="#t7-2">云平台 AI 服务对比</a><a class="nav-item" href="#t7-3">K8s AI 部署与 FinOps</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">8</span>安全与负责任 AI</div>
+    <div class="nav-items"><a class="nav-item" href="#t8-1">OWASP LLM Top 10</a><a class="nav-item" href="#t8-2">Guardrails 护栏体系</a><a class="nav-item" href="#t8-3">合规: EU AI Act / 银行监管</a></div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-title" onclick="toggleNav(this)"><span class="num">9</span>企业级整合</div>
+    <div class="nav-items"><a class="nav-item" href="#t9-1">Polyglot 多语言架构</a><a class="nav-item" href="#t9-2">Spring AI 与 Java 整合</a><a class="nav-item" href="#t9-3">AI Gateway 与遗留系统</a></div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+<!-- ==================== DOMAIN 1 ==================== -->
+<section class="domain" id="d1">
+<div class="domain-header">
+  <div class="domain-num">01</div>
+  <div><div class="domain-title">LLM 应用开发基础</div><div class="domain-title-en">Application Foundations</div></div>
+</div>
+
+<div class="topic" id="t1-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Python AI 生态 <span class="en">Python AI Ecosystem</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      2026 年 Python AI 开发标准栈: <strong>FastAPI</strong> 做 API 服务(异步、类型安全、自动 OpenAPI 文档), <strong>Pydantic v2</strong>(Rust 内核,速度提升 5-50x)做数据校验, <strong>uv</strong> 做包管理(比 pip 快 10-100x)。FastAPI 已占 ML 后端 42% 市场份额,完全取代 Flask 在 AI 领域的地位。
+    </div>
+    <div class="deep">
+      <p><strong>为什么是 FastAPI 而不是 Flask?</strong></p>
+      <p>核心原因是 LLM 服务的 I/O 密集特性。一次 LLM 调用可能耗时 2-30 秒,同步框架(Flask)在等待期间会阻塞整个工作线程。FastAPI 基于 Python 的 <code>async/await</code> 和 ASGI(Asynchronous Server Gateway Interface),一个 worker 可以同时处理数百个并发 LLM 请求。</p>
+      <p><strong>关键技术栈组合:</strong></p>
+      <ul>
+        <li><strong>FastAPI + Pydantic v2</strong>: Pydantic 做请求/响应模型校验,v2 底层用 Rust 重写(pydantic-core),序列化速度提升 5-50x。LLM 应用大量用 Pydantic 做 Structured Output 的 schema 定义</li>
+        <li><strong>uv 包管理器</strong>: Astral 公司开发,Rust 编写,替代 pip + virtualenv + pip-tools。单命令 <code>uv sync</code> 完成依赖解析+安装,在大型 AI 项目(依赖多)中节省显著时间</li>
+        <li><strong>异步模式注意点</strong>: 调用 LLM API 用 <code>httpx.AsyncClient</code> 而非 <code>requests</code>;CPU 密集的 embedding 计算用 <code>run_in_executor</code> 避免阻塞事件循环</li>
+      </ul>
+      <p><strong>面试场景:</strong> 被问"为什么选 FastAPI"时,核心答: 异步 I/O 适配 LLM 长耗时调用 + Pydantic 原生支持 Structured Output schema + 自动生成 OpenAPI 文档方便前后端协作。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://fastapi.tiangolo.com/" target="_blank">FastAPI 官方文档</a>
+      <a href="https://docs.pydantic.dev/latest/" target="_blank">Pydantic v2 文档</a>
+      <a href="https://docs.astral.sh/uv/" target="_blank">uv 包管理器</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t1-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>LangChain vs LlamaIndex vs LangGraph <span class="en">Framework Comparison</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      三者定位不同: <strong>LangChain</strong> 是通用 LLM 编排框架(LCEL 链式表达); <strong>LlamaIndex</strong> 专注 RAG 和数据索引(300+ 数据连接器); <strong>LangGraph</strong> 是 LangChain 团队出品的状态图框架,专门构建有状态的多步骤 Agent 工作流。2026 年趋势:简单链用 LangChain,RAG 用 LlamaIndex,Agent 用 LangGraph。
+    </div>
+    <div class="deep">
+      <table class="cmp-table">
+        <tr><th>维度</th><th>LangChain</th><th>LlamaIndex</th><th>LangGraph</th></tr>
+        <tr><td>核心理念</td><td>链式组合(Chain)</td><td>索引+查询引擎</td><td>状态机(StateGraph)</td></tr>
+        <tr><td>最佳场景</td><td>简单 Chain、Prompt 模板</td><td>复杂 RAG pipeline</td><td>多步 Agent、工作流</td></tr>
+        <tr><td>数据连接</td><td>中等</td><td>300+ 连接器,最强</td><td>依赖 LangChain</td></tr>
+        <tr><td>状态管理</td><td>无状态</td><td>查询级</td><td>持久化状态 + Checkpoint</td></tr>
+        <tr><td>Human-in-loop</td><td>弱</td><td>弱</td><td>原生支持中断/恢复</td></tr>
+        <tr><td>学习曲线</td><td>中</td><td>低(RAG专用)</td><td>高(需理解图论概念)</td></tr>
+      </table>
+      <p><strong>LangGraph 核心概念:</strong> 用有向图定义 Agent 流程 —— 每个节点(Node)是一个函数,边(Edge)定义状态转移条件。<code>StateGraph</code> 维护一个共享的 <code>TypedDict</code> 状态,节点修改状态后根据条件路由到下一个节点。内置 <code>MemorySaver</code> 做状态持久化,支持 <code>interrupt_before/after</code> 实现人工审核。</p>
+      <p><strong>2026 年实践建议:</strong> 不要选最重的框架,而是按需组合。很多生产系统只用 LangChain 的 PromptTemplate + OutputParser,RAG 部分直接用 LlamaIndex 的 VectorStoreIndex,Agent 逻辑用 LangGraph。三者可以混合使用。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://python.langchain.com/" target="_blank">LangChain 文档</a>
+      <a href="https://docs.llamaindex.ai/" target="_blank">LlamaIndex 文档</a>
+      <a href="https://langchain-ai.github.io/langgraph/" target="_blank">LangGraph 文档</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t1-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Hugging Face 生态 <span class="en">Hugging Face Ecosystem</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      Hugging Face 是 AI 领域的 "GitHub"。核心组件: <strong>Transformers</strong> 库(v5, PyTorch-only)提供模型加载和推理; <strong>Hub</strong> 托管 100万+ 模型; <strong>Datasets</strong> 库标准化数据加载; <strong>TGI</strong>(Text Generation Inference)做生产推理(但 2026 年 vLLM/SGLang 更主流)。
+    </div>
+    <div class="deep">
+      <p><strong>Transformers v5 关键变化:</strong> 放弃 TensorFlow/Flax 支持,只保留 PyTorch。这是因为社区 95%+ 的模型已经是 PyTorch 格式。对开发者意味着:不再需要处理多框架兼容问题。</p>
+      <p><strong>实际开发中最常用的 HF 组件:</strong></p>
+      <ul>
+        <li><code>AutoModel.from_pretrained()</code> — 自动加载模型和 tokenizer,支持 4-bit/8-bit 量化加载</li>
+        <li><code>pipeline()</code> — 高级 API,一行代码完成推理:<code>pipe = pipeline("text-generation", model="...")</code></li>
+        <li><strong>Datasets 库</strong> — 内存映射(memory-mapped)机制处理大数据集,不一次性加载到内存</li>
+        <li><strong>PEFT 库</strong> — 参数高效微调的官方实现,LoRA/QLoRA/Prefix Tuning 都在这里</li>
+        <li><strong>TRL 库</strong> — Transformer Reinforcement Learning,v1.0.0 (2026.3),集成 SFT/DPO/GRPO 训练器</li>
+      </ul>
+      <p><strong>Inference Endpoints:</strong> HF 托管推理服务,底层用 TGI 引擎。但 2026 年生产环境更多转向 vLLM(PagedAttention 显存效率更高)或 SGLang(RadixAttention 前缀复用)。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://huggingface.co/docs/transformers/" target="_blank">Transformers 文档</a>
+      <a href="https://huggingface.co/docs/datasets/" target="_blank">Datasets 文档</a>
+      <a href="https://huggingface.co/docs/peft/" target="_blank">PEFT 文档</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t1-4">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Tokenization 与注意力机制 <span class="en">Tokenization & Attention</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>Tokenization</strong> 将文本切分为 token(子词单元),主流算法是 BPE(Byte Pair Encoding)。<strong>注意力机制(Attention)</strong> 是 Transformer 的核心——让模型在生成每个 token 时"关注"输入中所有相关位置。2026 关键优化: GQA(分组查询注意力)已成标准, Flash Attention 4 大幅加速, KV Cache 是推理性能的主要瓶颈。
+    </div>
+    <div class="deep">
+      <p><strong>BPE Tokenization 原理:</strong> 从字节级开始,统计最高频的相邻 token 对,合并为新 token,迭代直到达到词表大小(通常 32K-128K)。中文通常 1 个汉字 = 1-2 个 token。理解 tokenization 对于估算成本(按 token 计费)和上下文窗口管理至关重要。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#2563eb"/>
+              <stop offset="100%" style="stop-color:#6366f1"/>
+            </linearGradient>
+          </defs>
+          <!-- Self-Attention Flow -->
+          <text x="350" y="22" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Self-Attention 计算流程</text>
+          <rect x="20" y="40" width="100" height="40" rx="6" fill="#f0f2f7" stroke="#2563eb"/>
+          <text x="70" y="65" fill="#1a1a2e" font-size="12" text-anchor="middle" font-family="Noto Sans SC">输入 X</text>
+          <line x1="120" y1="60" x2="155" y2="60" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr)"/>
+
+          <rect x="160" y="35" width="60" height="20" rx="4" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="190" y="49" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">× W_Q</text>
+          <rect x="160" y="58" width="60" height="20" rx="4" fill="#eff6ff" stroke="#059669"/>
+          <text x="190" y="72" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">× W_K</text>
+          <rect x="160" y="81" width="60" height="20" rx="4" fill="#eff6ff" stroke="#d97706"/>
+          <text x="190" y="95" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600">× W_V</text>
+
+          <line x1="220" y1="45" x2="270" y2="60" stroke="#2563eb" stroke-width="1"/>
+          <line x1="220" y1="68" x2="270" y2="60" stroke="#059669" stroke-width="1"/>
+
+          <rect x="270" y="42" width="90" height="36" rx="6" fill="#f0f2f7" stroke="url(#g1)"/>
+          <text x="315" y="57" fill="#1a1a2e" font-size="10" text-anchor="middle">Q·K^T / √d_k</text>
+          <text x="315" y="71" fill="#5c6378" font-size="9" text-anchor="middle">注意力分数</text>
+
+          <line x1="360" y1="60" x2="395" y2="60" stroke="#6366f1" stroke-width="1.5"/>
+
+          <rect x="400" y="42" width="70" height="36" rx="6" fill="#f0f2f7" stroke="#db2777"/>
+          <text x="435" y="57" fill="#db2777" font-size="11" text-anchor="middle">Softmax</text>
+          <text x="435" y="71" fill="#5c6378" font-size="9" text-anchor="middle">归一化</text>
+
+          <line x1="470" y1="60" x2="505" y2="60" stroke="#db2777" stroke-width="1.5"/>
+          <line x1="220" y1="91" x2="510" y2="91" stroke="#d97706" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="510" y1="91" x2="510" y2="60" stroke="#d97706" stroke-width="1"/>
+
+          <rect x="510" y="42" width="80" height="36" rx="6" fill="#f0f2f7" stroke="#d97706"/>
+          <text x="550" y="57" fill="#1a1a2e" font-size="10" text-anchor="middle">× V</text>
+          <text x="550" y="71" fill="#5c6378" font-size="9" text-anchor="middle">加权求和</text>
+
+          <line x1="590" y1="60" x2="620" y2="60" stroke="#d97706" stroke-width="1.5"/>
+          <rect x="620" y="40" width="65" height="40" rx="6" fill="#eff6ff" stroke="url(#g1)" stroke-width="2"/>
+          <text x="652" y="65" fill="#1a1a2e" font-size="12" text-anchor="middle" font-weight="600">输出</text>
+
+          <!-- GQA explanation -->
+          <rect x="20" y="120" width="660" height="85" rx="8" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="40" y="142" fill="#2563eb" font-size="12" font-weight="700" font-family="Noto Sans SC">MHA vs GQA vs MQA 对比</text>
+          <text x="40" y="162" fill="#1a1a2e" font-size="11" font-family="Noto Sans SC">MHA (Multi-Head): 每个头独立的 Q,K,V → 显存占用最大,质量最好</text>
+          <text x="40" y="180" fill="#059669" font-size="11" font-family="Noto Sans SC">GQA (Grouped-Query): 多个 Q 头共享 1 组 KV → 2026 标准,质量接近 MHA,KV Cache 减半+</text>
+          <text x="40" y="198" fill="#d97706" font-size="11" font-family="Noto Sans SC">MQA (Multi-Query): 所有 Q 头共享 1 组 KV → 最快,但质量略降,适合速度优先场景</text>
+        </svg>
+        <div class="diagram-caption">Self-Attention 核心公式: Attention(Q,K,V) = softmax(QK^T/√d_k)V — GQA 已成为 2026 模型标准配置</div>
+      </div>
+
+      <p><strong>KV Cache 为什么是瓶颈?</strong> 自回归生成时,每生成一个 token 就要用到之前所有 token 的 K 和 V。为避免重复计算,将它们缓存在 GPU 显存中。对于 128K 上下文的模型,KV Cache 可能占 10-30GB 显存。这也是为什么 vLLM 的 <em>PagedAttention</em>(像操作系统虚拟内存一样按页分配 KV Cache)和 SGLang 的 <em>RadixAttention</em>(共享前缀 KV Cache)成为 2026 推理优化的核心技术。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://arxiv.org/abs/1706.03762" target="_blank">Attention Is All You Need (原始论文)</a>
+      <a href="https://arxiv.org/abs/2305.13245" target="_blank">GQA 论文</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 2 ==================== -->
+<section class="domain" id="d2">
+<div class="domain-header">
+  <div class="domain-num">02</div>
+  <div><div class="domain-title">模型交互与编排</div><div class="domain-title-en">Model Interaction & Orchestration</div></div>
+</div>
+
+<div class="topic" id="t2-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>主流 LLM API 对比 <span class="en">LLM API Comparison 2026</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      2026 年主要 LLM 提供商: <strong>OpenAI</strong>(GPT-4.1/o3 系列,Responses API 取代 Assistants), <strong>Anthropic</strong>(Claude Opus/Sonnet 4.6,200K 上下文), <strong>Mistral</strong>(欧洲厂商,Small 4 性价比高), <strong>Meta LLaMA</strong>(Llama 4 Scout 10M 上下文,开源最强)。选型核心: 质量看 OpenAI/Anthropic,成本看 Mistral/LLaMA,隐私合规选 LLaMA 自部署。
+    </div>
+    <div class="deep">
+      <table class="cmp-table">
+        <tr><th>厂商</th><th>旗舰模型</th><th>上下文</th><th>核心优势</th><th>适用场景</th></tr>
+        <tr><td>OpenAI</td><td>GPT-4.1, o3/o4-mini</td><td>1M</td><td>工具调用最稳,生态最大</td><td>通用,代码生成</td></tr>
+        <tr><td>Anthropic</td><td>Claude Opus 4.6</td><td>200K</td><td>长文理解,安全对齐,代码</td><td>文档分析,企业合规</td></tr>
+        <tr><td>Mistral</td><td>Small 4 (V)</td><td>128K</td><td>成本低,欧洲合规,多模态</td><td>高性价比生产</td></tr>
+        <tr><td>Meta</td><td>Llama 4 Scout/Maverick</td><td>10M/1M</td><td>开源,可自部署,MoE</td><td>私有化部署,微调</td></tr>
+        <tr><td>Google</td><td>Gemini 2.5 Pro</td><td>1M</td><td>多模态原生,思考模型</td><td>多模态任务</td></tr>
+      </table>
+      <p><strong>API 设计趋势:</strong> OpenAI 在 2025 年推出 <strong>Responses API</strong> 取代 Chat Completions + Assistants 两套 API,统一了工具调用、文件搜索、代码执行的接口。Anthropic 的 Messages API 保持稳定,但 Extended Thinking(扩展思考)模式成为亮点——让模型先在内部"思考"再输出,适合复杂推理。</p>
+      <p><strong>MoE (Mixture of Experts) 架构理解:</strong> Llama 4 Scout 用 16 个 expert,每次推理只激活少量 expert。这意味着模型总参数量巨大(如 400B+),但每个 token 的计算量(active parameters)只有一部分(如 17B),因此速度接近小模型但质量接近大模型。这是 2026 年模型架构的主要趋势。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 175" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Mixture of Experts (MoE) 架构原理 — 为什么大模型也能跑得快</text>
+
+          <!-- Input -->
+          <rect x="10" y="50" width="80" height="35" rx="6" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="50" y="72" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">输入 Token</text>
+
+          <line x1="90" y1="67" x2="130" y2="67" stroke="#2563eb" stroke-width="1.5"/>
+
+          <!-- Router -->
+          <rect x="135" y="45" width="80" height="45" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="175" y="63" fill="#d97706" font-size="10" text-anchor="middle" font-weight="700">Router</text>
+          <text x="175" y="80" fill="#5c6378" font-size="8" text-anchor="middle">门控网络</text>
+
+          <!-- Expert grid -->
+          <line x1="215" y1="55" x2="250" y2="40" stroke="#d97706" stroke-width="1"/>
+          <line x1="215" y1="60" x2="250" y2="60" stroke="#d97706" stroke-width="1"/>
+          <line x1="215" y1="65" x2="250" y2="80" stroke="#d97706" stroke-width="1"/>
+          <line x1="215" y1="70" x2="250" y2="100" stroke="#d97706" stroke-width="1"/>
+
+          <!-- Experts -->
+          <rect x="255" y="28" width="60" height="24" rx="5" fill="#bbf7d0" stroke="#059669" stroke-width="1.5"/>
+          <text x="285" y="44" fill="#059669" font-size="9" text-anchor="middle" font-weight="600">Expert 1 ✓</text>
+          <rect x="255" y="56" width="60" height="24" rx="5" fill="#e5e7eb" stroke="#e2e6ef"/>
+          <text x="285" y="72" fill="#5c6378" font-size="9" text-anchor="middle">Expert 2</text>
+          <rect x="255" y="84" width="60" height="24" rx="5" fill="#bbf7d0" stroke="#059669" stroke-width="1.5"/>
+          <text x="285" y="100" fill="#059669" font-size="9" text-anchor="middle" font-weight="600">Expert 3 ✓</text>
+          <rect x="255" y="112" width="60" height="24" rx="5" fill="#e5e7eb" stroke="#e2e6ef"/>
+          <text x="285" y="128" fill="#5c6378" font-size="9" text-anchor="middle">Expert 4</text>
+          <text x="285" y="148" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">... 共 16 个 Expert</text>
+          <text x="285" y="160" fill="#059669" font-size="8" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">每次只激活 2 个 ✓</text>
+
+          <!-- Merge -->
+          <line x1="315" y1="40" x2="360" y2="67" stroke="#059669" stroke-width="1"/>
+          <line x1="315" y1="96" x2="360" y2="67" stroke="#059669" stroke-width="1"/>
+          <rect x="365" y="50" width="75" height="35" rx="6" fill="#ecfdf5" stroke="#059669"/>
+          <text x="402" y="72" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">加权合并</text>
+
+          <line x1="440" y1="67" x2="470" y2="67" stroke="#059669" stroke-width="1.5"/>
+          <rect x="475" y="50" width="80" height="35" rx="6" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="515" y="72" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">输出 Token</text>
+
+          <!-- Stats box -->
+          <rect x="575" y="35" width="135" height="125" rx="8" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="642" y="55" fill="#1a1a2e" font-size="10" text-anchor="middle" font-weight="700" font-family="Noto Sans SC">关键数字</text>
+          <text x="588" y="73" fill="#5c6378" font-size="9" font-family="Noto Sans SC">总参数: 400B+</text>
+          <text x="588" y="89" fill="#059669" font-size="9" font-family="Noto Sans SC">激活参数: ~17B</text>
+          <text x="588" y="105" fill="#5c6378" font-size="9" font-family="Noto Sans SC">速度: ≈ 小模型</text>
+          <text x="588" y="121" fill="#5c6378" font-size="9" font-family="Noto Sans SC">质量: ≈ 大模型</text>
+          <text x="588" y="143" fill="#d97706" font-size="9" font-weight="600" font-family="Noto Sans SC">💡 "免费午餐" 效果</text>
+        </svg>
+        <div class="diagram-caption">MoE 核心洞察: 不是所有知识对每个 token 都有用 — Router 选择最相关的 Expert 激活,其余"休息"</div>
+      </div>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://platform.openai.com/docs/" target="_blank">OpenAI API 文档</a>
+      <a href="https://docs.anthropic.com/" target="_blank">Anthropic Claude 文档</a>
+      <a href="https://docs.mistral.ai/" target="_blank">Mistral API 文档</a>
+      <a href="https://llama.meta.com/" target="_blank">LLaMA 官网</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t2-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Prompt Engineering 策略 <span class="en">Prompt Engineering Strategies</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      Prompt Engineering 不是"写提示词的技巧",而是<strong>控制 LLM 行为的系统工程</strong>。核心策略: <strong>Few-shot</strong>(给例子), <strong>CoT</strong>(Chain-of-Thought,强制推理步骤), <strong>ReAct</strong>(推理+行动交替), <strong>Structured Output</strong>(用 JSON Schema/Pydantic 约束输出格式)。2026 年最重要的趋势: Structured Output 已成为生产标配。
+    </div>
+    <div class="deep">
+      <p><strong>各策略的原理与适用场景:</strong></p>
+      <ul>
+        <li><strong>Zero-shot</strong>: 无示例直接提问。适合简单任务,依赖模型内在能力</li>
+        <li><strong>Few-shot</strong>: 提供 2-5 个输入-输出示例。核心原理是 <em>in-context learning</em>——模型通过示例推断出 pattern,无需修改权重。示例选择很关键:要覆盖边界情况,且格式一致</li>
+        <li><strong>Chain-of-Thought (CoT)</strong>: 加 "Let's think step by step" 或提供推理链示例。原理:将复杂问题分解为子步骤,每步降低出错概率。对数学/逻辑推理效果显著(准确率可提升 20-40%)</li>
+        <li><strong>ReAct</strong>: Reasoning + Acting 交替循环:Thought → Action → Observation → Thought...。这是 Agent 的理论基础——模型先推理要做什么,执行工具,观察结果,再推理下一步</li>
+        <li><strong>Tree-of-Thoughts (ToT)</strong>: CoT 的扩展,生成多条推理路径,评估并选择最优。适合需要"探索"的问题(如博弈、规划)</li>
+        <li><strong>Structured Output</strong>: 通过 JSON Schema 或 Pydantic model 约束输出格式。底层实现是 <em>constrained decoding</em>——在每步 token 生成时,只允许符合 schema 的 token。OpenAI 的 <code>response_format={"type":"json_schema"}</code> 和 Anthropic 的 tool use 都支持</li>
+      </ul>
+      <p><strong>2026 年实践建议:</strong> 先用 Structured Output 保证输出可解析,在此基础上加 CoT(在 schema 中加 <code>reasoning</code> 字段),再考虑 Few-shot 提升一致性。ReAct 留给 Agent 场景。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://arxiv.org/abs/2201.11903" target="_blank">Chain-of-Thought 论文</a>
+      <a href="https://arxiv.org/abs/2210.03629" target="_blank">ReAct 论文</a>
+      <a href="https://platform.openai.com/docs/guides/structured-outputs" target="_blank">OpenAI Structured Outputs</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t2-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Function Calling / Tool Use <span class="en">工具调用</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>Function Calling</strong> 让 LLM 决定何时调用外部函数(API、数据库、计算器等),并生成结构化的参数。模型不执行函数——它只输出"我想调用函数 X,参数是 Y",应用层执行后把结果返回给模型。这是 LLM 从"文本生成器"变为"能行动的 Agent"的关键能力。
+    </div>
+    <div class="deep">
+      <p><strong>工作流程(以 OpenAI 为例):</strong></p>
+      <p>1. 开发者在 API 请求中定义 <code>tools</code> 列表(每个 tool 有 name, description, parameters JSON Schema)<br>
+      2. 模型根据用户问题判断是否需要调用工具<br>
+      3. 如需调用,模型返回 <code>tool_calls</code> 数组(包含 function name + arguments JSON)<br>
+      4. 应用层执行函数,将结果以 <code>role: "tool"</code> 消息发回<br>
+      5. 模型根据函数返回值生成最终回答</p>
+
+      <p><strong>Parallel Tool Calling:</strong> 2026 年主流 API 都支持一次生成多个 tool_calls。例如用户问"北京和上海的天气",模型可以同时调用两次 <code>get_weather</code>。</p>
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="20" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Function Calling 完整流程</text>
+
+          <!-- Step 1: User -->
+          <rect x="10" y="45" width="100" height="45" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="60" y="63" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">① 用户提问</text>
+          <text x="60" y="78" fill="#5c6378" font-size="9" text-anchor="middle">"北京天气如何?"</text>
+
+          <line x1="110" y1="67" x2="140" y2="67" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrB)"/>
+          <defs><marker id="arrB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2563eb"/></marker></defs>
+
+          <!-- Step 2: LLM decides -->
+          <rect x="145" y="40" width="120" height="55" rx="8" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="205" y="58" fill="#6366f1" font-size="10" text-anchor="middle" font-weight="600">② LLM 判断</text>
+          <text x="205" y="73" fill="#5c6378" font-size="9" text-anchor="middle">匹配 tool 描述</text>
+          <text x="205" y="85" fill="#5c6378" font-size="9" text-anchor="middle">输出 tool_calls JSON</text>
+
+          <line x1="265" y1="67" x2="295" y2="67" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrP)"/>
+          <defs><marker id="arrP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#6366f1"/></marker></defs>
+
+          <!-- Step 3: App executes -->
+          <rect x="300" y="40" width="120" height="55" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="360" y="58" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">③ 应用层执行</text>
+          <text x="360" y="73" fill="#5c6378" font-size="9" text-anchor="middle">调用真实 API</text>
+          <text x="360" y="85" fill="#5c6378" font-size="9" text-anchor="middle">get_weather("北京")</text>
+
+          <line x1="420" y1="67" x2="450" y2="67" stroke="#059669" stroke-width="1.5" marker-end="url(#arrG)"/>
+          <defs><marker id="arrG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#059669"/></marker></defs>
+
+          <!-- Step 4: Return result -->
+          <rect x="455" y="40" width="110" height="55" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="510" y="58" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600">④ 返回结果</text>
+          <text x="510" y="73" fill="#5c6378" font-size="9" text-anchor="middle">role: "tool"</text>
+          <text x="510" y="85" fill="#5c6378" font-size="9" text-anchor="middle">{"temp": "22°C"}</text>
+
+          <line x1="565" y1="67" x2="595" y2="67" stroke="#d97706" stroke-width="1.5" marker-end="url(#arrA)"/>
+          <defs><marker id="arrA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#d97706"/></marker></defs>
+
+          <!-- Step 5: Final answer -->
+          <rect x="600" y="45" width="110" height="45" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="655" y="63" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">⑤ 最终回答</text>
+          <text x="655" y="78" fill="#5c6378" font-size="9" text-anchor="middle">"北京今天 22°C"</text>
+
+          <!-- Key insight box -->
+          <rect x="10" y="120" width="700" height="105" rx="8" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="30" y="142" fill="#2563eb" font-size="11" font-weight="700" font-family="Noto Sans SC">关键理解</text>
+          <text x="30" y="162" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">• 模型不执行函数! 它只输出"我想调用 X,参数是 Y"的 JSON。执行权在应用层,这保证了安全性</text>
+          <text x="30" y="180" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">• Parallel Tool Calling: 2026 主流 API 支持一次返回多个 tool_calls,应用层可并发执行</text>
+          <text x="30" y="198" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">• 与 MCP 关系: Function Calling = 模型侧能力(决定调什么),MCP = 工具暴露标准(工具怎么被发现)</text>
+          <text x="30" y="216" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">• 本质: Structured Output 的特殊形式——模型被训练为输出符合工具 JSON Schema 的参数而非自由文本</text>
+        </svg>
+        <div class="diagram-caption">Function Calling 五步流程 — 模型只做"决策",应用层做"执行"</div>
+      </div>
+      <p><strong>面试要点:</strong> "Function Calling 的本质是什么?" —— 本质是 Structured Output 的特殊形式。模型被训练为:当检测到用户意图匹配某个工具描述时,输出符合该工具 JSON Schema 的参数,而不是自由文本。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://platform.openai.com/docs/guides/function-calling" target="_blank">OpenAI Function Calling</a>
+      <a href="https://docs.anthropic.com/en/docs/build-with-claude/tool-use" target="_blank">Anthropic Tool Use</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t2-4">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>MCP 模型上下文协议 <span class="en">Model Context Protocol</span> <span class="tag tag-hot">热点</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>MCP (Model Context Protocol)</strong> 是 Anthropic 于 2024.11 发布的开放协议,用于标准化 LLM 应用与外部数据源/工具的连接。类比: USB-C 之于硬件设备 = MCP 之于 AI 工具集成。它定义了 Client-Server 架构,让任何工具只需实现一次 MCP Server,就能被任何支持 MCP 的 AI 应用调用。2025.11 捐赠给 Linux Foundation,成为行业标准。
+    </div>
+    <div class="deep">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+          <text x="350" y="22" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">MCP 架构概览</text>
+
+          <!-- Host App -->
+          <rect x="20" y="50" width="140" height="80" rx="10" fill="#f0f2f7" stroke="#2563eb" stroke-width="2"/>
+          <text x="90" y="78" fill="#2563eb" font-size="13" text-anchor="middle" font-weight="700" font-family="Noto Sans SC">Host 宿主应用</text>
+          <text x="90" y="98" fill="#5c6378" font-size="10" text-anchor="middle" font-family="Noto Sans SC">Claude Desktop</text>
+          <text x="90" y="112" fill="#5c6378" font-size="10" text-anchor="middle" font-family="Noto Sans SC">IDE / 自定义应用</text>
+
+          <!-- MCP Client -->
+          <rect x="200" y="50" width="130" height="80" rx="10" fill="#f0f2f7" stroke="#6366f1" stroke-width="2"/>
+          <text x="265" y="78" fill="#6366f1" font-size="13" text-anchor="middle" font-weight="700" font-family="Noto Sans SC">MCP Client</text>
+          <text x="265" y="98" fill="#5c6378" font-size="10" text-anchor="middle" font-family="Noto Sans SC">协议客户端</text>
+          <text x="265" y="112" fill="#5c6378" font-size="10" text-anchor="middle" font-family="Noto Sans SC">1 Host : N Clients</text>
+          <line x1="160" y1="90" x2="200" y2="90" stroke="#2563eb" stroke-width="1.5"/>
+
+          <!-- MCP Servers -->
+          <rect x="380" y="35" width="130" height="40" rx="8" fill="#eff6ff" stroke="#059669"/>
+          <text x="445" y="60" fill="#059669" font-size="11" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">MCP Server: 文件系统</text>
+          <rect x="380" y="85" width="130" height="40" rx="8" fill="#eff6ff" stroke="#d97706"/>
+          <text x="445" y="110" fill="#d97706" font-size="11" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">MCP Server: 数据库</text>
+          <rect x="380" y="135" width="130" height="40" rx="8" fill="#eff6ff" stroke="#db2777"/>
+          <text x="445" y="160" fill="#db2777" font-size="11" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">MCP Server: GitHub</text>
+
+          <line x1="330" y1="75" x2="380" y2="55" stroke="#059669" stroke-width="1"/>
+          <line x1="330" y1="90" x2="380" y2="105" stroke="#d97706" stroke-width="1"/>
+          <line x1="330" y1="105" x2="380" y2="155" stroke="#db2777" stroke-width="1"/>
+
+          <!-- Capabilities -->
+          <rect x="550" y="35" width="130" height="40" rx="8" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="615" y="52" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">Tools 工具</text>
+          <text x="615" y="67" fill="#5c6378" font-size="9" text-anchor="middle">模型可调用的函数</text>
+          <rect x="550" y="85" width="130" height="40" rx="8" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="615" y="102" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">Resources 资源</text>
+          <text x="615" y="117" fill="#5c6378" font-size="9" text-anchor="middle">上下文数据(只读)</text>
+          <rect x="550" y="135" width="130" height="40" rx="8" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="615" y="152" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600">Prompts 提示模板</text>
+          <text x="615" y="167" fill="#5c6378" font-size="9" text-anchor="middle">预定义交互模式</text>
+
+          <line x1="510" y1="55" x2="550" y2="55" stroke="#e2e6ef" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="510" y1="105" x2="550" y2="105" stroke="#e2e6ef" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="510" y1="155" x2="550" y2="155" stroke="#e2e6ef" stroke-width="1" stroke-dasharray="4"/>
+
+          <!-- Transport -->
+          <rect x="200" y="195" width="480" height="70" rx="10" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="440" y="218" fill="#5c6378" font-size="12" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">传输层 (Transport)</text>
+          <text x="300" y="245" fill="#2563eb" font-size="11" text-anchor="middle" font-family="Noto Sans SC">stdio (本地进程)</text>
+          <text x="440" y="245" fill="#059669" font-size="11" text-anchor="middle" font-family="Noto Sans SC">Streamable HTTP</text>
+          <text x="580" y="245" fill="#d97706" font-size="11" text-anchor="middle" font-family="Noto Sans SC">SSE (已弃用)</text>
+        </svg>
+        <div class="diagram-caption">MCP 三层架构: Host → Client → Server, 三种能力: Tools / Resources / Prompts</div>
+      </div>
+
+      <p><strong>核心概念详解:</strong></p>
+      <ul>
+        <li><strong>Host</strong>: 用户直接交互的应用(如 Claude Desktop、VS Code + Claude Code)。一个 Host 可以创建多个 MCP Client</li>
+        <li><strong>Client</strong>: 与 MCP Server 维持 1:1 连接,负责协议通信。客户端发送 JSON-RPC 2.0 消息</li>
+        <li><strong>Server</strong>: 暴露三种能力——Tools(模型可调用的函数)、Resources(附加上下文数据,如文件内容)、Prompts(预定义的交互模板)</li>
+        <li><strong>传输</strong>: 本地用 <code>stdio</code>(子进程通信),远程用 <strong>Streamable HTTP</strong>(2025.11 规范新增,替代旧的 SSE 传输)</li>
+      </ul>
+      <p><strong>2025.11 规范重要更新:</strong> 加入 OAuth 2.1 认证机制(远程 MCP Server 安全必需)、Elicitation(Server 向用户请求额外信息)、Tool Annotations(标记工具是否有副作用:readOnlyHint, destructiveHint)。</p>
+      <p><strong>与传统 API 集成的本质区别:</strong> 传统方式:每接一个新工具就写一套适配代码。MCP 方式:工具提供方实现一次 MCP Server,所有 MCP Client 自动可用。这就像 REST API 标准化了 Web 服务一样,MCP 标准化了 AI-工具交互。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://modelcontextprotocol.io/" target="_blank">MCP 官方规范</a>
+      <a href="https://docs.anthropic.com/en/docs/agents-and-tools/mcp" target="_blank">Anthropic MCP 文档</a>
+      <a href="https://github.com/modelcontextprotocol" target="_blank">MCP GitHub 组织</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 3 ==================== -->
+<section class="domain" id="d3">
+<div class="domain-header">
+  <div class="domain-num">03</div>
+  <div><div class="domain-title">RAG 检索增强生成</div><div class="domain-title-en">Retrieval-Augmented Generation</div></div>
+</div>
+
+<div class="topic" id="t3-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Embedding 模型选型 <span class="en">Embedding Models</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      Embedding 将文本映射为高维向量,语义相似的文本在向量空间中距离相近。2026 MTEB 排行榜头部: <strong>Microsoft Harrier-OSS</strong> 开源第一, OpenAI <strong>text-embedding-3-large</strong> 降至第 7 左右。选型关键维度: 维度(256-3072)、多语言支持、<strong>Matryoshka</strong>(套娃,可截断维度)支持、性价比。
+    </div>
+    <div class="deep">
+      <p><strong>Embedding 的本质:</strong> 将文本通过神经网络编码为固定长度的浮点数向量(如 1536 维)。两个文本的语义相似度 = 它们向量的余弦相似度(cosine similarity)。模型通过对比学习(contrastive learning)训练:让"相关"文本对的向量靠近,"不相关"的远离。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Embedding 工作原理 — 语义空间映射</text>
+
+          <!-- Left: Text -->
+          <rect x="10" y="40" width="160" height="140" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="90" y="60" fill="#2563eb" font-size="11" text-anchor="middle" font-weight="700">原始文本</text>
+          <text x="90" y="82" fill="#1a1a2e" font-size="10" text-anchor="middle" font-family="Noto Sans SC">"银行风险管理规定"</text>
+          <text x="90" y="102" fill="#1a1a2e" font-size="10" text-anchor="middle" font-family="Noto Sans SC">"SR 11-7 模型治理"</text>
+          <text x="90" y="122" fill="#1a1a2e" font-size="10" text-anchor="middle" font-family="Noto Sans SC">"今天北京天气很好"</text>
+          <text x="90" y="152" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">人能理解语义</text>
+          <text x="90" y="166" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">但计算机不能直接比较</text>
+
+          <!-- Arrow -->
+          <line x1="170" y1="110" x2="230" y2="110" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="200" y="100" fill="#2563eb" font-size="9" text-anchor="middle" font-weight="600">Embedding</text>
+          <text x="200" y="125" fill="#5c6378" font-size="8" text-anchor="middle">神经网络编码</text>
+
+          <!-- Middle: Vectors -->
+          <rect x="235" y="40" width="200" height="140" rx="8" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="335" y="60" fill="#6366f1" font-size="11" text-anchor="middle" font-weight="700">向量空间 (1536维)</text>
+          <text x="335" y="82" fill="#2563eb" font-size="9" text-anchor="middle" font-family="JetBrains Mono">[0.23, -0.41, 0.87, ...]</text>
+          <text x="335" y="102" fill="#059669" font-size="9" text-anchor="middle" font-family="JetBrains Mono">[0.21, -0.38, 0.82, ...]</text>
+          <text x="335" y="122" fill="#dc2626" font-size="9" text-anchor="middle" font-family="JetBrains Mono">[-0.65, 0.12, -0.33, ...]</text>
+          <text x="280" y="148" fill="#059669" font-size="9" font-family="Noto Sans SC">cos(A,B) = 0.94 ← 语义近!</text>
+          <text x="280" y="166" fill="#dc2626" font-size="9" font-family="Noto Sans SC">cos(A,C) = 0.12 ← 语义远</text>
+
+          <!-- Right: Matryoshka -->
+          <line x1="435" y1="110" x2="470" y2="110" stroke="#6366f1" stroke-width="1.5"/>
+
+          <rect x="475" y="40" width="230" height="140" rx="8" fill="#ecfdf5" stroke="#059669"/>
+          <text x="590" y="60" fill="#059669" font-size="11" text-anchor="middle" font-weight="700">Matryoshka (套娃) 截断</text>
+          <rect x="490" y="75" width="200" height="16" rx="3" fill="#bbf7d0" stroke="#059669"/>
+          <text x="590" y="87" fill="#059669" font-size="8" text-anchor="middle">完整 3072 维 — 最高精度</text>
+          <rect x="490" y="97" width="140" height="16" rx="3" fill="#bfdbfe" stroke="#2563eb"/>
+          <text x="560" y="109" fill="#2563eb" font-size="8" text-anchor="middle">截断 1536 维 — 精度 98%</text>
+          <rect x="490" y="119" width="80" height="16" rx="3" fill="#ddd6fe" stroke="#6366f1"/>
+          <text x="530" y="131" fill="#6366f1" font-size="8" text-anchor="middle">256 维 — 精度 93%</text>
+          <text x="590" y="155" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">存储减少 12x,检索快 12x</text>
+          <text x="590" y="170" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">精度损失仅 7% — 性价比极高</text>
+        </svg>
+        <div class="diagram-caption">核心直觉: Embedding 把"语义相似"变成"向量距离近" — Matryoshka 允许灵活截断维度,平衡精度与成本</div>
+      </div>
+
+      <p><strong>Matryoshka Representation Learning (MRL):</strong> 2024 年的重要创新。传统 embedding 必须使用全部维度(如 3072),MRL 训练让向量的前 N 维也有意义——你可以截断到 256 维仍保持良好效果。这对存储和检索速度有巨大影响:256 维 vs 3072 维,存储减少 12x,检索快 12x。OpenAI text-embedding-3 系列和多数新模型都支持。</p>
+      <p><strong>选型建议:</strong></p>
+      <ul>
+        <li>通用英文: text-embedding-3-large (OpenAI) 或 BGE-large-en-v1.5 (开源)</li>
+        <li>中英双语: BGE-M3 (BAAI,支持中英日韩等多语言,同时支持稠密+稀疏+多粒度检索)</li>
+        <li>私有化部署: Sentence-Transformers + 任意开源模型,通过 HF Inference 或自建服务</li>
+        <li>成本优先: text-embedding-3-small (OpenAI) 1536 维,价格是 large 的 1/5</li>
+      </ul>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://huggingface.co/spaces/mteb/leaderboard" target="_blank">MTEB 排行榜</a>
+      <a href="https://arxiv.org/abs/2205.13147" target="_blank">Matryoshka 论文</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t3-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>向量数据库对比 <span class="en">Vector Database Comparison</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      向量数据库存储 embedding 向量并支持高效的相似性搜索(ANN, Approximate Nearest Neighbor)。主流选择: <strong>pgvector/pgvectorscale</strong>(PostgreSQL 扩展,已有 PG 就用它), <strong>Qdrant</strong>(Rust 实现,过滤性能最强), <strong>Milvus</strong>(分布式,十亿级规模), <strong>Pinecone</strong>(全托管 SaaS), <strong>Chroma</strong>(轻量原型)。
+    </div>
+    <div class="deep">
+      <table class="cmp-table">
+        <tr><th>数据库</th><th>语言</th><th>部署</th><th>最佳场景</th><th>索引算法</th></tr>
+        <tr><td>pgvector/pgvectorscale</td><td>C/Rust</td><td>PG 扩展</td><td>已有 PG 生态,中等规模</td><td>IVFFlat, HNSW, StreamingDiskANN</td></tr>
+        <tr><td>Qdrant</td><td>Rust</td><td>自托管/云</td><td>复杂过滤+向量搜索</td><td>HNSW</td></tr>
+        <tr><td>Milvus</td><td>Go/C++</td><td>分布式</td><td>十亿级向量,高吞吐</td><td>IVF, HNSW, DiskANN</td></tr>
+        <tr><td>Pinecone</td><td>-</td><td>纯 SaaS</td><td>快速上手,免运维</td><td>专有</td></tr>
+        <tr><td>Chroma</td><td>Python</td><td>嵌入式/Docker</td><td>原型开发,本地测试</td><td>HNSW</td></tr>
+      </table>
+      <p><strong>核心索引算法 HNSW:</strong> Hierarchical Navigable Small World —— 在向量空间中构建多层图结构。上层是"高速公路"(少量节点,长距离连接),下层是"本地路"(密集节点,短距离)。搜索时从顶层开始"跳",逐层下降精确定位。查询复杂度 O(log N),但需要全部数据在内存中。</p>
+      <p><strong>pgvectorscale 的 StreamingDiskANN:</strong> 2025 年 Timescale 推出的创新——将向量索引放在 SSD 上而非全内存,通过图遍历+预取优化,在 99% recall 下达到 471 QPS。对于预算有限但数据量大的场景(如银行),这比全内存方案便宜 10x+。</p>
+      <p><strong>选型原则:</strong> 已有 PostgreSQL → pgvector(一站式,事务支持);需要复杂元数据过滤(如按日期、部门、权限过滤) → Qdrant;十亿级 → Milvus;原型/PoC → Chroma;不想运维 → Pinecone。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://github.com/pgvector/pgvector" target="_blank">pgvector GitHub</a>
+      <a href="https://qdrant.tech/documentation/" target="_blank">Qdrant 文档</a>
+      <a href="https://milvus.io/docs" target="_blank">Milvus 文档</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t3-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>分块策略与混合检索 <span class="en">Chunking & Hybrid Search</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>分块(Chunking)</strong> 将长文档拆分为适合 embedding 的小段。<strong>混合检索(Hybrid Search)</strong> 结合关键词搜索(BM25)和向量语义搜索,再用 <strong>Reranker</strong> 精排。这个"粗检+精排"两阶段架构是 2026 年生产 RAG 的标配。
+    </div>
+    <div class="deep">
+      <p><strong>分块策略深度对比:</strong></p>
+      <ul>
+        <li><strong>固定大小</strong>: 按字符/token 数切分(如 512 tokens,overlap 50)。简单但会切断句子/段落语义</li>
+        <li><strong>递归字符分割(RecursiveCharacterTextSplitter)</strong>: LangChain 默认。按 \n\n → \n → 空格 → 字符 层级递归切分,尽量保持语义边界。2026 年仍是最实用的 baseline</li>
+        <li><strong>语义分块(Semantic Chunking)</strong>: 计算相邻句子的 embedding 余弦相似度,在"语义断裂点"(相似度骤降处)切分。效果好但计算成本高(需要先对每句话做 embedding)</li>
+        <li><strong>Contextual Retrieval (Anthropic)</strong>: 给每个 chunk 加上文档级别的上下文摘要前缀。例如原 chunk 是"第三季度收入增长 15%",加前缀后变为"[来自 2024 年度报告 - 财务概要] 第三季度收入增长 15%"。这解决了 chunk 脱离上下文后语义模糊的核心问题</li>
+      </ul>
+      <p><strong>混合检索原理:</strong></p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">混合检索 + Rerank 两阶段架构</text>
+
+          <!-- Query -->
+          <rect x="10" y="60" width="90" height="40" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="55" y="85" fill="#2563eb" font-size="11" text-anchor="middle" font-weight="600">用户查询</text>
+
+          <!-- Two paths -->
+          <line x1="100" y1="72" x2="140" y2="50" stroke="#2563eb" stroke-width="1"/>
+          <line x1="100" y1="88" x2="140" y2="110" stroke="#059669" stroke-width="1"/>
+
+          <!-- BM25 -->
+          <rect x="145" y="30" width="110" height="40" rx="8" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="200" y="47" fill="#6366f1" font-size="10" text-anchor="middle" font-weight="600">BM25 关键词搜索</text>
+          <text x="200" y="62" fill="#5c6378" font-size="9" text-anchor="middle">精确匹配 "SR 11-7"</text>
+
+          <!-- Vector -->
+          <rect x="145" y="90" width="110" height="40" rx="8" fill="#ecfdf5" stroke="#059669"/>
+          <text x="200" y="107" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">向量语义搜索</text>
+          <text x="200" y="122" fill="#5c6378" font-size="9" text-anchor="middle">语义匹配 "风险管理"</text>
+
+          <!-- Merge -->
+          <line x1="255" y1="50" x2="300" y2="80" stroke="#6366f1" stroke-width="1"/>
+          <line x1="255" y1="110" x2="300" y2="80" stroke="#059669" stroke-width="1"/>
+
+          <rect x="300" y="55" width="100" height="50" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="350" y="75" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600">RRF 融合排序</text>
+          <text x="350" y="92" fill="#5c6378" font-size="9" text-anchor="middle">1/(k+rank)</text>
+
+          <!-- Rerank -->
+          <line x1="400" y1="80" x2="435" y2="80" stroke="#d97706" stroke-width="1.5"/>
+          <rect x="440" y="55" width="110" height="50" rx="8" fill="#fdf2f8" stroke="#db2777" stroke-width="1.5"/>
+          <text x="495" y="75" fill="#db2777" font-size="10" text-anchor="middle" font-weight="600">Reranker 精排</text>
+          <text x="495" y="92" fill="#5c6378" font-size="9" text-anchor="middle">Cross-encoder 打分</text>
+
+          <!-- Output -->
+          <line x1="550" y1="80" x2="585" y2="80" stroke="#db2777" stroke-width="1.5"/>
+          <rect x="590" y="60" width="110" height="40" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="645" y="77" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">Top-K 结果</text>
+          <text x="645" y="92" fill="#5c6378" font-size="9" text-anchor="middle">送入 LLM 生成</text>
+
+          <!-- Explanation -->
+          <rect x="10" y="145" width="700" height="45" rx="8" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="25" y="165" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">为什么两阶段? BM25 擅长精确词匹配(术语、型号、法规编号),向量擅长语义模糊匹配(同义词、意图)。</text>
+          <text x="25" y="182" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">RRF 合并两路结果,Reranker(如 Cohere Rerank)用 Cross-Encoder 做成对相关性判断,比 Bi-Encoder 更准但更慢。</text>
+        </svg>
+        <div class="diagram-caption">生产 RAG 标配: BM25 + 向量双路检索 → RRF 融合 → Cross-Encoder Rerank → Top-K 送入 LLM</div>
+      </div>
+
+      <p>BM25(关键词匹配)擅长精确查找("SR 11-7 条款"),向量搜索擅长语义匹配("银行风险管理规定")。两者互补。实现方式:同时运行两个检索,用 <strong>RRF (Reciprocal Rank Fusion)</strong> 合并排名:<code>score = Σ 1/(k + rank_i)</code>,k 通常取 60。最后用 Reranker (如 Cohere Rerank、BGE-Reranker) 对 top-K 结果精排。</p>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t3-4">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>高级 RAG 架构 <span class="en">Advanced RAG Patterns</span> <span class="tag tag-new">趋势</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      基础 RAG(检索→拼接→生成)有明显局限: 检索不准、缺乏推理、无法跨文档关联。2026 年进阶方案: <strong>GraphRAG</strong>(知识图谱增强), <strong>Agentic RAG</strong>(Agent 自主决定检索策略), <strong>Self-RAG</strong>(模型自判断是否需要检索), <strong>CRAG</strong>(检索结果质量评估+回退)。
+    </div>
+    <div class="deep">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="350" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">RAG 演进路径</text>
+          <!-- Level 1 -->
+          <rect x="20" y="40" width="130" height="50" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+          <text x="85" y="60" fill="#2563eb" font-size="11" text-anchor="middle" font-weight="600">Naive RAG</text>
+          <text x="85" y="78" fill="#5c6378" font-size="9" text-anchor="middle">检索→拼接→生成</text>
+          <!-- Arrow -->
+          <line x1="150" y1="65" x2="180" y2="65" stroke="#2563eb" stroke-width="1.5"/>
+          <polygon points="178,60 188,65 178,70" fill="#2563eb"/>
+          <!-- Level 2 -->
+          <rect x="190" y="40" width="130" height="50" rx="8" fill="#eff6ff" stroke="#059669"/>
+          <text x="255" y="60" fill="#059669" font-size="11" text-anchor="middle" font-weight="600">Advanced RAG</text>
+          <text x="255" y="78" fill="#5c6378" font-size="9" text-anchor="middle">混合检索+Rerank</text>
+          <!-- Arrow -->
+          <line x1="320" y1="65" x2="350" y2="65" stroke="#059669" stroke-width="1.5"/>
+          <polygon points="348,60 358,65 348,70" fill="#059669"/>
+          <!-- Level 3 -->
+          <rect x="360" y="40" width="130" height="50" rx="8" fill="#eff6ff" stroke="#d97706"/>
+          <text x="425" y="60" fill="#d97706" font-size="11" text-anchor="middle" font-weight="600">Agentic RAG</text>
+          <text x="425" y="78" fill="#5c6378" font-size="9" text-anchor="middle">Agent 自主检索决策</text>
+          <!-- Arrow -->
+          <line x1="490" y1="65" x2="520" y2="65" stroke="#d97706" stroke-width="1.5"/>
+          <polygon points="518,60 528,65 518,70" fill="#d97706"/>
+          <!-- Level 4 -->
+          <rect x="530" y="40" width="130" height="50" rx="8" fill="#eff6ff" stroke="#db2777"/>
+          <text x="595" y="60" fill="#db2777" font-size="11" text-anchor="middle" font-weight="600">GraphRAG</text>
+          <text x="595" y="78" fill="#5c6378" font-size="9" text-anchor="middle">知识图谱+向量联合</text>
+
+          <!-- Details -->
+          <rect x="20" y="110" width="320" height="75" rx="8" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="35" y="132" fill="#d97706" font-size="11" font-weight="600" font-family="Noto Sans SC">Agentic RAG 核心思想:</text>
+          <text x="35" y="150" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">模型作为 Agent,动态决定:</text>
+          <text x="35" y="166" fill="#5c6378" font-size="10" font-family="Noto Sans SC">① 是否需要检索 ② 查哪个索引 ③ 结果够不够 ④ 是否需要再查</text>
+          <text x="35" y="180" fill="#5c6378" font-size="10" font-family="Noto Sans SC">用 LangGraph 实现: 路由节点→检索节点→评估节点→生成/重试</text>
+
+          <rect x="360" y="110" width="320" height="75" rx="8" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="375" y="132" fill="#db2777" font-size="11" font-weight="600" font-family="Noto Sans SC">GraphRAG (Microsoft) 核心思想:</text>
+          <text x="375" y="150" fill="#1a1a2e" font-size="10" font-family="Noto Sans SC">先用 LLM 从文档中提取实体和关系,构建知识图谱</text>
+          <text x="375" y="166" fill="#5c6378" font-size="10" font-family="Noto Sans SC">查询时: 图遍历(关联推理) + 向量检索(语义匹配) 结合</text>
+          <text x="375" y="180" fill="#5c6378" font-size="10" font-family="Noto Sans SC">解决"跨多文档的全局性问题",如"所有部门的风险因素"</text>
+        </svg>
+      </div>
+      <p><strong>Self-RAG:</strong> 在生成过程中,模型输出特殊 token 来自我评估——"[Retrieve]" 判断是否需要检索,"[IsRel]" 判断检索结果是否相关,"[IsSup]" 判断生成结果是否被证据支持。这需要专门训练,但能显著减少幻觉。</p>
+      <p><strong>CRAG (Corrective RAG):</strong> 增加检索结果评估步骤——如果评分低,回退到 Web 搜索;如果中等,提取关键信息丢弃噪音;如果高,直接用。这是 LangGraph 官方教程的经典 pattern。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://microsoft.github.io/graphrag/" target="_blank">Microsoft GraphRAG</a>
+      <a href="https://arxiv.org/abs/2310.11511" target="_blank">Self-RAG 论文</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 4 ==================== -->
+<section class="domain" id="d4">
+<div class="domain-header">
+  <div class="domain-num">04</div>
+  <div><div class="domain-title">Agent 智能体系统</div><div class="domain-title-en">Agentic Systems</div></div>
+</div>
+
+<div class="topic" id="t4-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Agent 框架对比 <span class="en">Agent Frameworks</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      2026 年 Agent 框架主力: <strong>LangGraph</strong>(生产级首选,状态图+持久化+人工审核), <strong>OpenAI Agents SDK</strong>(简单轻量,Handoff 模式), <strong>CrewAI</strong>(多 Agent 角色扮演), <strong>AutoGen/AG2</strong>(微软系,正在过渡到 Agent Framework RC 1.0)。选型原则:生产系统用 LangGraph,快速原型用 OpenAI Agents SDK。
+    </div>
+    <div class="deep">
+      <table class="cmp-table">
+        <tr><th>框架</th><th>核心模式</th><th>状态管理</th><th>多 Agent</th><th>生产就绪</th></tr>
+        <tr><td>LangGraph</td><td>状态图 StateGraph</td><td>Checkpoint 持久化</td><td>子图组合</td><td>★★★★★</td></tr>
+        <tr><td>OpenAI Agents SDK</td><td>Agent + Handoff</td><td>RunContext</td><td>Handoff 转交</td><td>★★★☆☆</td></tr>
+        <tr><td>CrewAI</td><td>Crew + Task + Agent</td><td>有限</td><td>角色分工原生</td><td>★★★☆☆</td></tr>
+        <tr><td>AG2 (AutoGen)</td><td>ConversableAgent</td><td>重构中</td><td>对话式</td><td>★★☆☆☆</td></tr>
+      </table>
+      <p><strong>LangGraph 为什么是生产首选?</strong> 因为它解决了 Agent 在生产环境的核心挑战:1) <strong>确定性</strong>——图结构让执行路径可预测可调试; 2) <strong>持久化</strong>——Checkpoint 机制支持长时间运行的 Agent(跨天); 3) <strong>人工介入</strong>——<code>interrupt_before</code> 让高风险操作(如删除、支付)必须人工确认; 4) <strong>可观测</strong>——与 LangSmith 深度集成,每步可追溯。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 195" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">LangGraph StateGraph 工作原理</text>
+
+          <!-- START node -->
+          <circle cx="50" cy="90" r="18" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+          <text x="50" y="94" fill="#059669" font-size="9" text-anchor="middle" font-weight="700">START</text>
+          <line x1="68" y1="90" x2="110" y2="90" stroke="#059669" stroke-width="1.5"/>
+
+          <!-- Node: Router -->
+          <rect x="115" y="68" width="90" height="44" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="160" y="87" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">路由节点</text>
+          <text x="160" y="102" fill="#5c6378" font-size="8" text-anchor="middle">classify_intent()</text>
+
+          <!-- Conditional edges -->
+          <line x1="205" y1="78" x2="260" y2="55" stroke="#6366f1" stroke-width="1"/>
+          <text x="235" y="60" fill="#6366f1" font-size="8">需要检索</text>
+          <line x1="205" y1="100" x2="260" y2="130" stroke="#d97706" stroke-width="1"/>
+          <text x="228" y="125" fill="#d97706" font-size="8">直接回答</text>
+
+          <!-- Node: RAG Retrieve -->
+          <rect x="265" y="35" width="90" height="44" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="310" y="54" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">检索节点</text>
+          <text x="310" y="69" fill="#5c6378" font-size="8" text-anchor="middle">retrieve_docs()</text>
+
+          <line x1="355" y1="57" x2="405" y2="57" stroke="#059669" stroke-width="1"/>
+
+          <!-- Node: Grade -->
+          <rect x="410" y="35" width="90" height="44" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="455" y="54" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600">评估节点</text>
+          <text x="455" y="69" fill="#5c6378" font-size="8" text-anchor="middle">grade_relevance()</text>
+
+          <!-- Re-try loop -->
+          <path d="M420,79 Q420,105 350,105 Q280,105 280,79" stroke="#dc2626" fill="none" stroke-width="1" stroke-dasharray="4"/>
+          <text x="350" y="115" fill="#dc2626" font-size="8" text-anchor="middle" font-family="Noto Sans SC">不相关→重试</text>
+
+          <!-- OK path -->
+          <line x1="500" y1="57" x2="540" y2="90" stroke="#d97706" stroke-width="1"/>
+          <text x="515" y="68" fill="#059669" font-size="8">相关 ✓</text>
+
+          <!-- Node: Direct Answer -->
+          <rect x="265" y="115" width="90" height="40" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="310" y="140" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600">直接生成</text>
+          <line x1="355" y1="135" x2="540" y2="100" stroke="#d97706" stroke-width="1"/>
+
+          <!-- Node: Generate -->
+          <rect x="545" y="68" width="90" height="44" rx="8" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="590" y="87" fill="#6366f1" font-size="10" text-anchor="middle" font-weight="600">生成节点</text>
+          <text x="590" y="102" fill="#5c6378" font-size="8" text-anchor="middle">generate_answer()</text>
+          <line x1="635" y1="90" x2="665" y2="90" stroke="#6366f1" stroke-width="1.5"/>
+
+          <!-- END -->
+          <circle cx="685" cy="90" r="18" fill="#fdf2f8" stroke="#db2777" stroke-width="2"/>
+          <text x="685" y="94" fill="#db2777" font-size="9" text-anchor="middle" font-weight="700">END</text>
+
+          <!-- Shared State -->
+          <rect x="115" y="155" width="570" height="30" rx="6" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="400" y="175" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">共享状态 TypedDict: {"query": str, "docs": List, "grade": str, "answer": str} — 所有节点读写同一状态对象</text>
+        </svg>
+        <div class="diagram-caption">LangGraph 核心: 节点(函数) + 条件边(路由) + 共享状态(TypedDict) — 这是一个 CRAG(Corrective RAG)的典型图结构</div>
+      </div>
+
+      <p><strong>关键代码概念:</strong></p>
+<pre><code># LangGraph 核心模式 (伪代码)
+from langgraph.graph import StateGraph, END
+
+# 1. 定义共享状态
+class State(TypedDict):
+    query: str
+    docs: list
+    answer: str
+
+# 2. 构建图
+graph = StateGraph(State)
+graph.add_node("retrieve", retrieve_docs)
+graph.add_node("grade", grade_relevance)
+graph.add_node("generate", generate_answer)
+
+# 3. 定义条件边
+graph.add_conditional_edges("grade",
+    lambda s: "generate" if s["grade"]=="ok" else "retrieve")
+
+# 4. 编译 + 持久化
+app = graph.compile(checkpointer=MemorySaver())
+</code></pre>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t4-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Agent 设计模式 <span class="en">Agent Design Patterns</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      三大核心 Agent 模式: <strong>ReAct</strong>(推理-行动循环,最基础), <strong>Plan-and-Execute</strong>(先规划后执行,适合复杂多步任务), <strong>Reflexion</strong>(自我反思+改进,适合需要迭代的任务)。生产中通常组合使用:Plan-and-Execute 做整体编排,每步内部用 ReAct 执行。
+    </div>
+    <div class="deep">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="20" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Agent 三大设计模式对比</text>
+
+          <!-- ReAct -->
+          <rect x="10" y="40" width="220" height="240" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="120" y="62" fill="#2563eb" font-size="12" text-anchor="middle" font-weight="700">ReAct 推理-行动循环</text>
+          <rect x="30" y="75" width="80" height="30" rx="6" fill="#fff" stroke="#2563eb"/>
+          <text x="70" y="95" fill="#2563eb" font-size="10" text-anchor="middle">Thought</text>
+          <line x1="110" y1="90" x2="130" y2="90" stroke="#2563eb" stroke-width="1"/>
+          <rect x="130" y="75" width="80" height="30" rx="6" fill="#fff" stroke="#059669"/>
+          <text x="170" y="95" fill="#059669" font-size="10" text-anchor="middle">Action</text>
+          <line x1="170" y1="105" x2="170" y2="120" stroke="#059669" stroke-width="1"/>
+          <rect x="130" y="120" width="80" height="30" rx="6" fill="#fff" stroke="#d97706"/>
+          <text x="170" y="140" fill="#d97706" font-size="10" text-anchor="middle">Observation</text>
+          <path d="M130,135 Q30,135 30,105 L30,100" stroke="#5c6378" fill="none" stroke-width="1" stroke-dasharray="3"/>
+          <text x="120" y="170" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">循环直到 Final Answer</text>
+          <text x="120" y="195" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">✅ 最基础的 Agent 模式</text>
+          <text x="120" y="210" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">✅ 适合简单工具调用</text>
+          <text x="120" y="225" fill="#dc2626" font-size="9" text-anchor="middle" font-family="Noto Sans SC">❌ 缺乏全局规划能力</text>
+          <text x="120" y="240" fill="#dc2626" font-size="9" text-anchor="middle" font-family="Noto Sans SC">❌ 长任务易迷失方向</text>
+          <text x="120" y="265" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">复杂度: ★★☆</text>
+
+          <!-- Plan-and-Execute -->
+          <rect x="250" y="40" width="220" height="240" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="360" y="62" fill="#059669" font-size="12" text-anchor="middle" font-weight="700">Plan-and-Execute</text>
+          <rect x="290" y="75" width="140" height="25" rx="6" fill="#fff" stroke="#059669"/>
+          <text x="360" y="92" fill="#059669" font-size="10" text-anchor="middle">Planner LLM → 生成计划</text>
+          <line x1="360" y1="100" x2="360" y2="110" stroke="#059669" stroke-width="1"/>
+          <rect x="290" y="110" width="140" height="22" rx="5" fill="#fff" stroke="#5c6378"/>
+          <text x="360" y="125" fill="#5c6378" font-size="9" text-anchor="middle">Step 1: 查询库存 ✓</text>
+          <rect x="290" y="135" width="140" height="22" rx="5" fill="#fff" stroke="#5c6378"/>
+          <text x="360" y="150" fill="#5c6378" font-size="9" text-anchor="middle">Step 2: 计算价格 ◀ 执行中</text>
+          <rect x="290" y="160" width="140" height="22" rx="5" fill="#fff" stroke="#e2e6ef"/>
+          <text x="360" y="175" fill="#5c6378" font-size="9" text-anchor="middle">Step 3: 生成报价 ○</text>
+          <text x="360" y="200" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">✅ 复杂任务成功率高</text>
+          <text x="360" y="215" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">✅ 支持动态 Re-planning</text>
+          <text x="360" y="230" fill="#dc2626" font-size="9" text-anchor="middle" font-family="Noto Sans SC">❌ 规划本身可能出错</text>
+          <text x="360" y="245" fill="#dc2626" font-size="9" text-anchor="middle" font-family="Noto Sans SC">❌ 首次响应延迟较高</text>
+          <text x="360" y="265" fill="#059669" font-size="10" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">复杂度: ★★★</text>
+
+          <!-- Reflexion -->
+          <rect x="490" y="40" width="220" height="240" rx="10" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="600" y="62" fill="#6366f1" font-size="12" text-anchor="middle" font-weight="700">Reflexion 自我反思</text>
+          <rect x="520" y="80" width="160" height="25" rx="6" fill="#fff" stroke="#6366f1"/>
+          <text x="600" y="97" fill="#6366f1" font-size="10" text-anchor="middle">执行任务 → 得到结果</text>
+          <line x1="600" y1="105" x2="600" y2="115" stroke="#6366f1" stroke-width="1"/>
+          <rect x="520" y="115" width="160" height="25" rx="6" fill="#fff" stroke="#d97706"/>
+          <text x="600" y="132" fill="#d97706" font-size="10" text-anchor="middle">评估: 结果达标?</text>
+          <line x1="600" y1="140" x2="600" y2="150" stroke="#d97706" stroke-width="1"/>
+          <rect x="520" y="150" width="160" height="25" rx="6" fill="#fff" stroke="#db2777"/>
+          <text x="600" y="167" fill="#db2777" font-size="10" text-anchor="middle">反思: 哪里可以改进?</text>
+          <path d="M520,162 Q500,162 500,97 L520,97" stroke="#5c6378" fill="none" stroke-width="1" stroke-dasharray="3"/>
+          <text x="600" y="200" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">✅ 输出质量最高(迭代改进)</text>
+          <text x="600" y="215" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">✅ 适合代码生成、写作</text>
+          <text x="600" y="230" fill="#dc2626" font-size="9" text-anchor="middle" font-family="Noto Sans SC">❌ 多轮 LLM 调用,成本高</text>
+          <text x="600" y="245" fill="#dc2626" font-size="9" text-anchor="middle" font-family="Noto Sans SC">❌ 需要可评估的质量标准</text>
+          <text x="600" y="265" fill="#6366f1" font-size="10" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">复杂度: ★★★★</text>
+        </svg>
+        <div class="diagram-caption">三大 Agent 模式: 生产中通常 Plan-and-Execute 做编排,每步内部用 ReAct 执行,关键步骤加 Reflexion 迭代</div>
+      </div>
+
+      <p><strong>ReAct 循环:</strong> Thought("我需要查找用户的订单") → Action(调用 <code>search_orders</code> 工具) → Observation(返回结果) → Thought("找到了,需要计算退款金额") → Action(调用 <code>calculate_refund</code>) → ... 直到 Final Answer。这是 Agent 的"原子操作"。</p>
+      <p><strong>Plan-and-Execute:</strong> 先让一个"规划器 LLM"生成任务计划(如:"1. 查询库存 2. 计算价格 3. 生成报价"),然后逐步执行每个子任务。优势:对复杂任务的成功率高于纯 ReAct(因为有全局规划),但规划本身可能出错。2026 年改进:执行过程中如果发现计划不对,可以动态修改剩余步骤("re-planning")。</p>
+      <p><strong>Multi-Agent 协作模式:</strong></p>
+      <ul>
+        <li><strong>层级式(Hierarchical)</strong>: Supervisor Agent 分配任务给 Worker Agents。适合任务可明确分解的场景</li>
+        <li><strong>辩论式(Debate)</strong>: 多个 Agent 对同一问题给出不同观点,由 Judge Agent 综合。适合决策类任务(如投资研究中的 Bull/Bear 辩论)</li>
+        <li><strong>接力式(Handoff)</strong>: Agent A 处理不了时转交给 Agent B。OpenAI Agents SDK 的核心模式</li>
+      </ul>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t4-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>记忆系统 <span class="en">Memory Systems</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      Agent 记忆分三层: <strong>工作记忆</strong>(当前对话上下文,= context window), <strong>短期记忆</strong>(近期对话摘要,存在外部存储), <strong>长期记忆</strong>(持久化知识,通常用向量数据库存储)。核心挑战是在有限的上下文窗口中高效管理无限的历史信息。
+    </div>
+    <div class="deep">
+      <p><strong>MemGPT / Letta 的 OS 类比:</strong> 把上下文窗口看作"内存(RAM)",把外部存储看作"硬盘",Agent 像操作系统一样管理"虚拟内存"——决定何时将信息"换入"上下文(检索)或"换出"(摘要后存储)。这解决了"对话越长,早期信息丢失"的问题。</p>
+      <p><strong>实用记忆实现方案:</strong></p>
+      <ul>
+        <li><strong>滑动窗口</strong>: 只保留最近 N 轮对话,最简单但丢失历史</li>
+        <li><strong>摘要记忆</strong>: 定期让 LLM 对历史对话做摘要,用摘要替代原文。节省 token 但可能丢失细节</li>
+        <li><strong>向量记忆</strong>: 每轮对话做 embedding 存入向量库,新对话时检索相关历史。最灵活但增加延迟</li>
+        <li><strong>LangGraph MemorySaver</strong>: 将完整 Agent 状态(包括所有中间结果)持久化到数据库,支持"从上次中断处继续"</li>
+      </ul>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 5 ==================== -->
+<section class="domain" id="d5">
+<div class="domain-header">
+  <div class="domain-num">05</div>
+  <div><div class="domain-title">模型微调与适配</div><div class="domain-title-en">Fine-tuning & Adaptation</div></div>
+</div>
+
+<div class="topic" id="t5-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>LoRA / QLoRA 原理 <span class="en">Parameter-Efficient Fine-Tuning</span> <span class="tag tag-core">核心</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>LoRA (Low-Rank Adaptation)</strong>: 冻结原始模型权重,只训练两个小矩阵 A 和 B(低秩分解),推理时 W' = W + BA。参数量减少 90%+,效果接近全量微调。<strong>QLoRA</strong>: 在 LoRA 基础上将原始权重量化为 4-bit,训练只需 LoRA 部分的 16-bit,使 65B 模型可在单张 48GB GPU 上微调。
+    </div>
+    <div class="deep">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg">
+          <text x="350" y="20" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">LoRA 低秩分解原理</text>
+          <!-- Original W -->
+          <rect x="40" y="50" width="100" height="100" rx="4" fill="#f0f2f7" stroke="#2563eb" stroke-width="2"/>
+          <text x="90" y="95" fill="#2563eb" font-size="14" text-anchor="middle" font-weight="700">W₀</text>
+          <text x="90" y="115" fill="#5c6378" font-size="10" text-anchor="middle">d × d</text>
+          <text x="90" y="165" fill="#dc2626" font-size="10" text-anchor="middle" font-family="Noto Sans SC">冻结 ❄️ 不训练</text>
+
+          <!-- Plus -->
+          <text x="170" y="105" fill="#1a1a2e" font-size="24" text-anchor="middle">+</text>
+
+          <!-- B matrix -->
+          <rect x="210" y="50" width="40" height="100" rx="4" fill="#eff6ff" stroke="#059669" stroke-width="2"/>
+          <text x="230" y="95" fill="#059669" font-size="14" text-anchor="middle" font-weight="700">B</text>
+          <text x="230" y="115" fill="#5c6378" font-size="9" text-anchor="middle">d × r</text>
+
+          <!-- × -->
+          <text x="268" y="105" fill="#1a1a2e" font-size="18" text-anchor="middle">×</text>
+
+          <!-- A matrix -->
+          <rect x="290" y="75" width="100" height="40" rx="4" fill="#eff6ff" stroke="#d97706" stroke-width="2"/>
+          <text x="340" y="100" fill="#d97706" font-size="14" text-anchor="middle" font-weight="700">A</text>
+          <text x="340" y="122" fill="#5c6378" font-size="9" text-anchor="middle">r × d</text>
+
+          <text x="300" y="165" fill="#059669" font-size="10" text-anchor="middle" font-family="Noto Sans SC">只训练 A 和 B ✅</text>
+
+          <!-- = Result -->
+          <text x="420" y="105" fill="#1a1a2e" font-size="24" text-anchor="middle">=</text>
+
+          <rect x="460" y="50" width="100" height="100" rx="4" fill="#f0f2f7" stroke="#db2777" stroke-width="2"/>
+          <text x="510" y="95" fill="#db2777" font-size="14" text-anchor="middle" font-weight="700">W'</text>
+          <text x="510" y="115" fill="#5c6378" font-size="10" text-anchor="middle">d × d</text>
+          <text x="510" y="165" fill="#db2777" font-size="10" text-anchor="middle" font-family="Noto Sans SC">微调后权重</text>
+
+          <!-- Key insight -->
+          <rect x="40" y="185" width="520" height="28" rx="6" fill="#f5f3ff" stroke="#e2e6ef"/>
+          <text x="300" y="204" fill="#d97706" font-size="11" text-anchor="middle" font-family="Noto Sans SC">关键: r (秩) 通常取 8-64,远小于 d (如 4096)。参数量: 2×d×r vs d×d → 减少 97%+</text>
+        </svg>
+      </div>
+
+      <p><strong>LoRA 数学直觉:</strong> 预训练模型的权重变化矩阵 ΔW 本身是低秩的——即真正"有用"的信息方向远少于矩阵的行列数。LoRA 的假设就是: ΔW ≈ BA,其中 r (秩) ≪ d。实验证明 r=8 就能达到全量微调 90-95% 的效果。</p>
+      <p><strong>QLoRA 三项关键技术:</strong></p>
+      <ul>
+        <li><strong>4-bit NormalFloat (NF4)</strong>: 一种信息论最优的 4-bit 数据类型,比普通 INT4 精度更高。将原始 16-bit 权重量化为 NF4 存储</li>
+        <li><strong>Double Quantization</strong>: 对量化参数本身再做一次量化,进一步节省内存(每个参数节省约 0.37 bit)</li>
+        <li><strong>Paged Optimizers</strong>: 用 CPU 内存分页管理优化器状态,GPU 显存不够时自动"换页"到 CPU</li>
+      </ul>
+      <p><strong>实际效果:</strong> QLoRA 让 65B 参数模型的微调从需要 8×A100 (640GB) 降到 1×A100 (48GB),成本降 8x,效果损失 &lt;2%。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://arxiv.org/abs/2106.09685" target="_blank">LoRA 原始论文</a>
+      <a href="https://arxiv.org/abs/2305.14314" target="_blank">QLoRA 论文</a>
+      <a href="https://huggingface.co/docs/peft/" target="_blank">PEFT 库文档</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t5-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>对齐方法对比 <span class="en">Alignment: RLHF → DPO → GRPO</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      让模型"对齐"人类偏好的技术路线: <strong>RLHF</strong>(训练奖励模型+PPO 强化学习,最强但最复杂), <strong>DPO</strong>(直接偏好优化,无需奖励模型,简化 40-75% 成本), <strong>ORPO</strong>(单阶段,SFT+对齐同时完成), <strong>GRPO</strong>(DeepSeek 的方法,适合有可验证答案的任务,如数学/代码)。
+    </div>
+    <div class="deep">
+      <table class="cmp-table">
+        <tr><th>方法</th><th>需要奖励模型?</th><th>训练复杂度</th><th>数据需求</th><th>适用场景</th></tr>
+        <tr><td>RLHF (PPO)</td><td>是</td><td>最高(4个模型同时)</td><td>排序偏好数据</td><td>通用对齐(金标准)</td></tr>
+        <tr><td>DPO</td><td>否</td><td>中(1个模型)</td><td>偏好对数据</td><td>大多数对齐场景</td></tr>
+        <tr><td>ORPO</td><td>否</td><td>低(单阶段)</td><td>偏好对数据</td><td>资源受限</td></tr>
+        <tr><td>KTO</td><td>否</td><td>低</td><td>仅需好/坏二分</td><td>无法获得成对偏好时</td></tr>
+        <tr><td>GRPO</td><td>否(用规则验证)</td><td>中</td><td>可验证答案</td><td>数学/代码/推理</td></tr>
+      </table>
+      <p><strong>RLHF 原理:</strong> 1) SFT 微调出基础模型 → 2) 用人工偏好数据训练奖励模型(Reward Model) → 3) 用 PPO 算法优化策略模型,最大化奖励模型的分数,同时用 KL 散度约束不要偏离原始模型太远。复杂点在于:要同时管理 4 个模型(策略/参考/奖励/评价)。</p>
+      <p><strong>DPO 为什么能简化?</strong> 核心洞察: 奖励函数和最优策略之间有闭式解的数学关系。DPO 将奖励模型训练和策略优化合并为一个 <em>分类损失</em>: 让模型对"好回答"的概率高于"坏回答"。本质是在做 Bradley-Terry 模型的最大似然估计。</p>
+      <p><strong>GRPO (Group Relative Policy Optimization):</strong> DeepSeek-R1 的核心训练方法。对同一问题生成一组候选回答,用规则(如数学验证器)评分,以组内相对排名为奖励信号。不需要独立的奖励模型,特别适合"有标准答案"的任务。</p>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t5-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>决策框架: 何时微调 <span class="en">When to Fine-tune</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      决策顺序: <strong>Prompt Engineering → RAG → Fine-tuning</strong>,每一步都在前一步不够用时才升级。微调适合: 需要特定输出风格/格式、领域专业术语、减少推理成本(用小模型替代大模型)。不适合: 需要最新知识(用 RAG)、快速迭代(微调周期长)。
+    </div>
+    <div class="deep">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="20" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Prompt Engineering → RAG → Fine-tuning 决策流程</text>
+
+          <!-- Start -->
+          <rect x="280" y="40" width="160" height="35" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+          <text x="360" y="62" fill="#2563eb" font-size="11" text-anchor="middle" font-weight="700">需要 LLM 做某个任务</text>
+
+          <line x1="360" y1="75" x2="360" y2="95" stroke="#2563eb" stroke-width="1.5"/>
+
+          <!-- Q1 -->
+          <polygon points="360,95 450,125 360,155 270,125" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="360" y="122" fill="#d97706" font-size="9" text-anchor="middle" font-weight="600">Prompt + 示例</text>
+          <text x="360" y="134" fill="#d97706" font-size="9" text-anchor="middle" font-weight="600">能解决吗?</text>
+
+          <!-- Yes -->
+          <line x1="450" y1="125" x2="530" y2="125" stroke="#059669" stroke-width="1.5"/>
+          <text x="485" y="118" fill="#059669" font-size="10" font-weight="600">是 ✓</text>
+          <rect x="530" y="107" width="150" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="605" y="122" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">用 Prompt Engineering</text>
+          <text x="605" y="136" fill="#5c6378" font-size="9" text-anchor="middle">零成本,即时生效</text>
+
+          <!-- No, go to Q2 -->
+          <line x1="360" y1="155" x2="360" y2="170" stroke="#dc2626" stroke-width="1.5"/>
+          <text x="380" y="165" fill="#dc2626" font-size="10" font-weight="600">否</text>
+
+          <polygon points="360,170 440,195 360,220 280,195" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="360" y="192" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="600">缺少知识/数据?</text>
+          <text x="360" y="204" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="600">还是能力/风格?</text>
+
+          <!-- Knowledge branch -->
+          <line x1="280" y1="195" x2="170" y2="195" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="230" y="188" fill="#2563eb" font-size="9" font-weight="600">缺知识</text>
+          <rect x="30" y="177" width="140" height="36" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="100" y="192" fill="#2563eb" font-size="10" text-anchor="middle" font-weight="600">用 RAG</text>
+          <text x="100" y="206" fill="#5c6378" font-size="9" text-anchor="middle">不改模型,补充外部知识</text>
+
+          <!-- Capability branch -->
+          <line x1="440" y1="195" x2="530" y2="195" stroke="#db2777" stroke-width="1.5"/>
+          <text x="480" y="188" fill="#db2777" font-size="9" font-weight="600">缺能力/风格</text>
+          <rect x="530" y="177" width="150" height="36" rx="8" fill="#fdf2f8" stroke="#db2777" stroke-width="1.5"/>
+          <text x="605" y="192" fill="#db2777" font-size="10" text-anchor="middle" font-weight="600">考虑 Fine-tuning</text>
+          <text x="605" y="206" fill="#5c6378" font-size="9" text-anchor="middle">改变模型内在能力</text>
+
+          <!-- Bottom note -->
+          <text x="360" y="245" fill="#5c6378" font-size="10" text-anchor="middle" font-family="Noto Sans SC">80% 的 LLM 应用问题可以用 Prompt Engineering + RAG 解决,只有 20% 真正需要 Fine-tuning</text>
+        </svg>
+        <div class="diagram-caption">决策优先级: Prompt Engineering(零成本) → RAG(补知识) → Fine-tuning(改能力) — 每步升级前先验证前一步是否足够</div>
+      </div>
+
+      <p><strong>三种方法的定位:</strong></p>
+      <ul>
+        <li><strong>Prompt Engineering</strong>: 改变模型"怎么回答"——通过指令和示例引导行为。零成本、即时生效,但受上下文窗口限制</li>
+        <li><strong>RAG</strong>: 补充模型"不知道的知识"——从外部数据源检索最新/专有信息注入上下文。不改模型,但增加延迟和基础设施复杂度</li>
+        <li><strong>Fine-tuning</strong>: 改变模型"内在能力"——修改权重。效果最持久但成本最高(数据准备+训练+评测+部署)</li>
+      </ul>
+      <p><strong>微调的合理场景(银行环境):</strong></p>
+      <ul>
+        <li>将大模型的能力蒸馏到小模型(如用 Claude 生成训练数据,微调一个 7B 模型做简单分类),降低生产推理成本 10x+</li>
+        <li>强制统一输出格式(如特定的风险报告 JSON 结构),Prompt Engineering 无法 100% 保证一致性时</li>
+        <li>敏感数据不能发送到外部 API 时,微调开源模型做私有部署</li>
+      </ul>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 6 ==================== -->
+<section class="domain" id="d6">
+<div class="domain-header">
+  <div class="domain-num">06</div>
+  <div><div class="domain-title">LLMOps 可观测性</div><div class="domain-title-en">LLMOps & Observability</div></div>
+</div>
+
+<div class="topic" id="t6-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>可观测性工具链 <span class="en">Observability Tools</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      LLM 应用的可观测性 = 追踪每次 LLM 调用的输入/输出/耗时/成本/质量。核心工具: <strong>LangSmith</strong>(LangChain 官方,最完整), <strong>Langfuse</strong>(开源,OTel 原生), <strong>Arize Phoenix</strong>(漂移检测强), <strong>Helicone</strong>(代理模式,8ms P50 延迟)。2026 趋势: OpenTelemetry GenAI 语义约定成为行业标准。
+    </div>
+    <div class="deep">
+      <p><strong>为什么 LLM 需要专门的可观测性?</strong> 传统 APM(如 Datadog)追踪的是确定性的请求-响应。LLM 调用是<em>非确定性的</em>——同样的 prompt 可能返回不同结果,且"结果好不好"不能用 HTTP 200 判断。需要追踪:prompt 版本、模型版本、输出质量评分、token 使用量、成本。</p>
+      <p><strong>核心概念 — Trace:</strong> 一次用户请求可能触发多次 LLM 调用(Agent 循环、RAG 检索+生成),这些调用组成一棵 <em>Span 树</em>。每个 Span 记录:输入 prompt、输出 completion、模型名、token 数、延迟、自定义 metadata(如用户 ID、会话 ID)。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 190" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">LLM Trace Span 树示例 — 一次 RAG Agent 请求</text>
+
+          <!-- Root span -->
+          <rect x="10" y="35" width="700" height="28" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="20" y="53" fill="#2563eb" font-size="10" font-weight="700">Root: user_query "分析 Q3 财报风险"</text>
+          <text x="600" y="53" fill="#5c6378" font-size="9" text-anchor="end">总耗时 4.2s | 总 token: 8,340</text>
+
+          <!-- Child 1: Retrieval -->
+          <rect x="30" y="70" width="320" height="25" rx="5" fill="#ecfdf5" stroke="#059669"/>
+          <text x="40" y="87" fill="#059669" font-size="9" font-weight="600">Span: embedding + vector_search</text>
+          <text x="290" y="87" fill="#5c6378" font-size="9" text-anchor="end">0.3s | 512 tokens</text>
+
+          <!-- Child 2: Rerank -->
+          <rect x="30" y="100" width="200" height="25" rx="5" fill="#fdf2f8" stroke="#db2777"/>
+          <text x="40" y="117" fill="#db2777" font-size="9" font-weight="600">Span: cohere_rerank</text>
+          <text x="185" y="117" fill="#5c6378" font-size="9" text-anchor="end">0.2s</text>
+
+          <!-- Child 3: LLM call 1 -->
+          <rect x="30" y="130" width="500" height="25" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="40" y="147" fill="#6366f1" font-size="9" font-weight="600">Span: llm_call (claude-sonnet-4.6)</text>
+          <text x="435" y="147" fill="#5c6378" font-size="9" text-anchor="end">3.5s | input: 5,200 | output: 2,128 | $0.042</text>
+
+          <!-- Child 4: Output guard -->
+          <rect x="30" y="160" width="150" height="25" rx="5" fill="#fefce8" stroke="#d97706"/>
+          <text x="40" y="177" fill="#d97706" font-size="9" font-weight="600">Span: output_guardrail</text>
+          <text x="145" y="177" fill="#5c6378" font-size="9" text-anchor="end">0.1s</text>
+
+          <!-- Metrics box -->
+          <rect x="550" y="70" width="155" height="115" rx="8" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="560" y="88" fill="#1a1a2e" font-size="9" font-weight="700" font-family="Noto Sans SC">追踪指标</text>
+          <text x="560" y="104" fill="#5c6378" font-size="9">TTFT: 0.8s</text>
+          <text x="560" y="118" fill="#5c6378" font-size="9">Token/s: 45.2</text>
+          <text x="560" y="132" fill="#5c6378" font-size="9">Cost: $0.042</text>
+          <text x="560" y="146" fill="#5c6378" font-size="9">Faithfulness: 0.92</text>
+          <text x="560" y="160" fill="#5c6378" font-size="9">Relevancy: 0.88</text>
+          <text x="560" y="174" fill="#059669" font-size="9" font-weight="600">Status: ✓ Pass</text>
+        </svg>
+        <div class="diagram-caption">每次请求形成 Span 树 — 可追踪到每个环节的耗时、token 消耗和质量评分</div>
+      </div>
+
+      <p><strong>工具选型:</strong></p>
+      <ul>
+        <li>LangChain 生态 → LangSmith(一行代码接入,但厂商锁定)</li>
+        <li>开源优先 → Langfuse(支持 OTel,可自托管,社区活跃)</li>
+        <li>已有 Datadog/Grafana → 用 OTel GenAI 语义约定接入现有体系</li>
+        <li>极致低延迟 → Helicone(代理模式,只需改 base_url)</li>
+      </ul>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t6-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>评测框架与 LLM-as-Judge <span class="en">Evaluation & LLM-as-Judge</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      LLM 应用评测两大类: <strong>离线评测</strong>(用标注数据集批量跑分)和 <strong>在线评测</strong>(生产中实时评分)。核心框架: <strong>RAGAs</strong>(RAG 专用,衡量 faithfulness/relevancy), <strong>DeepEval</strong>(50+ 指标,pytest 式集成到 CI/CD)。<strong>LLM-as-Judge</strong> 用强模型评价弱模型输出,是 2026 年最主流的自动化评测方式。
+    </div>
+    <div class="deep">
+      <p><strong>RAG 评测四大指标 (RAGAs):</strong></p>
+      <ul>
+        <li><strong>Faithfulness(忠实度)</strong>: 生成的回答是否被检索到的上下文所支持?检测幻觉</li>
+        <li><strong>Answer Relevancy(回答相关性)</strong>: 生成的回答是否切题?</li>
+        <li><strong>Context Precision(上下文精度)</strong>: 检索到的文档中,排名靠前的是否更相关?</li>
+        <li><strong>Context Recall(上下文召回)</strong>: 回答所需的信息是否都被检索到了?</li>
+      </ul>
+      <p><strong>LLM-as-Judge 工作原理:</strong> 让 GPT-4 或 Claude 按预定义评分标准(rubric)给模型输出打分。研究表明与人类判断的一致性达 85%+。但有两个已知偏差: <em>位置偏差</em>(倾向于给排在前面的选项高分)和 <em>长度偏差</em>(倾向于给更长的回答高分)。缓解方法:随机化顺序、控制长度、使用 pairwise comparison 而非 pointwise scoring。</p>
+      <p><strong>promptfoo 特别提一下:</strong> 2026 年 3 月被 OpenAI 收购。它的核心价值是将 prompt 评测变成"单元测试"——定义测试用例 YAML,CI 中自动跑,回归检测 prompt 修改是否引入退化。这个思路值得在任何 LLM 项目中采用。</p>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t6-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Tracing 与成本监控 <span class="en">Tracing & Cost Monitoring</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      LLM 成本监控的核心维度: <strong>Token 用量</strong>(input/output 分开计费)、<strong>延迟</strong>(P50/P95/P99,TTFT 首 token 时间)、<strong>每次调用成本</strong>。降本手段: Semantic Cache(语义相似的查询复用结果)、Prompt Caching(Anthropic/OpenAI 原生支持)、Batch API(非实时场景降价 50%)。
+    </div>
+    <div class="deep">
+      <p><strong>Prompt Caching 原理:</strong> 如果两次请求的 system prompt 相同(或大部分相同),云服务商可以复用已计算好的 KV Cache。Anthropic 和 OpenAI 都在 2024-2025 年推出了原生支持。对于系统提示很长(如包含大量 RAG 上下文)的应用,可以节省 80-90% 的 input token 成本。</p>
+      <p><strong>FinOps 实践建议:</strong></p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 175" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">LLM FinOps 四大降本策略 — 组合可降 60-80% 成本</text>
+
+          <!-- Strategy 1 -->
+          <rect x="10" y="35" width="165" height="120" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="92" y="55" fill="#2563eb" font-size="11" text-anchor="middle" font-weight="700">🎯 模型路由</text>
+          <text x="92" y="72" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">简单问题 → 小模型</text>
+          <text x="92" y="86" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">复杂问题 → 大模型</text>
+          <rect x="25" y="95" width="60" height="18" rx="4" fill="#bbf7d0" stroke="#059669"/>
+          <text x="55" y="108" fill="#059669" font-size="8" text-anchor="middle">GPT-4o-mini</text>
+          <rect x="95" y="95" width="65" height="18" rx="4" fill="#fecaca" stroke="#dc2626"/>
+          <text x="128" y="108" fill="#dc2626" font-size="8" text-anchor="middle">Claude Opus</text>
+          <text x="92" y="130" fill="#059669" font-size="9" text-anchor="middle" font-weight="600">降本 40-60%</text>
+          <text x="92" y="145" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">分类器预判复杂度</text>
+
+          <!-- Strategy 2 -->
+          <rect x="190" y="35" width="165" height="120" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="272" y="55" fill="#059669" font-size="11" text-anchor="middle" font-weight="700">💾 语义缓存</text>
+          <text x="272" y="72" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">相似查询 cosine > 0.95</text>
+          <text x="272" y="86" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">→ 直接返回缓存结果</text>
+          <text x="272" y="103" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">Redis + 向量索引实现</text>
+          <text x="272" y="120" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">+ Prompt Caching (原生)</text>
+          <text x="272" y="138" fill="#059669" font-size="9" text-anchor="middle" font-weight="600">降本 30-50%</text>
+          <text x="272" y="149" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">重复问题免 LLM 调用</text>
+
+          <!-- Strategy 3 -->
+          <rect x="370" y="35" width="165" height="120" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+          <text x="452" y="55" fill="#d97706" font-size="11" text-anchor="middle" font-weight="700">📦 批量 API</text>
+          <text x="452" y="72" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">非实时场景:</text>
+          <text x="452" y="86" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">夜间报告、数据标注</text>
+          <text x="452" y="103" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">批量提交,异步返回</text>
+          <text x="452" y="120" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">通常 24h 内完成</text>
+          <text x="452" y="138" fill="#d97706" font-size="9" text-anchor="middle" font-weight="600">直降 50%</text>
+          <text x="452" y="149" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">OpenAI/Anthropic 原生支持</text>
+
+          <!-- Strategy 4 -->
+          <rect x="550" y="35" width="160" height="120" rx="8" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="630" y="55" fill="#6366f1" font-size="11" text-anchor="middle" font-weight="700">✂️ Token 优化</text>
+          <text x="630" y="72" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">精简 System Prompt</text>
+          <text x="630" y="86" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">限制 max_tokens 输出</text>
+          <text x="630" y="103" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">RAG Top-K 精选 (3-5)</text>
+          <text x="630" y="120" fill="#1a1a2e" font-size="9" text-anchor="middle" font-family="Noto Sans SC">对话历史滑动窗口</text>
+          <text x="630" y="138" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="600">降本 20-40%</text>
+          <text x="630" y="149" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">最低实施成本</text>
+        </svg>
+        <div class="diagram-caption">四策并用: 路由(选对模型) + 缓存(少调用) + 批量(降单价) + 精简(少 token) = 60-80% 成本降低</div>
+      </div>
+
+      <ul>
+        <li>模型路由(Model Routing): 简单问题用小模型(GPT-4o-mini / Haiku),复杂问题用大模型。一个分类器预先判断问题复杂度</li>
+        <li>Semantic Cache: 用 embedding 计算用户查询的相似度,如果与之前某个查询相似度 > 0.95,直接返回缓存结果。Redis + 向量索引实现</li>
+        <li>批量 API: 非实时任务(如夜间报告生成、数据标注)用 Batch API,通常价格为实时 API 的 50%</li>
+        <li>组合效果: 路由 + 缓存 + 批处理,实际生产中可实现 60-80% 的成本降低</li>
+      </ul>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 7 ==================== -->
+<section class="domain" id="d7">
+<div class="domain-header">
+  <div class="domain-num">07</div>
+  <div><div class="domain-title">部署与基础设施</div><div class="domain-title-en">Deployment & Infrastructure</div></div>
+</div>
+
+<div class="topic" id="t7-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>推理引擎对比 <span class="en">Inference Engines</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      自部署 LLM 推理的引擎选择: <strong>vLLM</strong>(PagedAttention,吞吐量提升 24x,2026 最主流), <strong>SGLang</strong>(RadixAttention 前缀共享,已部署 400K+ GPU), <strong>Ollama</strong>(本地开发/测试首选,一行命令跑模型), <strong>TGI</strong>(HuggingFace 出品,进入维护模式)。生产首选 vLLM 或 SGLang。
+    </div>
+    <div class="deep">
+      <table class="cmp-table">
+        <tr><th>引擎</th><th>核心技术</th><th>吞吐量</th><th>适用场景</th><th>状态</th></tr>
+        <tr><td>vLLM v0.19</td><td>PagedAttention</td><td>★★★★★</td><td>生产推理服务</td><td>活跃开发</td></tr>
+        <tr><td>SGLang</td><td>RadixAttention</td><td>★★★★★</td><td>多用户共享前缀场景</td><td>快速增长</td></tr>
+        <tr><td>TensorRT-LLM</td><td>NVIDIA 深度优化</td><td>★★★★★</td><td>NVIDIA GPU 极致性能</td><td>NVIDIA 维护</td></tr>
+        <tr><td>Ollama</td><td>llama.cpp 封装</td><td>★★☆☆☆</td><td>本地开发测试</td><td>活跃</td></tr>
+        <tr><td>TGI</td><td>Flash Attention</td><td>★★★☆☆</td><td>HF Endpoints</td><td>维护模式</td></tr>
+      </table>
+      <p><strong>PagedAttention 原理(vLLM 核心):</strong> 传统推理为每个请求预分配连续的 KV Cache 显存,存在大量内部碎片(实际使用 60-80%,浪费 20-40%)。PagedAttention 像操作系统的虚拟内存一样,将 KV Cache 分成固定大小的"页(page)",按需分配,不同请求的 KV Cache 页可以不连续存储。这将显存利用率提升到 ~95%,同等硬件下并发提升 2-4x。</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">传统 KV Cache vs PagedAttention 显存管理</text>
+
+          <!-- Traditional -->
+          <text x="175" y="42" fill="#dc2626" font-size="11" text-anchor="middle" font-weight="700">传统方式: 连续预分配</text>
+          <rect x="20" y="50" width="310" height="60" rx="6" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <!-- Request blocks -->
+          <rect x="25" y="55" width="120" height="20" rx="3" fill="#bfdbfe" stroke="#2563eb"/>
+          <text x="85" y="69" fill="#2563eb" font-size="8" text-anchor="middle">请求 A (实际用 60%)</text>
+          <rect x="145" y="55" width="40" height="20" rx="3" fill="#fecaca" stroke="#dc2626" stroke-dasharray="3"/>
+          <text x="165" y="69" fill="#dc2626" font-size="7" text-anchor="middle">浪费</text>
+          <rect x="185" y="55" width="80" height="20" rx="3" fill="#bbf7d0" stroke="#059669"/>
+          <text x="225" y="69" fill="#059669" font-size="8" text-anchor="middle">请求 B (用 70%)</text>
+          <rect x="265" y="55" width="25" height="20" rx="3" fill="#fecaca" stroke="#dc2626" stroke-dasharray="3"/>
+          <text x="278" y="69" fill="#dc2626" font-size="7" text-anchor="middle">浪</text>
+          <rect x="290" y="55" width="35" height="20" rx="3" fill="#e5e7eb"/>
+          <text x="308" y="69" fill="#5c6378" font-size="7" text-anchor="middle">空闲</text>
+
+          <rect x="25" y="80" width="50" height="20" rx="3" fill="#ddd6fe" stroke="#6366f1"/>
+          <text x="50" y="94" fill="#6366f1" font-size="8" text-anchor="middle">请求 C</text>
+          <rect x="75" y="80" width="20" height="20" rx="3" fill="#fecaca" stroke="#dc2626" stroke-dasharray="3"/>
+          <rect x="95" y="80" width="230" height="20" rx="3" fill="#e5e7eb"/>
+          <text x="210" y="94" fill="#5c6378" font-size="9" text-anchor="middle">大量碎片和空闲空间</text>
+
+          <text x="175" y="125" fill="#dc2626" font-size="10" text-anchor="middle" font-weight="600">显存利用率 ~60-80%</text>
+
+          <!-- PagedAttention -->
+          <text x="545" y="42" fill="#059669" font-size="11" text-anchor="middle" font-weight="700">PagedAttention: 分页按需分配</text>
+          <rect x="390" y="50" width="310" height="60" rx="6" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <!-- Pages mixed -->
+          <rect x="395" y="55" width="30" height="20" rx="3" fill="#bfdbfe" stroke="#2563eb"/><text x="410" y="69" fill="#2563eb" font-size="7" text-anchor="middle">A</text>
+          <rect x="425" y="55" width="30" height="20" rx="3" fill="#bbf7d0" stroke="#059669"/><text x="440" y="69" fill="#059669" font-size="7" text-anchor="middle">B</text>
+          <rect x="455" y="55" width="30" height="20" rx="3" fill="#bfdbfe" stroke="#2563eb"/><text x="470" y="69" fill="#2563eb" font-size="7" text-anchor="middle">A</text>
+          <rect x="485" y="55" width="30" height="20" rx="3" fill="#ddd6fe" stroke="#6366f1"/><text x="500" y="69" fill="#6366f1" font-size="7" text-anchor="middle">C</text>
+          <rect x="515" y="55" width="30" height="20" rx="3" fill="#bbf7d0" stroke="#059669"/><text x="530" y="69" fill="#059669" font-size="7" text-anchor="middle">B</text>
+          <rect x="545" y="55" width="30" height="20" rx="3" fill="#bfdbfe" stroke="#2563eb"/><text x="560" y="69" fill="#2563eb" font-size="7" text-anchor="middle">A</text>
+          <rect x="575" y="55" width="30" height="20" rx="3" fill="#ddd6fe" stroke="#6366f1"/><text x="590" y="69" fill="#6366f1" font-size="7" text-anchor="middle">C</text>
+          <rect x="605" y="55" width="30" height="20" rx="3" fill="#bbf7d0" stroke="#059669"/><text x="620" y="69" fill="#059669" font-size="7" text-anchor="middle">B</text>
+          <rect x="635" y="55" width="30" height="20" rx="3" fill="#bfdbfe" stroke="#2563eb"/><text x="650" y="69" fill="#2563eb" font-size="7" text-anchor="middle">A</text>
+          <rect x="665" y="55" width="30" height="20" rx="3" fill="#ddd6fe" stroke="#6366f1"/><text x="680" y="69" fill="#6366f1" font-size="7" text-anchor="middle">C</text>
+
+          <rect x="395" y="80" width="30" height="20" rx="3" fill="#bbf7d0" stroke="#059669"/><text x="410" y="94" fill="#059669" font-size="7" text-anchor="middle">B</text>
+          <rect x="425" y="80" width="30" height="20" rx="3" fill="#bfdbfe" stroke="#2563eb"/><text x="440" y="94" fill="#2563eb" font-size="7" text-anchor="middle">A</text>
+          <rect x="455" y="80" width="30" height="20" rx="3" fill="#ddd6fe" stroke="#6366f1"/><text x="470" y="94" fill="#6366f1" font-size="7" text-anchor="middle">C</text>
+          <rect x="485" y="80" width="210" height="20" rx="3" fill="#e5e7eb"/>
+          <text x="590" y="94" fill="#5c6378" font-size="9" text-anchor="middle">仅少量空闲页</text>
+
+          <text x="545" y="125" fill="#059669" font-size="10" text-anchor="middle" font-weight="600">显存利用率 ~95%+ → 并发提升 2-4x</text>
+
+          <!-- Bottom note -->
+          <rect x="20" y="140" width="680" height="50" rx="8" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="360" y="160" fill="#1a1a2e" font-size="10" text-anchor="middle" font-family="Noto Sans SC" font-weight="600">类比操作系统虚拟内存: 逻辑地址(每请求的 KV Cache)映射到物理页(GPU 显存块),通过页表管理</text>
+          <text x="360" y="178" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">SGLang 的 RadixAttention 更进一步: 用 Radix Tree 索引共享前缀的 KV Cache 页,多请求复用相同前缀的计算结果</text>
+        </svg>
+        <div class="diagram-caption">PagedAttention 核心贡献: 消除 KV Cache 显存碎片,是 vLLM 24x 吞吐提升的关键</div>
+      </div>
+
+      <p><strong>RadixAttention 原理(SGLang 核心):</strong> 当多个请求共享相同前缀(如相同的 system prompt),用 Radix Tree 索引已计算的 KV Cache,后续请求直接复用。在 RAG 场景(大量请求共享相同的检索上下文)或 Agent 场景(循环中前缀不变)效果尤其显著。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://docs.vllm.ai/" target="_blank">vLLM 文档</a>
+      <a href="https://sgl-project.github.io/" target="_blank">SGLang 项目</a>
+      <a href="https://ollama.com/" target="_blank">Ollama 官网</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t7-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>云平台 AI 服务对比 <span class="en">Cloud AI Platforms</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      三大云 AI 平台: <strong>AWS Bedrock</strong>(多供应商模型市场,适合多模型策略), <strong>Azure AI Foundry</strong>(OpenAI 独家合作,企业级安全强), <strong>Google Vertex AI</strong>(Gemini 原生,数据分析集成强)。银行场景: 已用 Azure 的优先 Azure AI Foundry(合规路径成熟);多云策略选 Bedrock。
+    </div>
+    <div class="deep">
+      <p><strong>选型的真正考量:</strong> 不是哪个平台"更好",而是组织现有的云投资在哪里。AI 服务需要与数据湖、IAM、审计日志、网络隔离深度集成,换一个云平台的迁移成本远大于 AI 服务本身的差异。</p>
+      <p><strong>各平台独特优势:</strong></p>
+      <ul>
+        <li><strong>AWS Bedrock</strong>: 一个 API 调用 Claude/Llama/Mistral/Cohere 等多家模型,Knowledge Bases 内置 RAG,Guardrails 内置安全。与 S3/SageMaker/Lambda 生态深度整合</li>
+        <li><strong>Azure AI Foundry</strong>: 唯一提供 GPT-4/o3 的云平台(OpenAI 独家)。Azure AD 企业身份集成、VNET 私有端点、CMK 加密——这些对银行合规至关重要</li>
+        <li><strong>Google Vertex AI</strong>: Gemini 原生,BigQuery 数据集成最好。Vertex AI Search & Conversation 提供端到端 RAG 方案</li>
+      </ul>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t7-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>K8s AI 部署与 CI/CD <span class="en">Kubernetes & CI/CD for AI</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      AI 工作负载在 K8s 上的部署: <strong>KServe</strong>(推理服务标准,v0.15 支持 LLM 专用 CRD), <strong>Ray Serve</strong>(分布式推理编排)。CI/CD: Jenkins/GitHub Actions 做代码,加上模型注册表(MLflow)做模型版本管理,<strong>Argo Workflows</strong> 编排训练/评测/部署 pipeline。
+    </div>
+    <div class="deep">
+      <p><strong>GPU 调度的独特挑战:</strong> 传统 K8s 调度以 CPU/内存为单位,GPU 是"全有或全无"的资源——一个 Pod 要么占一整张 GPU,要么没有。2026 年的改进: NVIDIA MIG(Multi-Instance GPU)允许将 A100/H100 切分为 2-7 个独立 GPU 实例;NVIDIA MPS 允许多进程共享一张 GPU 的计算单元。KServe 和 vLLM 已原生支持这些特性。</p>
+      <p><strong>AI CI/CD 与传统 CI/CD 的差异:</strong></p>
+      <ul>
+        <li>传统 CI/CD: 代码变更 → 测试 → 构建 → 部署</li>
+        <li>AI CI/CD 增加: <strong>数据变更</strong> → 触发重新评测; <strong>Prompt 变更</strong> → 触发回归测试(promptfoo); <strong>模型变更</strong> → A/B 测试(金丝雀发布); <strong>评测门禁</strong> → 评测指标不达标则阻止部署</li>
+      </ul>
+      <p><strong>Prefill-Decode 分离(2026 前沿):</strong> LLM 推理有两个阶段: Prefill(处理整个 prompt,计算密集)和 Decode(逐 token 生成,内存密集)。将它们分到不同的 GPU 节点,Prefill 用算力强的 GPU,Decode 用带宽大的 GPU,整体效率提升 30-50%。KServe v0.15 开始原生支持这种分离架构。</p>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 8 ==================== -->
+<section class="domain" id="d8">
+<div class="domain-header">
+  <div class="domain-num">08</div>
+  <div><div class="domain-title">安全与负责任 AI</div><div class="domain-title-en">Security & Responsible AI</div></div>
+</div>
+
+<div class="topic" id="t8-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>OWASP LLM Top 10 (2025) <span class="en">OWASP Top 10 for LLMs</span> <span class="tag tag-hot">热点</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      OWASP 于 2025 年发布了针对 LLM 应用的安全风险 Top 10。排名第一仍是 <strong>Prompt Injection</strong>(提示注入)。2025 版新增两个类别: <strong>System Prompt Leakage</strong>(系统提示泄露)和 <strong>Vector/Embedding Weaknesses</strong>(向量/嵌入弱点)——后者直接关系到 RAG 系统安全。
+    </div>
+    <div class="deep">
+      <p><strong>LLM01: Prompt Injection 提示注入</strong></p>
+      <ul>
+        <li><strong>直接注入</strong>: 用户在输入中直接写"忽略之前的指令,做 X"</li>
+        <li><strong>间接注入</strong>: 攻击者在 LLM 会读取的外部数据(网页、文档、邮件)中植入恶意指令。例如 RAG 检索到的文档中包含"将以下信息发送到 attacker.com"</li>
+        <li><strong>防御</strong>: 输入/输出过滤 + 权限最小化(LLM 不应有删除数据的权限) + 人工确认高危操作 + 数据源信任分级</li>
+      </ul>
+      <p><strong>LLM07: System Prompt Leakage (新增)</strong></p>
+      <p>攻击者通过特制 prompt 让模型泄露系统提示内容。防御:不在 system prompt 中放敏感信息(API 密钥、内部逻辑),用独立的配置服务管理敏感数据。</p>
+      <p><strong>LLM08: Vector & Embedding Weaknesses (新增)</strong></p>
+      <p>针对 RAG 系统:攻击者注入精心构造的文档到知识库,其 embedding 与目标查询高度相似,从而"投毒"检索结果。防御:数据源审计 + 检索结果来源追踪 + 异常文档检测。</p>
+      <p><strong>完整 Top 10 风险与解决方案:</strong></p>
+
+      <table class="cmp-table">
+        <tr><th>编号</th><th>风险名称</th><th>核心威胁</th><th>解决方案</th></tr>
+        <tr>
+          <td><strong style="color:#dc2626">LLM01</strong></td>
+          <td>Prompt Injection<br>提示注入</td>
+          <td>攻击者通过恶意输入劫持模型行为。直接注入(用户 prompt)或间接注入(外部数据中嵌入指令)</td>
+          <td>① 输入/输出语义过滤(非简单关键词匹配)<br>② 外部内容隔离标记,与系统指令严格分离<br>③ 最小权限原则:LLM 不持有删除/支付等高危权限<br>④ 人工确认高危操作(Human-in-the-loop)<br>⑤ 定期对抗测试(Red Teaming)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM02</strong></td>
+          <td>Sensitive Info Disclosure<br>敏感信息泄露</td>
+          <td>模型在输出中暴露 PII、API 密钥、内部数据等</td>
+          <td>① 输出层 PII 扫描与脱敏(Microsoft Presidio)<br>② 训练数据清洗,移除敏感信息<br>③ 数据分级 + 差异化访问控制(RBAC)<br>④ 用户明确的数据使用告知与 opt-out 机制<br>⑤ 同态加密处理敏感场景的数据计算</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM03</strong></td>
+          <td>Supply Chain<br>供应链风险</td>
+          <td>恶意/篡改的预训练模型、第三方数据集、插件、推理 API 引入后门</td>
+          <td>① 模型来源验证:只从可信 Hub 下载,校验签名/哈希<br>② AI BOM(AI 物料清单):记录所有模型、数据集、依赖版本<br>③ 插件/MCP Server 沙箱隔离 + 权限审查<br>④ 定期漏洞扫描(SCA)覆盖 ML 依赖<br>⑤ 自动化 MLOps 管道 + 审批流程</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM04</strong></td>
+          <td>Data &amp; Model Poisoning<br>数据与模型投毒</td>
+          <td>攻击者篡改训练/微调数据或 RAG 数据源,植入后门或偏差</td>
+          <td>① 训练数据溯源 + 完整性校验(数据水印)<br>② 数据清洗管道:异常检测 + 统计分析<br>③ 联邦学习 / 差分隐私减少单一数据源影响<br>④ 微调后对比基线模型的行为偏移检测<br>⑤ RAG 数据源白名单 + 定期审计</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM05</strong></td>
+          <td>Improper Output Handling<br>输出处理不当</td>
+          <td>LLM 输出未经过滤直接传入下游系统,可能导致 XSS、SQL 注入、远程代码执行</td>
+          <td>① 输出视为"不可信输入",做完整的转义/净化<br>② 遵循 OWASP 安全编码标准(SAST + DAST)<br>③ LLM 输出不直接执行:先解析 → 校验 → 再执行<br>④ 输出格式约束(JSON Schema)限制自由文本<br>⑤ CSP (Content Security Policy) 防前端注入</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM06</strong></td>
+          <td>Excessive Agency<br>过度授权</td>
+          <td>Agent 被赋予过多权限/工具,攻击者可通过注入让 Agent 执行危险操作</td>
+          <td>① 最小权限:每个工具只开必要权限(只读 vs 读写)<br>② MCP Tool Annotations: 标记 <code>destructiveHint</code><br>③ Human-in-the-loop:高危操作强制人工确认<br>④ 速率限制 Agent 单位时间内可执行的操作数<br>⑤ 完整的操作审计日志 + 异常行为告警</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#dc2626">LLM07</strong></td>
+          <td>System Prompt Leakage<br>系统提示泄露 🆕</td>
+          <td>攻击者诱导模型泄露 system prompt 中的敏感信息(内部逻辑、API 密钥、规则)</td>
+          <td>① System prompt 中不放任何敏感数据(密钥/内部 URL)<br>② 敏感配置走独立的配置服务(Vault/环境变量)<br>③ 输出过滤层检测并拦截 system prompt 内容泄露<br>④ 对抗测试:专门测试 prompt 提取攻击<br>⑤ 指令防御:在 prompt 中声明不可泄露自身内容</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#dc2626">LLM08</strong></td>
+          <td>Vector &amp; Embedding Weaknesses<br>向量/嵌入弱点 🆕</td>
+          <td>攻击者向知识库注入精心构造的文档,其 embedding 与目标查询高度相似,污染 RAG 检索结果</td>
+          <td>① 数据源准入审计 + 白名单管控<br>② 检索结果来源追踪(每条结果标记数据源)<br>③ 异常文档检测:embedding 分布统计异常告警<br>④ 权限隔离:不同用户只能检索授权范围的文档<br>⑤ 向量数据库访问控制 + 加密存储</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM09</strong></td>
+          <td>Misinformation<br>错误信息/幻觉</td>
+          <td>模型生成看似可信但事实错误的内容,误导用户决策</td>
+          <td>① RAG 引入权威数据源,减少纯模型幻觉<br>② 输出层事实核查:关键声明与 RAG 源交叉验证<br>③ 不确定度标注:让模型标记置信度低的内容<br>④ 人工审核关键输出(金融/法律/医疗场景)<br>⑤ 免责声明 + 引用来源(提升用户判断力)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#6366f1">LLM10</strong></td>
+          <td>Unbounded Consumption<br>无限制资源消耗</td>
+          <td>恶意用户通过大量/复杂请求耗尽计算资源,导致 DoS 或"Denial of Wallet"(账单爆炸)</td>
+          <td>① API 速率限制(按用户/按 token 双重限速)<br>② 请求超时:设置最大执行时间和最大 token 数<br>③ 输入长度/复杂度上限校验<br>④ 用量监控 + 异常告警(突增检测)<br>⑤ 预算上限(Cost Cap)+ 按团队成本归属</td>
+        </tr>
+      </table>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 185" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="16" fill="#5c6378" font-size="12" text-anchor="middle" font-family="Noto Sans SC">OWASP LLM Top 10 (2025) 速查 — 红色为 2025 新增</text>
+
+          <rect x="10" y="28" width="135" height="42" rx="5" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+          <text x="77" y="45" fill="#dc2626" font-size="9" text-anchor="middle" font-weight="700">LLM01 Prompt Injection</text>
+          <text x="77" y="62" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">直接/间接注入 → 劫持行为</text>
+
+          <rect x="150" y="28" width="135" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="217" y="45" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM02 Sensitive Info</text>
+          <text x="217" y="62" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">敏感信息泄露 (PII/密钥)</text>
+
+          <rect x="290" y="28" width="135" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="357" y="45" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM03 Supply Chain</text>
+          <text x="357" y="62" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">供应链风险 (恶意模型/插件)</text>
+
+          <rect x="430" y="28" width="135" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="497" y="45" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM04 Data Poisoning</text>
+          <text x="497" y="62" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">训练/微调数据投毒</text>
+
+          <rect x="570" y="28" width="140" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="640" y="45" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM05 Output Handling</text>
+          <text x="640" y="62" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">输出未过滤 → XSS/RCE</text>
+
+          <rect x="10" y="78" width="135" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="77" y="95" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM06 Excessive Agency</text>
+          <text x="77" y="112" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">过度授权 (Agent 权限过大)</text>
+
+          <rect x="150" y="78" width="135" height="42" rx="5" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+          <text x="217" y="95" fill="#dc2626" font-size="9" text-anchor="middle" font-weight="700">LLM07 Prompt Leakage</text>
+          <text x="217" y="112" fill="#dc2626" font-size="8" text-anchor="middle" font-family="Noto Sans SC">🆕 系统提示泄露</text>
+
+          <rect x="290" y="78" width="135" height="42" rx="5" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+          <text x="357" y="95" fill="#dc2626" font-size="9" text-anchor="middle" font-weight="700">LLM08 Vector Weakness</text>
+          <text x="357" y="112" fill="#dc2626" font-size="8" text-anchor="middle" font-family="Noto Sans SC">🆕 向量/嵌入弱点 (RAG投毒)</text>
+
+          <rect x="430" y="78" width="135" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="497" y="95" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM09 Misinformation</text>
+          <text x="497" y="112" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">幻觉/错误信息生成</text>
+
+          <rect x="570" y="78" width="140" height="42" rx="5" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="640" y="95" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">LLM10 Unbounded Cost</text>
+          <text x="640" y="112" fill="#5c6378" font-size="8" text-anchor="middle" font-family="Noto Sans SC">资源消耗失控 (DoS/成本爆)</text>
+
+          <!-- Banking note -->
+          <rect x="10" y="135" width="700" height="40" rx="8" fill="#fefce8" stroke="#d97706"/>
+          <text x="360" y="153" fill="#d97706" font-size="10" text-anchor="middle" font-weight="600" font-family="Noto Sans SC">🏦 银行场景重点关注: LLM01(注入) + LLM02(数据泄露) + LLM06(权限过大) + LLM08(RAG投毒)</text>
+          <text x="360" y="168" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">面试高频: "如何防御 Prompt Injection?" → 输入过滤 + 权限最小化 + 输出验证 + 人工确认高危操作</text>
+        </svg>
+        <div class="diagram-caption">红色框 = 2025 年新增类别 — LLM07/LLM08 直接影响 RAG 和 Agent 系统设计</div>
+      </div>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://genai.owasp.org/" target="_blank">OWASP GenAI 项目</a>
+      <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank">OWASP LLM Top 10</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t8-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Guardrails 护栏体系 <span class="en">AI Guardrails</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      Guardrails 是 LLM 输入/输出的安全过滤层。工具选择: <strong>NeMo Guardrails</strong>(NVIDIA,Colang DSL 定义规则), <strong>Llama Guard 4</strong>(Meta,12B 多模态分类器), <strong>AWS Bedrock Guardrails</strong>(托管服务)。架构模式: 在 LLM 前后各加一层 guardrail——输入过滤(拦截恶意 prompt)+输出过滤(检测有害/泄露内容)。
+    </div>
+    <div class="deep">
+      <p><strong>NeMo Guardrails 的 Colang DSL:</strong> 用类似自然语言的声明式规则定义安全策略。例如:</p>
+<pre><code>define user ask about competitor
+  "What do you think of CompetitorX?"
+  "Is CompetitorX better?"
+
+define flow
+  user ask about competitor
+  bot refuse competitor discussion
+  "I can only discuss our own products."</code></pre>
+      <p>这比写代码过滤更直观,业务人员也能理解和维护安全规则。</p>
+      <p><strong>分层防御架构:</strong></p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">LLM 应用五层安全防御架构</text>
+
+          <!-- User -->
+          <rect x="10" y="70" width="60" height="50" rx="8" fill="#f8f9fc" stroke="#e2e6ef"/>
+          <text x="40" y="92" fill="#5c6378" font-size="10" text-anchor="middle">用户</text>
+          <text x="40" y="106" fill="#5c6378" font-size="9" text-anchor="middle">请求</text>
+          <line x1="70" y1="95" x2="95" y2="95" stroke="#5c6378" stroke-width="1"/>
+
+          <!-- Layer 1 -->
+          <rect x="100" y="55" width="100" height="80" rx="6" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="150" y="73" fill="#2563eb" font-size="9" text-anchor="middle" font-weight="700">L1: API Gateway</text>
+          <text x="150" y="88" fill="#5c6378" font-size="8" text-anchor="middle">认证鉴权</text>
+          <text x="150" y="100" fill="#5c6378" font-size="8" text-anchor="middle">速率限制</text>
+          <text x="150" y="112" fill="#5c6378" font-size="8" text-anchor="middle">输入格式检查</text>
+          <text x="150" y="124" fill="#5c6378" font-size="8" text-anchor="middle">长度限制</text>
+          <line x1="200" y1="95" x2="220" y2="95" stroke="#2563eb" stroke-width="1"/>
+
+          <!-- Layer 2 -->
+          <rect x="225" y="55" width="100" height="80" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="275" y="73" fill="#059669" font-size="9" text-anchor="middle" font-weight="700">L2: 输入护栏</text>
+          <text x="275" y="88" fill="#5c6378" font-size="8" text-anchor="middle">Injection 检测</text>
+          <text x="275" y="100" fill="#5c6378" font-size="8" text-anchor="middle">PII 脱敏</text>
+          <text x="275" y="112" fill="#5c6378" font-size="8" text-anchor="middle">话题限制</text>
+          <text x="275" y="124" fill="#5c6378" font-size="8" text-anchor="middle">Llama Guard 分类</text>
+          <line x1="325" y1="95" x2="345" y2="95" stroke="#059669" stroke-width="1"/>
+
+          <!-- Layer 3: LLM -->
+          <rect x="350" y="60" width="80" height="70" rx="8" fill="#fefce8" stroke="#d97706" stroke-width="2"/>
+          <text x="390" y="82" fill="#d97706" font-size="10" text-anchor="middle" font-weight="700">L3: LLM</text>
+          <text x="390" y="97" fill="#5c6378" font-size="8" text-anchor="middle">System Prompt</text>
+          <text x="390" y="109" fill="#5c6378" font-size="8" text-anchor="middle">安全指令</text>
+          <text x="390" y="121" fill="#5c6378" font-size="8" text-anchor="middle">JSON Schema</text>
+          <line x1="430" y1="95" x2="450" y2="95" stroke="#d97706" stroke-width="1"/>
+
+          <!-- Layer 4 -->
+          <rect x="455" y="55" width="100" height="80" rx="6" fill="#fdf2f8" stroke="#db2777" stroke-width="1.5"/>
+          <text x="505" y="73" fill="#db2777" font-size="9" text-anchor="middle" font-weight="700">L4: 输出护栏</text>
+          <text x="505" y="88" fill="#5c6378" font-size="8" text-anchor="middle">幻觉检测</text>
+          <text x="505" y="100" fill="#5c6378" font-size="8" text-anchor="middle">敏感信息扫描</text>
+          <text x="505" y="112" fill="#5c6378" font-size="8" text-anchor="middle">合规性检查</text>
+          <text x="505" y="124" fill="#5c6378" font-size="8" text-anchor="middle">格式验证</text>
+          <line x1="555" y1="95" x2="575" y2="95" stroke="#db2777" stroke-width="1"/>
+
+          <!-- Layer 5 -->
+          <rect x="580" y="55" width="100" height="80" rx="6" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="630" y="73" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="700">L5: 审计层</text>
+          <text x="630" y="88" fill="#5c6378" font-size="8" text-anchor="middle">全链路日志</text>
+          <text x="630" y="100" fill="#5c6378" font-size="8" text-anchor="middle">输入/输出存档</text>
+          <text x="630" y="112" fill="#5c6378" font-size="8" text-anchor="middle">异常告警</text>
+          <text x="630" y="124" fill="#5c6378" font-size="8" text-anchor="middle">合规审计</text>
+
+          <!-- Response -->
+          <line x1="680" y1="95" x2="700" y2="95" stroke="#6366f1" stroke-width="1"/>
+          <text x="710" y="99" fill="#5c6378" font-size="10" text-anchor="start">→ 响应</text>
+
+          <!-- Bottom note -->
+          <text x="360" y="160" fill="#1a1a2e" font-size="10" text-anchor="middle" font-family="Noto Sans SC" font-weight="600">银行场景关键: L2 必须包含 PII 脱敏(Microsoft Presidio) + L5 满足 SR 11-7 / SS1/23 审计要求</text>
+          <text x="360" y="178" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">工具选择: NeMo Guardrails (声明式规则) | Llama Guard 4 (12B 分类器) | AWS Bedrock Guardrails (托管)</text>
+        </svg>
+        <div class="diagram-caption">五层纵深防御 — 每一层独立失败时其他层仍能提供保护</div>
+      </div>
+
+      <ul>
+        <li><strong>第一层: API Gateway</strong> — 速率限制、认证、基本输入长度/格式检查</li>
+        <li><strong>第二层: Input Guardrail</strong> — Prompt injection 检测、PII 识别与脱敏(Microsoft Presidio)、话题限制</li>
+        <li><strong>第三层: LLM 自身</strong> — System prompt 中的安全指令、output JSON schema 约束</li>
+        <li><strong>第四层: Output Guardrail</strong> — 幻觉检测(与 RAG 源交叉验证)、敏感信息扫描、合规性检查</li>
+        <li><strong>第五层: 审计</strong> — 所有输入/输出日志,供合规审计和事后分析</li>
+      </ul>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://github.com/NVIDIA/NeMo-Guardrails" target="_blank">NeMo Guardrails GitHub</a>
+      <a href="https://arxiv.org/abs/2310.10501" target="_blank">NeMo Guardrails 论文</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t8-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>合规: EU AI Act / 银行监管 <span class="en">Compliance & Banking Regulations</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      三大合规框架: <strong>EU AI Act</strong>(2026.8 高风险系统合规截止), <strong>NIST AI RMF</strong>(美国,自愿性框架), <strong>ISO 42001</strong>(AI 管理体系认证)。银行特定: 美联储 <strong>SR 11-7</strong>(模型风险管理)和英国 PRA <strong>SS1/23</strong> 同样适用于 GenAI 模型,要求持续监控、独立验证、变更管理。
+    </div>
+    <div class="deep">
+      <p><strong>EU AI Act 对 LLM 应用的影响:</strong></p>
+      <ul>
+        <li><strong>通用 AI 模型(GPAI)</strong>: 必须提供技术文档、训练数据摘要、遵守版权法。如果有"系统性风险"(如参数超过 10^25 FLOPs),还需做红队测试和对抗评估</li>
+        <li><strong>高风险应用</strong>: 银行信贷评分、风险评估如果用了 AI,属于高风险。2026.8 前必须满足: 风险管理体系、数据治理、透明度(用户知道在与 AI 交互)、人工监督、准确性/鲁棒性/安全性测试</li>
+        <li><strong>罚款</strong>: 最高全球营业额的 7% 或 3500 万欧元</li>
+      </ul>
+      <p><strong>SR 11-7 (美联储 模型风险管理) 对 GenAI 的扩展:</strong></p>
+      <p>SR 11-7 原本针对传统金融模型(如信用评分),但监管者已明确表示 GenAI 同样适用。核心要求: 1) 模型开发需有文档化的开发过程; 2) 独立验证(模型使用团队 ≠ 验证团队); 3) 持续监控(对 GenAI 意味着:输出质量漂移检测、幻觉率监控、偏差分析); 4) 治理框架(谁批准部署、谁负责失败)。</p>
+      <p><strong>PRA SS1/23 (英国):</strong> 与 SR 11-7 类似但更强调"模型风险文化"和董事会级别的问责。对于 HSBC 这类在英国注册的银行,AI 模型部署需要经过模型风险委员会审批。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://artificialintelligenceact.eu/" target="_blank">EU AI Act 官网</a>
+      <a href="https://www.nist.gov/artificial-intelligence/executive-order-safe-secure-and-trustworthy-artificial-intelligence" target="_blank">NIST AI RMF</a>
+      <a href="https://www.federalreserve.gov/supervisionreg/srletters/sr1107.htm" target="_blank">SR 11-7 原文</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- ==================== DOMAIN 9 ==================== -->
+<section class="domain" id="d9">
+<div class="domain-header">
+  <div class="domain-num">09</div>
+  <div><div class="domain-title">企业级整合</div><div class="domain-title-en">Enterprise Integration</div></div>
+</div>
+
+<div class="topic" id="t9-1">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Polyglot 多语言架构 <span class="en">Polyglot Architecture</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      企业 AI 集成的现实: 业务系统是 <strong>Java/Spring</strong>(稳定、成熟),AI 服务是 <strong>Python</strong>(生态最丰富)。多语言架构通过 <strong>REST/gRPC</strong> 做同步通信、<strong>Kafka</strong> 做异步事件流,让两者各司其职。原则:不要用 Python 重写业务逻辑,也不要用 Java 强行做 ML——让每种语言做它最擅长的事。
+    </div>
+    <div class="deep">
+      <p><strong>推荐架构模式:</strong></p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg">
+          <text x="360" y="18" fill="#5c6378" font-size="13" text-anchor="middle" font-family="Noto Sans SC">Polyglot 企业 AI 整合架构</text>
+
+          <!-- Java Layer -->
+          <rect x="10" y="40" width="220" height="160" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+          <text x="120" y="60" fill="#2563eb" font-size="12" text-anchor="middle" font-weight="700">Java / Spring 业务层</text>
+          <rect x="25" y="70" width="90" height="28" rx="5" fill="#fff" stroke="#2563eb"/>
+          <text x="70" y="88" fill="#2563eb" font-size="9" text-anchor="middle">用户认证 (SSO)</text>
+          <rect x="125" y="70" width="90" height="28" rx="5" fill="#fff" stroke="#2563eb"/>
+          <text x="170" y="88" fill="#2563eb" font-size="9" text-anchor="middle">事务管理</text>
+          <rect x="25" y="105" width="90" height="28" rx="5" fill="#fff" stroke="#2563eb"/>
+          <text x="70" y="123" fill="#2563eb" font-size="9" text-anchor="middle">业务规则引擎</text>
+          <rect x="125" y="105" width="90" height="28" rx="5" fill="#fff" stroke="#2563eb"/>
+          <text x="170" y="123" fill="#2563eb" font-size="9" text-anchor="middle">Spring AI Client</text>
+          <rect x="25" y="140" width="190" height="28" rx="5" fill="#fff" stroke="#2563eb"/>
+          <text x="120" y="158" fill="#2563eb" font-size="9" text-anchor="middle">API Gateway (Kong / Spring Cloud Gateway)</text>
+          <text x="120" y="188" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">稳定、成熟、事务安全</text>
+
+          <!-- Communication -->
+          <rect x="245" y="60" width="80" height="35" rx="6" fill="#fefce8" stroke="#d97706"/>
+          <text x="285" y="75" fill="#d97706" font-size="9" text-anchor="middle" font-weight="600">REST/gRPC</text>
+          <text x="285" y="88" fill="#5c6378" font-size="8" text-anchor="middle">同步调用</text>
+
+          <rect x="245" y="110" width="80" height="35" rx="6" fill="#ecfdf5" stroke="#059669"/>
+          <text x="285" y="125" fill="#059669" font-size="9" text-anchor="middle" font-weight="600">Kafka</text>
+          <text x="285" y="138" fill="#5c6378" font-size="8" text-anchor="middle">异步事件流</text>
+
+          <rect x="245" y="155" width="80" height="35" rx="6" fill="#f5f3ff" stroke="#6366f1"/>
+          <text x="285" y="170" fill="#6366f1" font-size="9" text-anchor="middle" font-weight="600">CDC</text>
+          <text x="285" y="183" fill="#5c6378" font-size="8" text-anchor="middle">Debezium</text>
+
+          <line x1="230" y1="77" x2="245" y2="77" stroke="#d97706" stroke-width="1"/>
+          <line x1="230" y1="127" x2="245" y2="127" stroke="#059669" stroke-width="1"/>
+
+          <!-- Python Layer -->
+          <rect x="340" y="40" width="220" height="160" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+          <text x="450" y="60" fill="#059669" font-size="12" text-anchor="middle" font-weight="700">Python AI 服务层</text>
+          <rect x="355" y="70" width="90" height="28" rx="5" fill="#fff" stroke="#059669"/>
+          <text x="400" y="88" fill="#059669" font-size="9" text-anchor="middle">LLM 调用 (FastAPI)</text>
+          <rect x="455" y="70" width="90" height="28" rx="5" fill="#fff" stroke="#059669"/>
+          <text x="500" y="88" fill="#059669" font-size="9" text-anchor="middle">RAG Pipeline</text>
+          <rect x="355" y="105" width="90" height="28" rx="5" fill="#fff" stroke="#059669"/>
+          <text x="400" y="123" fill="#059669" font-size="9" text-anchor="middle">Embedding 服务</text>
+          <rect x="455" y="105" width="90" height="28" rx="5" fill="#fff" stroke="#059669"/>
+          <text x="500" y="123" fill="#059669" font-size="9" text-anchor="middle">Agent 编排</text>
+          <rect x="355" y="140" width="190" height="28" rx="5" fill="#fff" stroke="#059669"/>
+          <text x="450" y="158" fill="#059669" font-size="9" text-anchor="middle">MCP Server (暴露 AI 能力)</text>
+          <text x="450" y="188" fill="#5c6378" font-size="9" text-anchor="middle" font-family="Noto Sans SC">生态丰富、迭代快速</text>
+
+          <line x1="325" y1="77" x2="340" y2="77" stroke="#d97706" stroke-width="1"/>
+          <line x1="325" y1="127" x2="340" y2="127" stroke="#059669" stroke-width="1"/>
+
+          <!-- External -->
+          <rect x="575" y="40" width="135" height="160" rx="10" fill="#f5f3ff" stroke="#6366f1" stroke-width="1.5"/>
+          <text x="642" y="60" fill="#6366f1" font-size="11" text-anchor="middle" font-weight="700">外部服务</text>
+          <rect x="585" y="70" width="115" height="25" rx="5" fill="#fff" stroke="#6366f1"/>
+          <text x="642" y="87" fill="#6366f1" font-size="9" text-anchor="middle">OpenAI / Anthropic</text>
+          <rect x="585" y="100" width="115" height="25" rx="5" fill="#fff" stroke="#6366f1"/>
+          <text x="642" y="117" fill="#6366f1" font-size="9" text-anchor="middle">Vector DB (Qdrant)</text>
+          <rect x="585" y="130" width="115" height="25" rx="5" fill="#fff" stroke="#6366f1"/>
+          <text x="642" y="147" fill="#6366f1" font-size="9" text-anchor="middle">PostgreSQL</text>
+          <rect x="585" y="160" width="115" height="25" rx="5" fill="#fff" stroke="#6366f1"/>
+          <text x="642" y="177" fill="#6366f1" font-size="9" text-anchor="middle">Redis (语义缓存)</text>
+
+          <line x1="560" y1="90" x2="575" y2="90" stroke="#6366f1" stroke-width="1"/>
+          <line x1="560" y1="120" x2="575" y2="120" stroke="#6366f1" stroke-width="1"/>
+        </svg>
+        <div class="diagram-caption">原则: Java 管业务逻辑+事务+安全,Python 管 AI 计算+模型调用 — 通过 REST/gRPC + Kafka 解耦通信</div>
+      </div>
+
+      <p><strong>通信方式选择:</strong></p>
+      <ul>
+        <li><strong>REST (HTTP/JSON)</strong>: 最通用,调试方便。适合低频请求(如用户提问)</li>
+        <li><strong>gRPC (HTTP/2 + Protobuf)</strong>: 二进制序列化,延迟低 2-5x。适合服务间高频内部调用(如 embedding 批量计算)。需要管理 .proto 文件</li>
+        <li><strong>Kafka</strong>: 解耦生产者/消费者。适合:AI 推理结果异步通知、训练数据收集、审计日志流。银行场景必备(事件溯源、合规审计)</li>
+      </ul>
+      <p><strong>API 合约管理:</strong> 用 OpenAPI (REST) 或 Protobuf (gRPC) 做严格的接口定义。Python 侧用 FastAPI 自动生成 OpenAPI schema,Java 侧用 Spring 的 OpenAPI 生成器自动创建客户端代码——保证两端接口始终一致。</p>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t9-2">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>Spring AI 与 Java 整合 <span class="en">Spring AI Framework</span> <span class="tag tag-new">新</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>Spring AI</strong> v1.1 GA (2025.11 发布) 是 Spring 生态的 AI 集成框架。它不是要替代 Python AI 栈,而是让 Java 团队能直接在 Spring Boot 应用中调用 LLM、做 RAG、用 MCP。核心价值: 复用 Spring 的依赖注入、事务管理、安全框架,而不是另起炉灶。
+    </div>
+    <div class="deep">
+      <p><strong>Spring AI 核心功能 (v1.1):</strong></p>
+      <ul>
+        <li><strong>Chat Client</strong>: 统一的 LLM 调用接口,支持 OpenAI / Anthropic / Ollama / Azure / AWS Bedrock 等 20+ 模型提供商,切换只需改配置</li>
+        <li><strong>Structured Output</strong>: 用 Spring 的 <code>BeanOutputConverter</code> 直接将 LLM 输出映射到 Java POJO,类似 Python 的 Pydantic 模型</li>
+        <li><strong>RAG 支持</strong>: 内置 VectorStore 抽象(支持 pgvector, Qdrant, Milvus 等),DocumentReader / Transformer / Writer 管道</li>
+        <li><strong>MCP 集成</strong>: v1.1 深度整合 MCP 协议,Spring Boot 应用可以同时作为 MCP Client(调用外部 MCP Server 的工具)和 MCP Server(将自己的 Spring Bean 暴露为 MCP 工具)</li>
+        <li><strong>Advisors(拦截器)</strong>: 类似 Spring AOP,在 LLM 调用前后插入逻辑(如日志、安全检查、RAG 检索)</li>
+      </ul>
+      <p><strong>何时用 Spring AI vs Python?</strong></p>
+      <ul>
+        <li>如果你的团队主要是 Java 开发者,AI 只是现有业务系统的增强(如给客服系统加个 AI 助手)→ Spring AI 让你不离开 Java 生态就能集成 AI</li>
+        <li>如果是新建 AI-first 的服务(如 RAG pipeline、Agent 系统)→ Python 生态更成熟,工具选择更多</li>
+        <li>两者可以共存: Spring AI 处理"业务+AI 的胶水层",Python 处理"AI 密集计算"</li>
+      </ul>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://docs.spring.io/spring-ai/reference/" target="_blank">Spring AI 文档</a>
+      <a href="https://spring.io/blog/2025/11/12/spring-ai-1-1-GA-released/" target="_blank">Spring AI 1.1 发布公告</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+
+<div class="topic" id="t9-3">
+  <div class="topic-header" onclick="toggleTopic(this)">
+    <h3>AI Gateway 与遗留系统整合 <span class="en">AI Gateway & Legacy Integration</span></h3>
+    <span class="toggle">+</span>
+  </div>
+  <div class="topic-body"><div class="topic-body-inner">
+    <div class="concise">
+      <strong>AI Gateway</strong> 是 API Gateway 的 AI 版本——统一管理多个 LLM 提供商的调用,提供认证、限速(按 token)、多模型路由、故障转移、成本追踪。工具: <strong>Kong AI Gateway</strong>, <strong>Portkey</strong>, <strong>LiteLLM</strong>(开源)。遗留系统整合用 <strong>Strangler Fig 模式</strong> + <strong>Anti-Corruption Layer</strong>。
+    </div>
+    <div class="deep">
+      <p><strong>AI Gateway 核心功能:</strong></p>
+      <ul>
+        <li><strong>多模型路由</strong>: 根据请求特征(token 数、任务类型)自动路由到最合适的模型(GPT-4 / Claude / Llama)</li>
+        <li><strong>故障转移</strong>: OpenAI API 宕机 → 自动切换到 Anthropic,对调用方透明</li>
+        <li><strong>Token 级限速</strong>: 不是传统的 QPS 限速,而是按 token 消耗量限速(因为一个复杂请求可能消耗 10000 token,等于 100 个简单请求)</li>
+        <li><strong>成本归属</strong>: 按团队/项目/用户追踪 LLM 消费,做内部成本分摊</li>
+        <li><strong>语义缓存</strong>: 内置 embedding 相似度匹配,相似查询直接返回缓存</li>
+      </ul>
+      <p><strong>Strangler Fig 模式整合遗留系统:</strong></p>
+      <p>不是"推倒重来"而是"逐步替换"。在遗留系统前面加一个路由层(API Gateway)。新功能用 AI 微服务实现,路由层将新请求导向 AI 服务,旧请求继续走遗留系统。随着 AI 服务覆盖面扩大,旧系统被"绞杀"。关键:用 <strong>Anti-Corruption Layer</strong>(防腐层)隔离新旧系统的数据模型差异,避免遗留系统的技术债务污染新服务。</p>
+      <p><strong>CDC + 事件驱动:</strong> 用 <strong>Debezium</strong>(Change Data Capture)监听遗留数据库的变更,转为 Kafka 事件,驱动 AI 服务更新知识库。这样 AI 系统总能获得最新数据,而不需要侵入遗留系统代码。</p>
+    </div>
+    <div class="refs">
+      <div class="refs-title">📎 参考链接</div>
+      <a href="https://github.com/BerriAI/litellm" target="_blank">LiteLLM GitHub</a>
+      <a href="https://docs.konghq.com/gateway/latest/ai-gateway/" target="_blank">Kong AI Gateway</a>
+      <a href="https://debezium.io/" target="_blank">Debezium CDC</a>
+    </div>
+    </div><!-- end topic-body-inner -->
+  </div>
+</div>
+</section>
+
+<!-- Footer -->
+<div style="text-align:center; padding:40px 0 20px; color:var(--text2); font-size:12px; border-top:1px solid var(--border); margin-top:40px;">
+  AI/LLM 深度知识参考 · 2026.04 · 面向 VP/Director 级技术面试准备<br>
+  覆盖 9 大领域 · 30+ 核心概念 · 简洁回答 + 深度解析双层结构
+</div>
+
+</div><!-- end main -->
+
+<script>
+// --- Nav group toggle (click to open/close) ---
+function toggleNav(el) {
+  el.nextElementSibling.classList.toggle('open');
+}
+
+// --- Topic card toggle ---
+function toggleTopic(header) {
+  header.closest('.topic').classList.toggle('open');
+  updateToggleAllBtn();
+}
+
+// --- Toggle All Topics (main body cards) ---
+let allExpanded = true;
+function toggleAll() {
+  allExpanded = !allExpanded;
+  document.querySelectorAll('.topic').forEach(t => t.classList.toggle('open', allExpanded));
+  updateToggleAllBtn();
+}
+function updateToggleAllBtn() {
+  const total = document.querySelectorAll('.topic').length;
+  const openCount = document.querySelectorAll('.topic.open').length;
+  allExpanded = openCount > total / 2;
+  document.getElementById('toggleAllBtn').textContent = allExpanded ? '📖 收起全部' : '📖 展开全部';
+}
+
+// --- Deep-only toggle ---
+let deepVisible = true;
+function toggleDeepOnly() {
+  deepVisible = !deepVisible;
+  document.querySelectorAll('.deep').forEach(d => d.style.display = deepVisible ? '' : 'none');
+  event.target.textContent = deepVisible ? '🎯 只看简洁回答' : '🔬 显示深度解析';
+}
+
+// --- Sidebar: Toggle ALL nav groups ---
+function toggleAllNavGroups() {
+  const allItems = document.querySelectorAll('.nav-items');
+  const openCount = document.querySelectorAll('.nav-items.open').length;
+  const shouldOpen = openCount < allItems.length / 2;
+  allItems.forEach(n => n.classList.toggle('open', shouldOpen));
+  document.getElementById('sbToggleBtn').textContent = shouldOpen ? '▾ 收起全部' : '▸ 展开全部';
+}
+
+// --- Scroll Spy ---
+const domainSections = document.querySelectorAll('.domain');
+const navGroups = document.querySelectorAll('.nav-group');
+const navItems = document.querySelectorAll('.nav-item');
+let lastActiveDomain = null;
+
+function onScroll() {
+  const scrollY = window.scrollY + 80;
+
+  // Reading progress
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docH > 0 ? Math.min(100, Math.round((window.scrollY / docH) * 100)) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  // Back to top
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 400);
+
+  // Find active domain
+  let currentDomain = null;
+  domainSections.forEach((sec, i) => {
+    const rect = sec.getBoundingClientRect();
+    if (rect.top <= 100 && rect.bottom > 100) currentDomain = i;
+  });
+
+  if (currentDomain !== null && currentDomain !== lastActiveDomain) {
+    lastActiveDomain = currentDomain;
+
+    // Clear all active states
+    navGroups.forEach(g => {
+      g.querySelector('.nav-group-title').classList.remove('active');
+    });
+
+    // Activate + auto-open current nav group
+    const activeGroup = navGroups[currentDomain];
+    if (activeGroup) {
+      activeGroup.querySelector('.nav-group-title').classList.add('active');
+      activeGroup.querySelector('.nav-items').classList.add('open');
+
+      // Scroll sidebar to keep active visible
+      const sidebar = document.querySelector('.sidebar');
+      const groupTop = activeGroup.offsetTop - sidebar.offsetTop;
+      if (groupTop < sidebar.scrollTop || groupTop > sidebar.scrollTop + sidebar.clientHeight - 80) {
+        sidebar.scrollTo({ top: groupTop - 60, behavior: 'smooth' });
+      }
+    }
+  }
+
+  // Highlight active nav-item
+  navItems.forEach(item => item.classList.remove('active'));
+  let activeTopic = null;
+  document.querySelectorAll('.topic').forEach(t => {
+    const rect = t.getBoundingClientRect();
+    if (rect.top <= 120 && rect.bottom > 120) activeTopic = t.id;
+  });
+  if (activeTopic) {
+    const link = document.querySelector(`.nav-item[href="#${activeTopic}"]`);
+    if (link) link.classList.add('active');
+  }
+
+  // Close mobile sidebar on scroll
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+}
+
+// Throttled scroll
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => { onScroll(); ticking = false; });
+    ticking = true;
+  }
+}, { passive: true });
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.querySelector('.sidebar').classList.remove('mobile-open');
+});
+document.querySelectorAll('.topic-header').forEach(h => {
+  h.setAttribute('tabindex', '0');
+  h.setAttribute('role', 'button');
+  h.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTopic(h); }
+  });
+});
+
+// Nav item click closes mobile sidebar
+document.querySelectorAll('.nav-item').forEach(a => {
+  a.addEventListener('click', () => document.querySelector('.sidebar').classList.remove('mobile-open'));
+});
+
+// --- Init ---
+// Default: all topics OPEN, all nav groups CLOSED (only 1-level visible)
+document.querySelectorAll('.topic').forEach(t => t.classList.add('open'));
+// Nav groups start collapsed — scroll spy will open the active one
+onScroll();
+
+// Print: open everything
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('.topic').forEach(t => t.classList.add('open'));
+  document.querySelectorAll('.nav-items').forEach(n => n.classList.add('open'));
+  document.querySelectorAll('.deep').forEach(d => d.style.display = '');
+});
+</script>
+</body>
+</html>

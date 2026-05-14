@@ -1,0 +1,2507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM 面试知识库 — Python · LangChain · LangGraph · HuggingFace</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --bg2: #ffffff;
+    --bg3: #eef1f6;
+    --border: #d8dde8;
+    --border2: #c4ccd9;
+    --text: #2d3748;
+    --text-dim: #718096;
+    --text-bright: #1a202c;
+    --accent: #2563eb;
+    --accent2: #1d4ed8;
+    --green: #16a34a;
+    --orange: #b45309;
+    --purple: #7c3aed;
+    --red: #dc2626;
+    --teal: #0d9488;
+    --gold: #92400e;
+    --tag-bg: #f0f4ff;
+    --tag-border: #bfdbfe;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif SC', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 28px 0 40px;
+    z-index: 50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .sidebar-brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .sidebar-brand-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .sidebar-brand-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.3;
+  }
+
+  .sidebar-search {
+    margin: 0 12px 12px;
+    position: relative;
+  }
+  .sidebar-search input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px 7px 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-bright);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .sidebar-search input::placeholder { color: var(--text-dim); }
+  .sidebar-search input:focus { border-color: var(--accent); }
+  .sidebar-search-icon {
+    position: absolute; left: 9px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim); font-size: 13px; pointer-events: none;
+  }
+
+  .sidebar-group-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    padding: 12px 20px 4px;
+  }
+
+  .sidebar-section {
+    margin-bottom: 2px;
+  }
+
+  .sidebar-section-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    text-decoration: none;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .sidebar-section-link:hover {
+    background: var(--bg3);
+    border-left-color: var(--border2);
+  }
+  .sidebar-section-link.active {
+    background: rgba(37,99,235,0.06);
+    border-left-color: var(--accent);
+  }
+  .sidebar-section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    min-width: 18px;
+  }
+  .sidebar-section-link.active .sidebar-section-num { color: var(--accent); }
+  .sidebar-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 500;
+    flex: 1;
+    line-height: 1.3;
+  }
+  .sidebar-section-link.active .sidebar-section-title { color: var(--accent2); font-weight: 700; }
+  .sidebar-chevron {
+    font-size: 9px;
+    color: var(--text-dim);
+    transition: transform 0.2s;
+  }
+  .sidebar-section.open .sidebar-chevron { transform: rotate(90deg); }
+
+  /* Sub-items */
+  .sidebar-subitems {
+    display: none;
+    padding-bottom: 4px;
+  }
+  .sidebar-section.open .sidebar-subitems { display: block; }
+  .sidebar-subitem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 20px 4px 32px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .sidebar-subitem:hover { background: var(--bg3); }
+  .sidebar-subitem.active-sub { background: rgba(37,99,235,0.04); }
+  .sidebar-subitem-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--border2);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+  .sidebar-subitem.active-sub .sidebar-subitem-dot { background: var(--accent); }
+  .sidebar-subitem-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .sidebar-subitem.active-sub .sidebar-subitem-text { color: var(--text); }
+
+  .sidebar-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .stag-hot { background: rgba(220,38,38,0.1); color: var(--red); }
+  .stag-new { background: rgba(22,163,74,0.1); color: var(--green); }
+
+  /* ── Main Content ── */
+  .main-content {
+    margin-left: 240px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+    position: relative;
+  }
+
+  /* Header */
+  header {
+    padding: 60px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .header-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:0.4;transform:scale(0.8)}
+  }
+
+  h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+
+  .version-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .vtag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .vtag.blue { color: var(--accent); border-color: rgba(88,166,255,0.4); background: rgba(88,166,255,0.08); }
+  .vtag.green { color: var(--green); border-color: rgba(63,185,80,0.4); background: rgba(63,185,80,0.08); }
+  .vtag.purple { color: var(--purple); border-color: rgba(188,140,255,0.4); background: rgba(188,140,255,0.08); }
+  .vtag.orange { color: var(--orange); border-color: rgba(210,153,34,0.4); background: rgba(210,153,34,0.08); }
+  .vtag.gold { color: var(--gold); border-color: rgba(227,179,65,0.4); background: rgba(227,179,65,0.08); }
+
+  /* TOC */
+  .toc {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+  }
+  .toc-title {
+    grid-column: 1 / -1;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .toc a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc a .num {
+    color: var(--border2);
+    min-width: 20px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 56px;
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .section-icon {
+    margin-left: auto;
+    font-size: 20px;
+    opacity: 0.7;
+  }
+
+  /* Interview cards */
+  .cards { display: flex; flex-direction: column; gap: 16px; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border2); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--bg3);
+  }
+  .card-header:hover { background: #e5eaf4; }
+
+  .interview-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .tag-hot { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .tag-core { background: rgba(88,166,255,0.12); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+  .tag-new { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .tag-deep { background: rgba(188,140,255,0.12); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+  .tag-prod { background: rgba(210,153,34,0.12); color: var(--orange); border: 1px solid rgba(210,153,34,0.3); }
+
+  .card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-bright);
+    flex: 1;
+  }
+
+  .card-arrow {
+    color: var(--text-dim);
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
+  .card.open .card-arrow { transform: rotate(90deg); }
+
+  .card-body {
+    display: none;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .card.open .card-body { display: block; }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.9;
+  }
+
+  .card-body strong {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  .card-body em {
+    color: var(--gold);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* Code block */
+  pre {
+    background: #1e2433;
+    border: 1px solid #2d3748;
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 12px 0;
+    position: relative;
+  }
+  pre code { color: #e2e8f0; }
+  pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 8px; right: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .st { color: #a5d6ff; }
+  .cm { color: #8b949e; font-style: italic; }
+  .nm { color: #79c0ff; }
+  .op { color: #ff7b72; }
+
+  /* Key points list */
+  .points {
+    list-style: none;
+    margin: 10px 0 14px;
+  }
+  .points li {
+    font-size: 13.5px;
+    color: var(--text);
+    padding: 5px 0 5px 20px;
+    position: relative;
+    line-height: 1.75;
+  }
+  .points li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+    top: 8px;
+  }
+
+  /* Comparison table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+  th {
+    background: var(--bg3);
+    color: var(--accent2);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+    font-size: 13px;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* Reference links */
+  .refs {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .refs a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 4px 10px;
+    border: 1px solid rgba(88,166,255,0.25);
+    border-radius: 4px;
+    background: rgba(88,166,255,0.06);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .refs a::before { content: '↗'; font-size: 10px; }
+  .refs a:hover {
+    background: rgba(88,166,255,0.15);
+    border-color: rgba(88,166,255,0.5);
+    color: var(--accent2);
+  }
+
+  /* Warning note */
+  .note {
+    background: rgba(210,153,34,0.08);
+    border-left: 3px solid var(--orange);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .note strong { color: var(--orange); }
+
+  .tip {
+    background: rgba(63,185,80,0.07);
+    border-left: 3px solid var(--green);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .tip strong { color: var(--green); }
+
+  /* Question highlight */
+  .q {
+    background: rgba(88,166,255,0.06);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--accent2);
+  }
+  .q::before { content: '面试官: '; color: var(--text-dim); font-style: normal; font-size: 11px; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* Scroll to top */
+  .back-top {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    width: 38px; height: 38px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+    z-index: 100;
+  }
+  .back-top:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* search */
+  .search-wrap {
+    margin-bottom: 36px;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 18px 12px 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-bright);
+    outline: none;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .search-input::placeholder { color: var(--text-dim); }
+  .search-input:focus { border-color: var(--accent); }
+  .search-wrap-inner {
+    position: relative;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 15px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     SIDEBAR NAVIGATION
+════════════════════════════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-label">Interview KB · 2026</div>
+    <div class="sidebar-brand-title">LLM 工程师<br>面试知识库</div>
+  </div>
+
+  <div class="sidebar-search">
+    <span class="sidebar-search-icon">⌕</span>
+    <input type="text" placeholder="搜索..." id="sidebarSearch" />
+  </div>
+
+  <div class="sidebar-group-label">知识模块</div>
+
+  <div class="sidebar-section" data-target="s5">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">01</span>
+      <span class="sidebar-section-title">LLM 核心概念</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s5"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Attention 机制原理</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s5"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Prompt Engineering</span></a>
+      <a class="sidebar-subitem" href="#s5"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">RAG vs Fine-tuning</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s1">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">02</span>
+      <span class="sidebar-section-title">Python 核心基础</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s1"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">async/await 异步编程</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s1"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Generator 流式输出原理</span></a>
+      <a class="sidebar-subitem" href="#s1"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Type Hints & Pydantic</span></a>
+      <a class="sidebar-subitem" href="#s1"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">装饰器 @tool 原理</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s2">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">03</span>
+      <span class="sidebar-section-title">HuggingFace 生态</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s2"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Transformers pipeline / AutoModel</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s2"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Tokenizer 深度理解</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s2"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">datasets 库 · Streaming</span></a>
+      <a class="sidebar-subitem" href="#s2"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Trainer API</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s_vec">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">04</span>
+      <span class="sidebar-section-title">向量检索系统</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s_vec"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Embedding 模型选型</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s_vec"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">向量索引算法 HNSW/IVF</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s_vec"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">向量数据库选型对比</span></a>
+      <a class="sidebar-subitem" href="#s_vec"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">混合检索 · Reranker</span></a>
+      <a class="sidebar-subitem" href="#s_vec"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">pgvector 生产实践</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s3">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">05</span>
+      <span class="sidebar-section-title">LangChain 1.x</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s3"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">create_agent</span><span class="sidebar-tag stag-new">v1.0</span></a>
+      <a class="sidebar-subitem" href="#s3"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Middleware 系统</span><span class="sidebar-tag stag-new">v1.0</span></a>
+      <a class="sidebar-subitem" href="#s3"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Content Blocks 标准化</span></a>
+      <a class="sidebar-subitem" href="#s3"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">RAG 完整链路</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s3"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">LCEL 表达语言</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s4">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">06</span>
+      <span class="sidebar-section-title">LangGraph 1.x</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s4"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">StateGraph · Node · Edge</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s4"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Checkpointer 持久化</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s4"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">Human-in-the-Loop</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s4"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">多 Agent 架构</span></a>
+      <a class="sidebar-subitem" href="#s4"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">LangGraph Platform</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s6">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">07</span>
+      <span class="sidebar-section-title">微调与训练</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s6"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">LoRA / QLoRA 原理</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s6"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">LLaMA-Factory 框架</span></a>
+      <a class="sidebar-subitem" href="#s6"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">训练稳定性</span></a>
+      <a class="sidebar-subitem" href="#s6"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">评估指标 RAGAS</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s8">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">08</span>
+      <span class="sidebar-section-title">FastAPI · SSE · WS</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s8"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">依赖注入 · Lifespan</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s8"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">SSE 流式输出</span><span class="sidebar-tag stag-hot">高频</span></a>
+      <a class="sidebar-subitem" href="#s8"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">WebSocket 全双工</span></a>
+      <a class="sidebar-subitem" href="#s8"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">SSE vs WS 选型</span></a>
+      <a class="sidebar-subitem" href="#s8"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">生产配置 · 限流</span></a>
+      <a class="sidebar-subitem" href="#s8"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">异步陷阱排查</span></a>
+    </div>
+  </div>
+
+  <div class="sidebar-section" data-target="s7">
+    <div class="sidebar-section-link" onclick="toggleSidebar(this)">
+      <span class="sidebar-section-num">09</span>
+      <span class="sidebar-section-title">生产部署</span>
+      <span class="sidebar-chevron">▶</span>
+    </div>
+    <div class="sidebar-subitems">
+      <a class="sidebar-subitem" href="#s7"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">vLLM · PagedAttention</span></a>
+      <a class="sidebar-subitem" href="#s7"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">模型量化 AWQ/GPTQ</span></a>
+      <a class="sidebar-subitem" href="#s7"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">LangSmith 可观测性</span></a>
+      <a class="sidebar-subitem" href="#s7"><span class="sidebar-subitem-dot"></span><span class="sidebar-subitem-text">MCP 协议</span></a>
+    </div>
+  </div>
+
+</nav>
+<!-- ════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════ -->
+<div class="main-content">
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="header-badge">INTERVIEW KNOWLEDGE BASE · 2026</div>
+    <h1><span>//</span> LLM 工程师面试知识库</h1>
+    <div class="header-sub">Python · LangChain 1.x · LangGraph 1.x · HuggingFace · Fine-tuning · Production</div>
+    <div class="version-tags">
+      <span class="vtag blue">LangChain v1.1+</span>
+      <span class="vtag green">LangGraph v1.1+</span>
+      <span class="vtag purple">HuggingFace Transformers</span>
+      <span class="vtag orange">QLoRA / PEFT</span>
+      <span class="vtag gold">2025/2026 最新</span>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <div class="search-wrap-inner">
+      <span class="search-icon">⌕</span>
+      <input class="search-input" type="text" placeholder="搜索知识点、关键词..." id="searchInput" />
+    </div>
+  </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 5 · LLM 核心概念
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>LLM 核心概念</h2>
+      <span class="section-icon">🧠</span>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Embedding 与向量数据库 — 语义搜索原理</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">RAG 中 embedding 是如何工作的？为什么余弦相似度比欧式距离更常用？</div>
+          <p><strong>Embedding</strong> 是将文本映射到高维向量空间的过程，语义相近的文本向量距离近。<em>余弦相似度</em>只关注向量方向（不受长度影响），而欧式距离受向量模长影响，长文档向量模长更大，会导致不公平比较。</p>
+          <ul class="points">
+            <li><strong>BGE-M3</strong>（你项目正在用）：支持多语言、多粒度（dense + sparse + colbert），是目前中英文混合场景最优选择</li>
+            <li><strong>pgvector</strong>：PostgreSQL 扩展，<code>ivfflat</code> 索引（近似，速度快）vs <code>hnsw</code> 索引（准确度高，内存大）</li>
+            <li><strong>ChromaDB</strong>：轻量本地向量库，开发调试首选，支持 metadata 过滤</li>
+            <li><strong>维度权衡</strong>：1536 维（text-embedding-3-large）vs 768 维（BGE），维度高精度高但存储成本大</li>
+            <li><strong>批量 embedding</strong>：生产环境用 <code>embed_documents()</code> 批量处理而非逐条调用，节省 API 费用</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain_huggingface <span class="kw">import</span> HuggingFaceEmbeddings
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+
+<span class="cm"># BGE-M3 多语言 embedding（你项目的选择）</span>
+embedding = HuggingFaceEmbeddings(
+    model_name=<span class="st">"BAAI/bge-m3"</span>,
+    model_kwargs={<span class="st">"device"</span>: <span class="st">"cuda"</span>},
+    encode_kwargs={<span class="st">"normalize_embeddings"</span>: <span class="nm">True</span>}  <span class="cm"># 余弦相似度必须归一化</span>
+)
+vectorstore = Chroma.from_documents(chunks, embedding)</code></pre>
+          <div class="refs">
+            <a href="https://huggingface.co/BAAI/bge-m3" target="_blank">BGE-M3 模型卡片</a>
+            <a href="https://github.com/pgvector/pgvector" target="_blank">pgvector GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Attention 机制 — Transformer 核心原理</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">请解释 Self-Attention 的计算过程，为什么要除以 √d_k？</div>
+          <p><strong>Self-Attention</strong>：每个 token 作为 Query，与序列中所有 token 的 Key 计算点积得到 attention score，softmax 归一化后作为权重对 Value 加权求和。本质是动态计算每个 token 应该"关注"序列中哪些位置。</p>
+          <ul class="points">
+            <li><strong>除以 √d_k</strong>：防止 d_k 过大时点积结果进入 softmax 饱和区（梯度消失），数值稳定性</li>
+            <li><strong>Multi-Head Attention</strong>：并行运行 h 个 attention head，捕获不同类型的依赖关系（句法、语义、指代）</li>
+            <li><strong>KV Cache</strong>：推理时缓存历史 token 的 Key/Value，避免重复计算，是 LLM 推理加速的核心</li>
+            <li><strong>Flash Attention</strong>：IO-aware 的 attention 实现，分块计算避免将完整 attention 矩阵写回 HBM，速度提升 2-4x</li>
+            <li><strong>GQA（Grouped Query Attention）</strong>：Llama 3、Qwen 2.5 使用，多个 Q head 共享一组 KV head，节省 KV Cache 显存</li>
+          </ul>
+          <div class="refs">
+            <a href="https://arxiv.org/abs/1706.03762" target="_blank">Attention is All You Need 原论文</a>
+            <a href="https://arxiv.org/abs/2205.14135" target="_blank">Flash Attention 论文</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">Prompt Engineering — CoT / Few-shot / System Prompt 设计</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何设计 System Prompt 让 Agent 在金融领域表现更好？</div>
+          <p><strong>Prompt Engineering 最佳实践</strong>：① <em>角色定义</em>（清晰的专业身份）→ ② <em>任务约束</em>（明确不能做什么）→ ③ <em>输出格式规范</em>（JSON schema 或 Markdown）→ ④ <em>Few-shot 示例</em>（1-5 个高质量样例）→ ⑤ <em>Chain-of-Thought</em>（"逐步推理"）。</p>
+          <ul class="points">
+            <li><strong>CoT（Chain-of-Thought）</strong>：在 prompt 中加入 "Let's think step by step" 或 few-shot reasoning 示例，显著提升复杂推理准确率</li>
+            <li><strong>Self-consistency</strong>：多次采样取多数投票，减少随机性影响</li>
+            <li><strong>ReAct</strong>：交替进行 Reasoning（思考）和 Acting（调用工具），是 Agent 循环的文字描述</li>
+            <li><strong>XML 标签结构</strong>：Claude 对 XML 格式的 prompt 响应更好，LLaMA/Qwen 用 Markdown</li>
+            <li><strong>上下文窗口管理</strong>：重要信息放开头和结尾（Lost in the Middle 现象）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">RAG vs Fine-tuning — 如何选择？</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">什么情况下用 RAG，什么情况下需要微调？</div>
+          <table>
+            <tr><th>维度</th><th>RAG</th><th>Fine-tuning</th></tr>
+            <tr><td>知识来源</td><td>外部文档检索，可实时更新</td><td>烘焙进模型权重，无法实时更新</td></tr>
+            <tr><td>适合场景</td><td>知识库问答、文档搜索、事实查询</td><td>特定风格/格式、领域术语、结构化输出任务</td></tr>
+            <tr><td>成本</td><td>向量数据库维护 + LLM API 费用</td><td>GPU 训练成本高，但推理更廉价</td></tr>
+            <tr><td>幻觉风险</td><td>较低（有检索证据）</td><td>较高（依赖训练数据质量）</td></tr>
+            <tr><td>你项目</td><td>ChromaDB + BGE-M3 的 RAG 链路</td><td>Qwen2-VL 表格提取微调</td></tr>
+          </table>
+          <div class="tip"><strong>面试最佳答案：</strong>两者互补而非对立。最优实践是先 Fine-tune 学会领域格式和风格，再用 RAG 注入最新知识。你的项目正是此架构：先 QLoRA 微调表格提取能力，再用 RAG 增强 QA。</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 1 · Python 核心基础
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Python 核心基础</h2>
+      <span class="section-icon">🐍</span>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">async/await 与异步编程 — LLM 场景下的必备</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">async/await 和多线程有什么区别？什么时候用异步？</div>
+          <p><strong>核心区别：</strong>Python GIL 限制了多线程的 CPU 并行能力，但 <em>async/await</em> 是单线程协程模型，适合 <strong>IO 密集型</strong>任务（如并发调用多个 LLM API、读写向量数据库）。LLM 应用 99% 的等待时间是网络 IO，因此 async 是标配。</p>
+          <ul class="points">
+            <li><strong>event loop</strong>：asyncio 事件循环负责调度协程，遇到 <code>await</code> 时挂起当前协程，执行其他就绪协程</li>
+            <li><strong>并发 LLM 调用</strong>：使用 <code>asyncio.gather()</code> 同时发起多个 LLM 请求，大幅降低延迟</li>
+            <li><strong>streaming</strong>：async generator (<code>async for chunk in stream</code>) 是 LLM 流式输出的底层实现</li>
+            <li><strong>注意陷阱</strong>：不能在 async 函数中直接调用同步阻塞代码（如 <code>requests.get</code>），需用 <code>loop.run_in_executor()</code> 包装</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="cm"># 并发调用多个 LLM</span>
+<span class="kw">import</span> asyncio
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+
+<span class="kw">async def</span> <span class="fn">call_llm</span>(prompt: <span class="nm">str</span>) -> <span class="nm">str</span>:
+    llm = ChatOpenAI(<span class="st">model=</span><span class="st">"gpt-4o"</span>)
+    resp = <span class="kw">await</span> llm.ainvoke(prompt)
+    <span class="kw">return</span> resp.content
+
+<span class="kw">async def</span> <span class="fn">main</span>():
+    results = <span class="kw">await</span> asyncio.gather(
+        call_llm(<span class="st">"问题1"</span>),
+        call_llm(<span class="st">"问题2"</span>),
+        call_llm(<span class="st">"问题3"</span>),
+    )  <span class="cm"># 3个请求并发执行，总耗时≈单次耗时</span></code></pre>
+          <div class="refs">
+            <a href="https://docs.python.org/3/library/asyncio.html" target="_blank">Python asyncio 官方文档</a>
+            <a href="https://docs.langchain.com/oss/python/concepts/async" target="_blank">LangChain Async 指南</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">Generator 与 Iterator — 流式输出的底层原理</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LangChain 的流式输出（streaming）是如何实现的？</div>
+          <p><strong>Generator 核心：</strong>使用 <code>yield</code> 关键字的函数返回一个 generator 对象，<strong>惰性求值</strong>（lazy evaluation），每次调用 <code>next()</code> 才执行到下一个 yield。LLM streaming 的本质就是 server-sent events → async generator。</p>
+          <ul class="points">
+            <li><code>yield</code> vs <code>return</code>：yield 保留函数状态，下次调用从断点继续；return 销毁栈帧</li>
+            <li><strong>内存效率</strong>：处理大文件/大数据集时用 generator 避免 OOM，datasets 库的 streaming 模式核心就是此原理</li>
+            <li><code>yield from</code>：委托给子 generator，简化嵌套迭代</li>
+            <li><strong>面试加分</strong>：能解释 <code>__iter__</code> / <code>__next__</code> 协议与 generator 的关系</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="cm"># LLM 流式输出的本质</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+
+llm = ChatOpenAI(<span class="st">model=</span><span class="st">"gpt-4o"</span>, streaming=<span class="nm">True</span>)
+
+<span class="cm"># stream() 返回的是一个 generator</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> llm.stream(<span class="st">"解释 transformer"</span>):
+    print(chunk.content, end=<span class="st">""</span>, flush=<span class="nm">True</span>)
+
+<span class="cm"># 自定义 generator —— 理解底层原理</span>
+<span class="kw">def</span> <span class="fn">token_stream</span>(tokens):
+    <span class="kw">for</span> token <span class="kw">in</span> tokens:
+        <span class="kw">yield</span> token  <span class="cm"># 暂停，返回 token，等待下一次 next()</span></code></pre>
+          <div class="refs">
+            <a href="https://docs.langchain.com/oss/python/concepts/streaming" target="_blank">LangChain Streaming 文档</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">类型注解 (Type Hints) — Pydantic 与数据验证</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LangChain 里的 BaseModel 是什么？为什么 LLM 输出结构化数据要用 Pydantic？</div>
+          <p><strong>Pydantic v2</strong> 是 Python LLM 生态的基础设施。LangChain 的 <code>with_structured_output()</code> 底层依赖 Pydantic schema 生成 JSON Schema，告诉 LLM 应该返回什么格式。LangGraph 的 State 也是 TypedDict 或 Pydantic model。</p>
+          <ul class="points">
+            <li><strong>运行时验证</strong>：Pydantic 在运行时校验类型，比纯 type hints（仅静态检查）更安全</li>
+            <li><strong>.model_json_schema()</strong>：自动生成 JSON Schema，LangChain 用它构造 function calling 的参数描述</li>
+            <li><strong>Field 验证器</strong>：<code>@field_validator</code> 装饰器可做自定义业务逻辑校验</li>
+            <li><strong>TypedDict vs Pydantic</strong>：LangGraph State 推荐 TypedDict（无运行时开销），Tool 的输出用 Pydantic BaseModel</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+
+<span class="kw">class</span> <span class="fn">ExtractedInfo</span>(BaseModel):
+    company: <span class="nm">str</span> = Field(description=<span class="st">"公司名称"</span>)
+    revenue: <span class="nm">float</span> = Field(description=<span class="st">"收入（百万）"</span>)
+    year: <span class="nm">int</span> = Field(description=<span class="st">"财年"</span>)
+
+llm = ChatOpenAI(<span class="st">model=</span><span class="st">"gpt-4o"</span>)
+structured_llm = llm.with_structured_output(ExtractedInfo)
+result = structured_llm.invoke(<span class="st">"花旗银行2024年收入为200亿美元"</span>)
+<span class="cm"># result.company == "花旗银行"  自动解析✓</span></code></pre>
+          <div class="refs">
+            <a href="https://docs.pydantic.dev/latest/" target="_blank">Pydantic v2 文档</a>
+            <a href="https://docs.langchain.com/oss/python/concepts/structured_outputs" target="_blank">LangChain 结构化输出</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-deep">深入</span>
+          <span class="card-title">装饰器 (Decorator) — @tool、@chain 的实现原理</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LangChain 的 @tool 装饰器是怎么工作的？</div>
+          <p>装饰器本质是<strong>高阶函数</strong>，接受函数并返回新函数。<code>@tool</code> 装饰器做了三件事：① 把函数的 docstring 作为 tool description；② 利用 type hints / Pydantic 生成参数 schema；③ 把普通函数包装成 LangChain Tool 对象（含 <code>.name</code>, <code>.description</code>, <code>.invoke()</code>）。</p>
+          <ul class="points">
+            <li><strong>functools.wraps</strong>：装饰器应保留原函数的 <code>__name__</code>、<code>__doc__</code>，避免调试困难</li>
+            <li><strong>带参数的装饰器</strong>：三层嵌套函数，LangGraph 的 <code>@node</code> 就是此模式</li>
+            <li><strong>类装饰器</strong>：实现 <code>__call__</code> 方法，适合有状态的装饰器</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain_core.tools <span class="kw">import</span> tool
+
+<span class="nm">@tool</span>
+<span class="kw">def</span> <span class="fn">search_risk_db</span>(query: <span class="nm">str</span>) -> <span class="nm">str</span>:
+    <span class="st">"""在风险数据库中搜索相关法规和风险指标。"""</span>
+    <span class="kw">return</span> f<span class="st">"找到关于 {query} 的风险数据..."</span>
+
+<span class="cm"># 等效于:</span>
+<span class="cm"># search_risk_db.name == "search_risk_db"</span>
+<span class="cm"># search_risk_db.description == "在风险数据库中搜索..."</span>
+<span class="cm"># search_risk_db.args_schema 自动从 type hints 生成</span></code></pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 2 · HuggingFace 生态
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>HuggingFace 生态</h2>
+      <span class="section-icon">🤗</span>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Transformers 核心 API — pipeline / AutoModel / Tokenizer</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">用 HuggingFace 加载模型有哪几种方式？它们的区别是什么？</div>
+          <p><strong>三层 API 设计：</strong>① <em>pipeline()</em> — 最高层封装，一行代码完成推理，适合快速验证；② <em>AutoModel + AutoTokenizer</em> — 中间层，可控性更强，支持自定义推理逻辑；③ 直接使用具体模型类（如 <code>Qwen2VLForConditionalGeneration</code>）— 最底层，完全控制，用于研究和微调。</p>
+          <ul class="points">
+            <li><strong>AutoClass</strong>：根据模型 config 自动选择正确的模型架构，无需硬编码类名</li>
+            <li><strong>from_pretrained()</strong>：本地路径或 HuggingFace Hub ID，支持 <code>revision</code>（指定 commit）、<code>trust_remote_code=True</code></li>
+            <li><strong>device_map="auto"</strong>：自动分配模型层到多 GPU，核心参数，面试必提</li>
+            <li><strong>torch_dtype=torch.bfloat16</strong>：半精度加载，节省显存，BF16 比 FP16 对大模型更稳定</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> transformers <span class="kw">import</span> AutoTokenizer, AutoModelForCausalLM
+<span class="kw">import</span> torch
+
+<span class="cm"># 标准加载方式（适合 7B 以下模型）</span>
+model_id = <span class="st">"Qwen/Qwen2.5-7B-Instruct"</span>
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    device_map=<span class="st">"auto"</span>,          <span class="cm"># 自动多 GPU 分配</span>
+    torch_dtype=torch.bfloat16, <span class="cm"># 半精度，省显存</span>
+    trust_remote_code=<span class="nm">True</span>
+)
+
+inputs = tokenizer(<span class="st">"请总结这篇文章："</span>, return_tensors=<span class="st">"pt"</span>).to(<span class="st">"cuda"</span>)
+output = model.generate(**inputs, max_new_tokens=<span class="nm">512</span>)
+print(tokenizer.decode(output[<span class="nm">0</span>], skip_special_tokens=<span class="nm">True</span>))</code></pre>
+          <div class="refs">
+            <a href="https://huggingface.co/docs/transformers/main/index" target="_blank">Transformers 官方文档</a>
+            <a href="https://huggingface.co/docs/transformers/main/perf_train_gpu_one" target="_blank">单 GPU 训练优化</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Tokenizer 深度理解 — 面试必考</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">BPE 和 WordPiece 分词算法有什么区别？special tokens 是什么？</div>
+          <p><strong>Tokenizer 工作流：</strong>原始文本 → 预处理（normalization）→ 子词分割（BPE/WordPiece/Unigram）→ 转化为 token IDs → 添加 special tokens（<code>[BOS]</code>, <code>[EOS]</code>, <code>[PAD]</code>）。理解 tokenizer 是调试模型输入问题的关键。</p>
+          <ul class="points">
+            <li><strong>BPE（字节对编码）</strong>：GPT 系列用，从字符级出发，贪婪合并高频对，词汇表固定大小</li>
+            <li><strong>WordPiece</strong>：BERT 用，使用 <code>##</code> 标记子词，最大化训练数据似然</li>
+            <li><strong>SentencePiece</strong>：与语言无关，直接处理原始 bytes（Qwen、LLaMA 系列使用）</li>
+            <li><strong>attention_mask</strong>：padding token 位置为 0，告诉模型忽略这些位置</li>
+            <li><strong>Chat template</strong>：<code>apply_chat_template()</code> 将对话列表格式化为模型特定的 prompt 格式（如 Qwen 的 <code>&lt;|im_start|&gt;</code>）</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="cm"># Chat template 应用（LLM 对话推理标配）</span>
+messages = [
+    {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"你是金融分析专家"</span>},
+    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"分析这份财报表格"</span>}
+]
+text = tokenizer.apply_chat_template(
+    messages, tokenize=<span class="nm">False</span>, add_generation_prompt=<span class="nm">True</span>
+)
+<span class="cm"># Qwen2 输出: &lt;|im_start|&gt;system\n你是金融分析专家...&lt;|im_end|&gt;</span></code></pre>
+          <div class="refs">
+            <a href="https://huggingface.co/docs/transformers/main/tokenizer_summary" target="_blank">Tokenizer 原理总结</a>
+            <a href="https://huggingface.co/docs/transformers/main/chat_templating" target="_blank">Chat Templates 文档</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">datasets 库 — 大规模数据处理与 streaming</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">微调时如何高效处理几十 GB 的训练数据？</div>
+          <p><strong>datasets 核心优势：</strong>Apache Arrow 内存格式，<strong>零拷贝</strong>读取（通过 mmap）；支持 <em>streaming 模式</em>，数据不加载进内存直接从磁盘/网络流式迭代。这是处理超大数据集（几十 GB 以上）的唯一实践方案。</p>
+          <ul class="points">
+            <li><strong>map()</strong>：批量变换，设置 <code>batched=True</code> 和 <code>num_proc</code> 并行，比逐条处理快 10x</li>
+            <li><strong>filter()</strong>：按条件过滤，返回新 Dataset，原数据不变（immutable 设计）</li>
+            <li><strong>streaming=True</strong>：加载时只读取 metadata，遍历时按需拉取，内存占用恒定</li>
+            <li><strong>DataCollator</strong>：将一个 batch 的样本整理成模型输入格式，处理 padding 和 labels</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> datasets <span class="kw">import</span> load_dataset
+
+<span class="cm"># Streaming 模式处理大型数据集</span>
+ds = load_dataset(<span class="st">"financial-reports"</span>, split=<span class="st">"train"</span>, streaming=<span class="nm">True</span>)
+
+<span class="cm"># map 并行预处理</span>
+<span class="kw">def</span> <span class="fn">tokenize_fn</span>(batch):
+    <span class="kw">return</span> tokenizer(batch[<span class="st">"text"</span>], truncation=<span class="nm">True</span>, max_length=<span class="nm">2048</span>)
+
+ds_local = load_dataset(<span class="st">"json"</span>, data_files=<span class="st">"train.jsonl"</span>, split=<span class="st">"train"</span>)
+tokenized = ds_local.map(tokenize_fn, batched=<span class="nm">True</span>, num_proc=<span class="nm">8</span>)
+tokenized.save_to_disk(<span class="st">"./tokenized_dataset"</span>)  <span class="cm"># Arrow 格式缓存</span></code></pre>
+          <div class="refs">
+            <a href="https://huggingface.co/docs/datasets/main/index" target="_blank">datasets 文档</a>
+            <a href="https://huggingface.co/docs/datasets/main/stream" target="_blank">Streaming 指南</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">Trainer API — 训练循环的高级封装</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">Trainer 和手写训练循环相比有什么优缺点？</div>
+          <p><strong>Trainer</strong> 封装了分布式训练、混合精度、梯度累积、学习率调度、检查点保存等所有样板代码。<strong>优点</strong>：快速上手，与 HuggingFace 生态（hub、callbacks）无缝集成。<strong>缺点</strong>：定制化训练逻辑（如自定义 loss、multi-task）需要继承重写，调试复杂度高。大多数 LoRA 微调场景用 <em>SFTTrainer</em>（TRL 库）更简洁。</p>
+          <ul class="points">
+            <li><strong>TrainingArguments</strong>：控制所有超参，<code>per_device_train_batch_size</code>、<code>gradient_accumulation_steps</code>、<code>fp16/bf16</code>、<code>save_strategy</code></li>
+            <li><strong>gradient_accumulation_steps</strong>：显存不够时的等效扩大 batch 方案，steps × batch_size = 有效 batch</li>
+            <li><strong>Callbacks</strong>：EarlyStoppingCallback, TensorBoardCallback, 自定义 logging</li>
+            <li><strong>evaluate()</strong>：内置评估循环，搭配 <code>compute_metrics</code> 回调函数</li>
+          </ul>
+          <div class="refs">
+            <a href="https://huggingface.co/docs/transformers/main/trainer" target="_blank">Trainer API 文档</a>
+            <a href="https://huggingface.co/docs/trl/main/sft_trainer" target="_blank">SFTTrainer (TRL)</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION VEC · 向量 Embedding 与向量检索系统
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s_vec">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>向量 Embedding 与向量检索系统</h2>
+      <span class="section-icon">🔍</span>
+    </div>
+    <div class="tip"><strong>背景：</strong>向量检索是 RAG 和语义搜索的基础设施。面试中常考：embedding 模型选型、相似度度量原理、索引算法（HNSW/IVF）、向量数据库选型、以及混合检索工程实现。</div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Embedding 模型选型 — Dense / Sparse / BGE-M3 多粒度</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">中英混合的金融文档场景应该选哪种 embedding 模型？为什么 BGE-M3 优于 OpenAI text-embedding？</div>
+          <p><strong>三类 Embedding 模式的本质差异：</strong></p>
+          <ul class="points">
+            <li><strong>Dense Embedding（稠密向量）</strong>：双编码器架构（Bi-Encoder），query 和 document 分别编码为固定长度向量，用余弦/点积相似度检索。速度快，支持 ANN 索引，但词汇表外词汇（OOV）语义捕捉弱</li>
+            <li><strong>Sparse Embedding（稀疏向量）</strong>：学习型稀疏表示（如 SPLADE），输出类似 TF-IDF 的高维稀疏向量，保留关键词精确匹配能力，适合专业术语、产品型号等精确检索</li>
+            <li><strong>ColBERT（多向量）</strong>：每个 token 生成一个向量，用 MaxSim 运算匹配，精度最高但存储成本最大（token 数 × 维度）</li>
+          </ul>
+          <p><strong>BGE-M3 的核心优势：</strong>三合一模型，<em>同一个模型</em>同时支持 Dense + Sparse + ColBERT 三种检索模式，100+ 语言，序列长度达 8192 token（适合长文档），中英混合场景无需切换模型。</p>
+          <table>
+            <tr><th>模型</th><th>维度</th><th>多语言</th><th>最大长度</th><th>开源</th><th>适用场景</th></tr>
+            <tr><td>BGE-M3</td><td>1024</td><td>✅ 100+</td><td>8192</td><td>✅</td><td>中英混合、长文档、生产首选</td></tr>
+            <tr><td>text-embedding-3-large</td><td>3072</td><td>✅</td><td>8191</td><td>❌ API</td><td>快速原型，无私有化需求</td></tr>
+            <tr><td>BGE-large-zh</td><td>1024</td><td>中文专项</td><td>512</td><td>✅</td><td>纯中文短文档</td></tr>
+            <tr><td>E5-mistral-7b</td><td>4096</td><td>✅</td><td>32768</td><td>✅</td><td>高精度，资源充足场景</td></tr>
+          </table>
+          <pre data-lang="Python"><code><span class="kw">from</span> FlagEmbedding <span class="kw">import</span> BGEM3FlagModel
+
+<span class="cm"># BGE-M3 三模式同时生成（生产推荐）</span>
+model = BGEM3FlagModel(<span class="st">'BAAI/bge-m3'</span>, use_fp16=<span class="nm">True</span>)
+output = model.encode(
+    [<span class="st">"花旗银行2024年Q4净利润同比增长12%"</span>],
+    batch_size=<span class="nm">12</span>,
+    max_length=<span class="nm">2048</span>,
+    return_dense=<span class="nm">True</span>,   <span class="cm"># 稠密向量，用于 ANN 检索</span>
+    return_sparse=<span class="nm">True</span>,  <span class="cm"># 稀疏向量，用于关键词匹配</span>
+    return_colbert_vecs=<span class="nm">True</span>  <span class="cm"># 多向量，精排用</span>
+)
+dense_vec  = output[<span class="st">'dense_vecs'</span>]    <span class="cm"># shape: (1, 1024)</span>
+sparse_vec = output[<span class="st">'lexical_weights'</span>] <span class="cm"># dict: {token_id: weight}</span></code></pre>
+          <div class="tip"><strong>面试技巧：</strong>提到 BGE-M3 时能说出"单模型统一三种检索范式"这一设计哲学，体现对工程权衡的深度理解。</div>
+          <div class="refs">
+            <a href="https://huggingface.co/BAAI/bge-m3" target="_blank">BGE-M3 模型卡片</a>
+            <a href="https://arxiv.org/abs/2402.03216" target="_blank">BGE-M3 技术论文</a>
+            <a href="https://github.com/FlagOpen/FlagEmbedding" target="_blank">FlagEmbedding GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">向量索引算法 — HNSW / IVF / Flat 的原理与选型</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">pgvector 的 HNSW 和 IVFFlat 索引有什么区别？生产环境选哪个？</div>
+          <p>向量检索的核心矛盾：精确 KNN（暴力搜索）准确但 O(n) 时间复杂度，不可扩展；<strong>近似最近邻（ANN）</strong>以极小精度损失换取亚线性检索速度。</p>
+          <ul class="points">
+            <li><strong>HNSW（Hierarchical Navigable Small World）</strong>：多层图结构，查询从稀疏顶层逐步导航到稠密底层。<em>优点</em>：查询极快（<1ms），高 recall（>95%）；<em>缺点</em>：构建慢，内存占用大（每条向量约 1.1× 原始大小）。<strong>生产推荐</strong></li>
+            <li><strong>IVFFlat（倒排文件 + 精确搜索）</strong>：K-means 聚类分桶，查询时只搜索最近 nprobe 个桶。<em>优点</em>：内存小，支持更大数据集；<em>缺点</em>：需要训练阶段，nprobe 小时 recall 低</li>
+            <li><strong>Flat（暴力搜索）</strong>：精确 KNN，recall=100%，适合数据量 < 10 万的小规模场景或作为精排阶段</li>
+            <li><strong>IVFPQ（倒排+乘积量化）</strong>：压缩存储，内存可降低 8-32 倍，牺牲少量精度，超大规模（亿级）必选</li>
+          </ul>
+          <pre data-lang="SQL"><code>-- pgvector 创建 HNSW 索引（生产推荐）
+CREATE INDEX ON document_embeddings
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+-- m: 每个节点最大邻居数，越大精度高但内存大，推荐 16
+-- ef_construction: 构建时搜索宽度，越大精度高但构建慢，推荐 64
+
+-- 查询时设置搜索宽度（影响 recall vs 速度权衡）
+SET hnsw.ef_search = 40;  -- 越大 recall 越高，默认 40
+SELECT id, content, embedding <=> query_vec AS distance
+FROM document_embeddings
+ORDER BY embedding <=> query_vec  -- cosine 距离
+LIMIT 10;</code></pre>
+          <table>
+            <tr><th>索引类型</th><th>查询速度</th><th>Recall</th><th>内存</th><th>适用规模</th></tr>
+            <tr><td>Flat</td><td>最慢（O(n)）</td><td>100%</td><td>最小</td><td>&lt; 10万</td></tr>
+            <tr><td>IVFFlat</td><td>快</td><td>85-95%</td><td>小</td><td>10万-1000万</td></tr>
+            <tr><td>HNSW</td><td>极快</td><td>95-99%</td><td>大</td><td>10万-千万</td></tr>
+            <tr><td>IVFPQ</td><td>快</td><td>80-90%</td><td>极小</td><td>千万-亿级</td></tr>
+          </table>
+          <div class="refs">
+            <a href="https://github.com/pgvector/pgvector" target="_blank">pgvector 文档</a>
+            <a href="https://arxiv.org/abs/1603.09320" target="_blank">HNSW 原论文</a>
+            <a href="https://faiss.ai/cpp_api/struct/structfaiss_1_1IndexIVFFlat.html" target="_blank">FAISS IVFFlat</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">向量数据库选型 — Chroma / pgvector / Qdrant / Weaviate</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">各向量数据库的核心差异是什么？金融企业场景下如何选型？</div>
+          <table>
+            <tr><th>数据库</th><th>部署模式</th><th>核心优势</th><th>主要限制</th><th>推荐场景</th></tr>
+            <tr><td><strong>ChromaDB</strong></td><td>本地嵌入式 / 轻量服务端</td><td>零配置，Python 原生，开发调试极快</td><td>不支持 ACID，生产稳定性弱</td><td>开发原型、研究、小规模生产</td></tr>
+            <tr><td><strong>pgvector</strong></td><td>PostgreSQL 扩展</td><td>复用现有 PG 基础设施，标量+向量联合查询，ACID 事务</td><td>大规模（>千万）性能弱于专用向量库</td><td>已有 PG 栈的企业、需要事务的场景</td></tr>
+            <tr><td><strong>Qdrant</strong></td><td>独立服务 / K8s</td><td>Rust 实现高性能，支持 payload 过滤+向量联合查询，稀疏向量原生支持</td><td>独立运维成本</td><td>高性能需求、混合检索生产场景</td></tr>
+            <tr><td><strong>Weaviate</strong></td><td>独立服务 / Cloud</td><td>GraphQL 接口，内置多模态，生态成熟</td><td>资源消耗较大</td><td>多模态场景、已有 Weaviate 团队</td></tr>
+            <tr><td><strong>Milvus</strong></td><td>分布式集群</td><td>亿级向量水平扩展，企业级高可用</td><td>运维复杂度高</td><td>超大规模（亿级）企业场景</td></tr>
+          </table>
+          <div class="tip"><strong>企业银行推荐路径：</strong>开发阶段用 <strong>ChromaDB</strong>（零运维成本）→ 如已有 PostgreSQL 基础设施则迁移 <strong>pgvector</strong>（复用 DBA 能力、ACID 保障）→ 数据量超过千万且有性能要求时评估 <strong>Qdrant</strong>。避免过早引入 Milvus 的运维复杂度。</div>
+          <div class="refs">
+            <a href="https://docs.trychroma.com/" target="_blank">ChromaDB 文档</a>
+            <a href="https://qdrant.tech/documentation/" target="_blank">Qdrant 文档</a>
+            <a href="https://github.com/pgvector/pgvector" target="_blank">pgvector GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">混合检索 (Hybrid Search) — 语义 + 关键词融合</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">纯向量语义检索有什么缺陷？混合检索如何解决？RRF 是什么？</div>
+          <p><strong>纯语义检索的致命缺陷：</strong>对<em>精确词汇</em>（产品编号如 "CVE-2024-12345"、人名缩写、专有术语）的召回率极低——语义空间中这类词汇的 embedding 相似度并不高。金融文档（合规编号、监管条款代码）、代码检索场景最为突出。</p>
+          <p><strong>混合检索 = Dense（语义）+ Sparse（关键词）</strong>，两路结果用 <em>RRF（倒数排名融合）</em>合并：每个文档的最终分数 = Σ 1/(k + rank_i)，k 通常为 60。RRF 无需调权重参数，鲁棒性强，是混合检索的工业标准。</p>
+          <ul class="points">
+            <li><strong>BM25</strong>：经典稀疏检索算法，TF-IDF 的改进版，关键词精确匹配能力最强，Elasticsearch 默认算法</li>
+            <li><strong>EnsembleRetriever</strong>：LangChain 的混合检索封装，支持设置各路权重</li>
+            <li><strong>Reranker（精排）</strong>：召回后用交叉编码器（Cross-Encoder）重排序。Cross-Encoder 比 Bi-Encoder 精度高（query 和 doc 拼接后联合编码），但速度慢（无法预先建索引），只适合 top-k 精排</li>
+            <li><strong>两阶段流水线</strong>：粗排（ANN 召回 top-100）→ 精排（Reranker 取 top-10）→ 送入 LLM</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> EnsembleRetriever
+<span class="kw">from</span> langchain_community.retrievers <span class="kw">import</span> BM25Retriever
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+
+<span class="cm"># 两路检索器</span>
+bm25_retriever = BM25Retriever.from_documents(docs, k=<span class="nm">10</span>)
+vector_retriever = vectorstore.as_retriever(search_kwargs={<span class="st">"k"</span>: <span class="nm">10</span>})
+
+<span class="cm"># EnsembleRetriever 用 RRF 融合（weights 影响 RRF 分数权重）</span>
+hybrid = EnsembleRetriever(
+    retrievers=[bm25_retriever, vector_retriever],
+    weights=[<span class="nm">0.4</span>, <span class="nm">0.6</span>]   <span class="cm"># 语义权重稍高，可按业务调整</span>
+)
+
+<span class="cm"># 加 Reranker 精排（BGE-Reranker）</span>
+<span class="kw">from</span> FlagEmbedding <span class="kw">import</span> FlagReranker
+reranker = FlagReranker(<span class="st">'BAAI/bge-reranker-v2-m3'</span>, use_fp16=<span class="nm">True</span>)
+candidates = hybrid.invoke(<span class="st">"监管资本充足率要求"</span>)
+scores = reranker.compute_score([[query, doc.page_content] <span class="kw">for</span> doc <span class="kw">in</span> candidates])
+reranked = [candidates[i] <span class="kw">for</span> i <span class="kw">in</span> sorted(range(len(scores)), key=<span class="kw">lambda</span> x: -scores[x])]</code></pre>
+          <div class="refs">
+            <a href="https://python.langchain.com/docs/how_to/ensemble_retriever/" target="_blank">EnsembleRetriever 文档</a>
+            <a href="https://huggingface.co/BAAI/bge-reranker-v2-m3" target="_blank">BGE-Reranker-v2-m3</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">pgvector 生产实践 — 性能调优 / 元数据过滤 / 分区</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">pgvector 在生产中有哪些性能陷阱？如何用 metadata 过滤缩小检索范围？</div>
+          <p>pgvector 最常见的生产陷阱：HNSW 索引创建后，<strong>新插入数据不会自动更新索引</strong>（需手动 REINDEX 或定期重建）。此外，在高并发写入场景下，向量索引维护成本高，需要与 DBA 协商维护窗口。</p>
+          <ul class="points">
+            <li><strong>预过滤 vs 后过滤</strong>：pgvector 1.0+ 支持 WHERE 子句 + 向量搜索联合查询（预过滤），比先向量搜再 WHERE 过滤精度高，避免检索结果被大量过滤导致 top-k 不足</li>
+            <li><strong>分区策略</strong>：按 <code>doc_type</code>（如 annual_report、regulation、news）建 PostgreSQL 分区表，每分区独立 HNSW 索引，缩小检索范围</li>
+            <li><strong>连接池</strong>：向量查询是计算密集操作，用 <code>pgBouncer</code> 或 <code>asyncpg</code> 连接池，避免连接数爆炸</li>
+            <li><strong>向量归一化</strong>：存储前做 L2 归一化（<code>normalize_embeddings=True</code>），使用 <code>vector_cosine_ops</code> 操作符，等价于点积，速度最快</li>
+          </ul>
+          <pre data-lang="SQL"><code>-- 元数据预过滤 + 向量检索（pgvector 生产范式）
+SELECT id, content, metadata->>'doc_type' AS doc_type,
+       embedding <=> $1 AS similarity
+FROM documents
+WHERE metadata->>'doc_type' = 'regulation'        -- 预过滤
+  AND metadata->>'year' >= '2023'
+  AND embedding <=> $1 < 0.3                      -- 相似度阈值过滤
+ORDER BY embedding <=> $1
+LIMIT 10;
+
+-- 建立 GIN 索引加速 JSONB metadata 过滤
+CREATE INDEX ON documents USING gin(metadata);
+-- HNSW 只在过滤后的子集上搜索（需要 pgvector 0.7+）</code></pre>
+          <div class="refs">
+            <a href="https://github.com/pgvector/pgvector#filtering" target="_blank">pgvector 过滤文档</a>
+            <a href="https://supabase.com/docs/guides/ai/vector-columns" target="_blank">Supabase pgvector 生产指南</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 3 · LangChain 1.x
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>LangChain 1.x <span style="font-size:12px;color:var(--green);font-family:Space Mono">GA Oct 2025</span></h2>
+      <span class="section-icon">⛓️</span>
+    </div>
+    <div class="note"><strong>⚠️ 版本注意：</strong>LangChain 1.0 于 2025 年 10 月正式 GA，架构重大重组。旧版 Chain 类、<code>AgentExecutor</code>、LCEL pipe operator 模式已移至 <code>langchain-classic</code>。面试时务必区分 0.x 和 1.x API。</div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-new">v1.0 新增</span>
+          <span class="card-title">create_agent — 1.0 核心 Agent 抽象</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LangChain 1.0 的 create_agent 和之前的 AgentExecutor 有什么区别？</div>
+          <p><strong>create_agent</strong> 是 LangChain 1.0 的标准 Agent 入口，底层运行在 LangGraph runtime 上，取代了旧版 <code>AgentExecutor</code>。它的最大特性是引入了 <strong>Middleware 系统</strong>，可以像 Express.js 中间件一样在 Agent 循环的各个钩子点注入自定义逻辑，不再需要修改 Agent 核心代码。</p>
+          <ul class="points">
+            <li><strong>tool calling 架构</strong>：标准 Tool Calling loop（Reason → Act → Observe → Repeat），不再有 ReAct prompt hacking</li>
+            <li><strong>provider agnostic</strong>：model 参数接受字符串如 <code>"openai:gpt-4o"</code> 或 <code>"anthropic:claude-sonnet-4-6"</code>，避免厂商锁定</li>
+            <li><strong>backward compatible</strong>：旧代码不需要改，legacy chains 可在 langchain-classic 中继续使用</li>
+            <li><strong>structured output 集成</strong>：结构化输出直接集成进 agent 循环，减少额外 LLM 调用</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain.agents <span class="kw">import</span> create_agent
+<span class="kw">from</span> langchain_core.tools <span class="kw">import</span> tool
+
+<span class="nm">@tool</span>
+<span class="kw">def</span> <span class="fn">query_database</span>(sql: <span class="nm">str</span>) -> <span class="nm">str</span>:
+    <span class="st">"""执行 SQL 查询并返回结果。"""</span>
+    <span class="kw">return</span> f<span class="st">"查询结果: {sql}"</span>
+
+agent = create_agent(
+    model=<span class="st">"openai:gpt-4o"</span>,  <span class="cm"># provider:model_name 格式</span>
+    tools=[query_database],
+    system_prompt=<span class="st">"你是数据分析专家，帮助用户分析财务数据。"</span>
+)
+result = agent.invoke({<span class="st">"messages"</span>: [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"查询2024年Q4收入"</span>}]})</code></pre>
+          <div class="refs">
+            <a href="https://docs.langchain.com/oss/python/releases/langchain-v1" target="_blank">LangChain v1 新特性文档</a>
+            <a href="https://blog.langchain.com/langchain-langgraph-1dot0/" target="_blank">官方发布博客</a>
+            <a href="https://changelog.langchain.com/announcements/langchain-1-0-now-generally-available" target="_blank">Changelog</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-new">v1.0 核心</span>
+          <span class="card-title">Middleware 系统 — Agent 循环的可插拔拦截器</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何在不修改 Agent 核心逻辑的情况下添加 PII 脱敏、对话摘要、Human-in-the-loop？</div>
+          <p><strong>Middleware</strong> 是 LangChain 1.0 最重要的新特性，类比 Web 框架中的中间件（Django middleware、Express.js middleware）。它暴露以下钩子：<code>before_model</code>（LLM 调用前）、<code>after_model</code>（LLM 返回后）、<code>before_tool</code>、<code>after_tool</code>。多个 Middleware 以<strong>洋葱模型</strong>组合，请求顺序进入、响应逆序返回。</p>
+          <ul class="points">
+            <li><strong>PIIMiddleware</strong>：调用 LLM 前自动 redact 敏感信息（邮箱、手机号、身份证），金融/医疗场景合规必备</li>
+            <li><strong>SummarizationMiddleware</strong>：对话 token 超出阈值时自动摘要历史消息，解决长对话 context 溢出</li>
+            <li><strong>HumanInTheLoopMiddleware</strong>：tool 调用前暂停，等待人工审批，高风险操作必备（如转账、删数据）</li>
+            <li><strong>自定义 Middleware</strong>：继承 <code>AgentMiddleware</code>，实现任意钩子方法，比旧版 callback 机制更清晰</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain.agents <span class="kw">import</span> create_agent
+<span class="kw">from</span> langchain.agents.middleware <span class="kw">import</span> (
+    PIIMiddleware, SummarizationMiddleware, HumanInTheLoopMiddleware
+)
+
+agent = create_agent(
+    model=<span class="st">"anthropic:claude-sonnet-4-6"</span>,
+    tools=[transfer_funds, query_account],
+    middleware=[
+        PIIMiddleware(<span class="st">"email"</span>, strategy=<span class="st">"redact"</span>, apply_to_input=<span class="nm">True</span>),
+        SummarizationMiddleware(
+            model=<span class="st">"openai:gpt-4o-mini"</span>,
+            max_tokens_before_summary=<span class="nm">2000</span>,
+            messages_to_keep=<span class="nm">5</span>
+        ),
+        HumanInTheLoopMiddleware(
+            interrupt_on={
+                <span class="st">"transfer_funds"</span>: {<span class="st">"allowed_decisions"</span>: [<span class="st">"approve"</span>, <span class="st">"reject"</span>]}
+            }
+        ),
+    ]
+)</code></pre>
+          <div class="tip"><strong>面试加分：</strong>能解释 Middleware 的"洋葱模型"执行顺序，以及如何用 <code>wrap_model_call</code> 实现动态模型切换（根据用户权限级别使用不同模型）。</div>
+          <div class="refs">
+            <a href="https://docs.langchain.com/oss/python/releases/langchain-v1#middleware" target="_blank">Middleware 官方文档</a>
+            <a href="https://codecut.ai/langchain-1-0-middleware-production-agents/" target="_blank">Middleware 实战教程</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">Content Blocks — 标准化多模态模型输出</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">不同 LLM 提供商的输出格式不一样，LangChain 怎么统一处理？</div>
+          <p>LangChain 1.0 引入 <strong>Standard Content Blocks</strong>，将模型输出从不透明字符串升级为结构化 <code>content_blocks</code> 列表。每个 block 有明确的 <code>type</code>（<code>"text"</code>、<code>"reasoning"</code>、<code>"citation"</code>、<code>"tool_call"</code>），无论使用 OpenAI、Anthropic 还是其他 provider，输出格式保持一致。</p>
+          <ul class="points">
+            <li><strong>reasoning blocks</strong>：Claude 的扩展思考 / o1 的 reasoning tokens 都统一暴露在 content_blocks 中</li>
+            <li><strong>citation blocks</strong>：RAG 场景中模型引用的来源文档，直接从输出中提取，无需解析</li>
+            <li><strong>多模态支持</strong>：消息格式支持 image、file、video，为下一代多模态模型做好准备</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain_anthropic <span class="kw">import</span> ChatAnthropic
+
+llm = ChatAnthropic(<span class="st">model=</span><span class="st">"claude-sonnet-4-6"</span>)
+response = llm.invoke(<span class="st">"分析这篇财报"</span>)
+
+<span class="cm"># 新的 content_blocks 访问方式</span>
+<span class="kw">for</span> block <span class="kw">in</span> response.content_blocks:
+    <span class="kw">if</span> block.type == <span class="st">"text"</span>:
+        print(<span class="st">"回答:"</span>, block.text)
+    <span class="kw">elif</span> block.type == <span class="st">"reasoning"</span>:
+        print(<span class="st">"推理过程:"</span>, block.thinking)  <span class="cm"># Claude Extended Thinking</span></code></pre>
+          <div class="refs">
+            <a href="https://techcommunity.microsoft.com/blog/azuredevcommunityblog/langchain-v1-is-now-generally-available/4462159" target="_blank">Microsoft: LangChain v1 深度解析</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">RAG 完整链路 — Document Loaders / Splitters / VectorStore / Retriever</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">请描述一个完整的 RAG 系统的实现流程，有哪些关键参数需要调优？</div>
+          <p><strong>RAG 四步骤：</strong>① <em>文档加载</em>（Document Loaders）→ ② <em>分块</em>（Text Splitters）→ ③ <em>向量化存储</em>（Embeddings + VectorStore）→ ④ <em>检索增强生成</em>（Retriever + LLM）。每步都有调优空间。</p>
+          <ul class="points">
+            <li><strong>chunk_size / chunk_overlap</strong>：chunk 太大信息密度低，太小丢失上下文。金融文档通常 512-1024 token，overlap 10-15%</li>
+            <li><strong>RecursiveCharacterTextSplitter</strong>：优先按段落 → 句子 → 字符分割，保持语义完整性，生产首选</li>
+            <li><strong>混合检索</strong>：语义搜索（向量相似度）+ BM25 关键词检索，Ensemble Retriever 加权融合，precision 显著提升</li>
+            <li><strong>MMR (Maximum Marginal Relevance)</strong>：检索时减少冗余，返回相关但多样的文档</li>
+            <li><strong>Reranker</strong>：先召回 top-k，再用交叉编码器精排，常用 BGE-Reranker 或 Cohere Rerank</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> OpenAIEmbeddings
+<span class="kw">from</span> langchain.agents <span class="kw">import</span> create_agent
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=<span class="nm">1000</span>, chunk_overlap=<span class="nm">150</span>
+)
+chunks = splitter.split_documents(docs)
+
+vectorstore = Chroma.from_documents(chunks, OpenAIEmbeddings())
+retriever = vectorstore.as_retriever(
+    search_type=<span class="st">"mmr"</span>,       <span class="cm"># 多样性检索</span>
+    search_kwargs={<span class="st">"k"</span>: <span class="nm">6</span>, <span class="st">"fetch_k"</span>: <span class="nm">20</span>}
+)</code></pre>
+          <div class="refs">
+            <a href="https://docs.langchain.com/oss/python/concepts/rag" target="_blank">LangChain RAG 概念文档</a>
+            <a href="https://docs.langchain.com/oss/python/concepts/text_splitters" target="_blank">Text Splitters 文档</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-deep">深入</span>
+          <span class="card-title">LCEL — LangChain 表达语言（v0.x 核心，1.x 仍兼容）</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">什么是 LCEL？它的 | 管道操作符原理是什么？</div>
+          <p><strong>LCEL（LangChain Expression Language）</strong>是基于 Runnable 接口的声明式组合框架。每个 Runnable 都实现 <code>invoke()</code>、<code>stream()</code>、<code>batch()</code>、<code>ainvoke()</code> 四个方法。<code>|</code> 操作符通过 <code>__or__</code> 方法创建 RunnableSequence，链式组合各组件。</p>
+          <div class="note"><strong>注意：</strong>LangChain 1.0 中，大量使用 <code>|</code> 管道的模式已被 <code>create_agent + middleware</code> 取代，但 LCEL 仍适用于构建自定义非 agent 链。</div>
+          <ul class="points">
+            <li><strong>RunnableParallel</strong>：并行执行多个 Runnable，结果合并为 dict</li>
+            <li><strong>RunnableBranch</strong>：条件分支，根据输入路由到不同子链</li>
+            <li><strong>RunnablePassthrough</strong>：透传输入，用于在链中携带原始数据</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> ChatPromptTemplate
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> StrOutputParser
+
+<span class="cm"># LCEL 链式组合（0.x 风格，1.x 仍兼容）</span>
+prompt = ChatPromptTemplate.from_template(<span class="st">"分析: {question}"</span>)
+llm = ChatOpenAI(<span class="st">model=</span><span class="st">"gpt-4o"</span>)
+chain = prompt | llm | StrOutputParser()
+result = chain.invoke({<span class="st">"question"</span>: <span class="st">"分析苹果公司Q4财报"</span>})</code></pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 4 · LangGraph 1.x
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>LangGraph 1.x <span style="font-size:12px;color:var(--green);font-family:Space Mono">GA Oct 2025 · v1.1.7</span></h2>
+      <span class="section-icon">🕸️</span>
+    </div>
+    <div class="tip"><strong>背景：</strong>LangGraph 1.0 是 Agent 领域第一个生产级稳定版本，Uber、LinkedIn、Klarna、JP Morgan 在生产环境使用。<code>langgraph.prebuilt</code> 模块已废弃，功能移入 <code>langchain.agents</code>。LangChain 1.0 的 create_agent 底层运行在 LangGraph runtime 上。</div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">StateGraph 核心模型 — Node / Edge / State 三元素</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LangGraph 的 Graph 抽象解决了什么问题？和 LangChain 链有什么本质区别？</div>
+          <p><strong>本质区别：链（Chain）是有向无环图（DAG），而 LangGraph 支持有环图（Cyclic Graph）</strong>。这使得 Agent 可以"循环思考"——执行工具后根据结果决定是继续调用工具还是结束，这是 ReAct 模式的图结构实现。</p>
+          <ul class="points">
+            <li><strong>State</strong>：TypedDict，贯穿整个 Graph，每个 Node 读取并更新 State</li>
+            <li><strong>Node</strong>：Python 函数，接受 State 返回 State 的 partial update</li>
+            <li><strong>Edge</strong>：固定边（总是流向某节点）或条件边（根据 State 决定下一个节点）</li>
+            <li><strong>START / END</strong>：特殊节点，标记图的入口和出口</li>
+            <li><strong>Reducer</strong>：State 字段更新策略，默认覆盖；<code>Annotated[list, operator.add]</code> 表示追加</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph, START, END
+<span class="kw">from</span> typing <span class="kw">import</span> TypedDict, Annotated
+<span class="kw">import</span> operator
+
+<span class="kw">class</span> <span class="fn">AgentState</span>(TypedDict):
+    messages: Annotated[list, operator.add]  <span class="cm"># 追加式更新</span>
+    current_step: <span class="nm">str</span>
+    final_answer: <span class="nm">str</span>
+
+<span class="kw">def</span> <span class="fn">analyze_node</span>(state: AgentState) -> dict:
+    <span class="cm"># 读 State，返回部分更新</span>
+    <span class="kw">return</span> {<span class="st">"current_step"</span>: <span class="st">"analyzed"</span>}
+
+<span class="kw">def</span> <span class="fn">route</span>(state: AgentState) -> <span class="nm">str</span>:
+    <span class="cm"># 条件边：根据 State 决定下一个 Node</span>
+    <span class="kw">if</span> state[<span class="st">"current_step"</span>] == <span class="st">"analyzed"</span>:
+        <span class="kw">return</span> <span class="st">"generate"</span>
+    <span class="kw">return</span> <span class="st">"retry"</span>
+
+graph = StateGraph(AgentState)
+graph.add_node(<span class="st">"analyze"</span>, analyze_node)
+graph.add_edge(START, <span class="st">"analyze"</span>)
+graph.add_conditional_edges(<span class="st">"analyze"</span>, route)</code></pre>
+          <div class="refs">
+            <a href="https://langchain-ai.github.io/langgraph/concepts/" target="_blank">LangGraph 核心概念文档</a>
+            <a href="https://langchain-ai.github.io/langgraph/tutorials/" target="_blank">LangGraph 教程</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Checkpointer — 持久化状态与时间旅行</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何让 Agent 在服务重启后恢复之前的对话状态？</div>
+          <p><strong>Checkpointer</strong> 是 LangGraph 的核心生产特性。每次 Graph step 执行完毕，Checkpointer 自动将 State snapshot 持久化到存储后端。服务重启后，通过相同的 <code>thread_id</code> 恢复，Agent 从断点继续，不需要用户重新输入上下文。</p>
+          <ul class="points">
+            <li><strong>MemorySaver</strong>：内存存储，开发调试用，重启丢失</li>
+            <li><strong>AsyncPostgresSaver / AsyncSqliteSaver</strong>：生产环境使用，持久化到数据库</li>
+            <li><strong>thread_id</strong>：区分不同对话会话的关键，每个用户/会话一个 thread_id</li>
+            <li><strong>时间旅行（Time Travel）</strong>：通过 <code>get_state_history()</code> 获取历史快照，可以从任意 checkpoint 重新执行（调试 Agent 行为的利器）</li>
+            <li><strong>v1.1.7 修复</strong>：修复了 interrupt 节点的时间旅行 bug，生产部署更稳定</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langgraph.checkpoint.memory <span class="kw">import</span> MemorySaver
+<span class="kw">from</span> langgraph.checkpoint.postgres.aio <span class="kw">import</span> AsyncPostgresSaver
+
+<span class="cm"># 生产环境: PostgreSQL checkpointer</span>
+<span class="kw">async with</span> AsyncPostgresSaver.from_conn_string(DB_URL) <span class="kw">as</span> checkpointer:
+    app = graph.compile(checkpointer=checkpointer)
+    config = {<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: <span class="st">"user_123_session_456"</span>}}
+
+    <span class="cm"># 第一次调用</span>
+    result1 = <span class="kw">await</span> app.ainvoke({<span class="st">"messages"</span>: [...]}, config)
+
+    <span class="cm"># 服务重启后，相同 thread_id 自动恢复状态</span>
+    result2 = <span class="kw">await</span> app.ainvoke({<span class="st">"messages"</span>: [new_msg]}, config)</code></pre>
+          <div class="refs">
+            <a href="https://langchain-ai.github.io/langgraph/concepts/persistence/" target="_blank">LangGraph Persistence 文档</a>
+            <a href="https://langchain-ai.github.io/langgraph/how-tos/time-travel/" target="_blank">Time Travel 指南</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">Human-in-the-Loop — interrupt / Command 模式</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何实现 Agent 执行到某步骤时暂停，等待人工确认后再继续？</div>
+          <p>LangGraph 提供一级 API 支持 Human-in-the-Loop。<strong>两种实现方式：</strong>① <code>interrupt_before/interrupt_after</code>（编译时静态配置暂停节点）；② <code>interrupt()</code> 函数（节点内动态暂停，可携带问题给用户）。暂停后 Agent 状态被 Checkpointer 保存，用户回复后通过 <code>Command</code> 恢复。</p>
+          <ul class="points">
+            <li><strong>interrupt()</strong>：在 Node 内部调用，将控制权交还给用户，可传递任意 payload 展示给用户</li>
+            <li><strong>Command(resume=value)</strong>：用户回复后，以 Command 对象恢复 Graph，<code>value</code> 作为 interrupt() 的返回值</li>
+            <li><strong>应用场景</strong>：高风险工具调用确认（删数据、转账）、多步骤审批流程（信贷审批、合规审查）</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langgraph.types <span class="kw">import</span> interrupt, Command
+
+<span class="kw">def</span> <span class="fn">review_node</span>(state: AgentState):
+    <span class="cm"># 暂停并向用户提问</span>
+    user_decision = interrupt({
+        <span class="st">"question"</span>: <span class="st">"确认执行 SQL 删除操作？"</span>,
+        <span class="st">"preview"</span>: state[<span class="st">"pending_sql"</span>]
+    })
+    <span class="kw">if</span> user_decision == <span class="st">"approve"</span>:
+        execute_sql(state[<span class="st">"pending_sql"</span>])
+    <span class="kw">return</span> {<span class="st">"status"</span>: user_decision}
+
+<span class="cm"># 用户审批后恢复</span>
+app.invoke(Command(resume=<span class="st">"approve"</span>), config)</code></pre>
+          <div class="refs">
+            <a href="https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/" target="_blank">Human-in-the-Loop 文档</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-deep">深入</span>
+          <span class="card-title">多 Agent 架构 — Supervisor / Swarm / Hierarchical</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何设计一个有多个专业 Agent 协作的系统？</div>
+          <p>LangGraph 支持多 Agent 编排，三种主要模式：<strong>① Supervisor（监督者模式）</strong>：一个 LLM 作为 orchestrator，决定将任务路由给哪个 sub-agent；<strong>② Swarm（蜂群模式）</strong>：agent 之间直接 handoff，去中心化；<strong>③ Hierarchical（层级模式）</strong>：多层 Supervisor，适合复杂企业工作流。</p>
+          <ul class="points">
+            <li><strong>子图（Subgraph）</strong>：每个 Agent 是一个独立 Compiled Graph，作为父 Graph 的节点嵌入，保持状态隔离</li>
+            <li><strong>Handoff</strong>：Agent A 完成任务后将控制权和上下文传给 Agent B，<code>Command(goto="agent_b")</code></li>
+            <li><strong>共享状态 vs 私有状态</strong>：父子图可共享部分 State 字段，通过 schema 映射</li>
+            <li><strong>实际案例</strong>：金融报告 Agent → Supervisor 分配给：数据提取 Agent、分析 Agent、写作 Agent，最终汇总</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> langgraph.graph <span class="kw">import</span> StateGraph
+<span class="kw">from</span> langchain.agents <span class="kw">import</span> create_agent
+
+<span class="cm"># 专业子 Agent</span>
+data_agent = create_agent(model=<span class="st">"gpt-4o"</span>, tools=[query_db])
+analysis_agent = create_agent(model=<span class="st">"gpt-4o"</span>, tools=[run_analysis])
+
+<span class="kw">def</span> <span class="fn">supervisor_node</span>(state):
+    <span class="cm"># LLM 决策：分配给哪个 sub-agent</span>
+    decision = supervisor_llm.invoke(state[<span class="st">"messages"</span>])
+    <span class="kw">return</span> Command(goto=decision.next_agent)
+
+graph = StateGraph(SupervisorState)
+graph.add_node(<span class="st">"supervisor"</span>, supervisor_node)
+graph.add_node(<span class="st">"data_agent"</span>, data_agent)
+graph.add_node(<span class="st">"analysis_agent"</span>, analysis_agent)</code></pre>
+          <div class="refs">
+            <a href="https://langchain-ai.github.io/langgraph/concepts/multi_agent/" target="_blank">Multi-Agent 架构文档</a>
+            <a href="https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/" target="_blank">Supervisor 实战教程</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">LangGraph Platform — Studio / Cloud 部署</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LangGraph 如何在生产环境部署和监控？</div>
+          <p><strong>LangGraph Platform</strong> 提供完整的生产部署工具链：① <em>LangGraph Studio</em>（可视化调试 IDE，可直接编辑 Graph 节点并重放）；② <em>LangGraph Cloud</em>（托管部署，含 API 端点、水平扩展、监控）；③ <em>LangGraph CLI</em>（本地开发服务器，热重载）。</p>
+          <ul class="points">
+            <li><strong>langgraph.json</strong>：项目配置文件，定义 graph 入口、依赖、环境变量</li>
+            <li><strong>LangSmith 集成</strong>：所有 trace 自动上报，Insights Agent 自动聚类分析 Agent 行为模式</li>
+            <li><strong>水平扩展</strong>：每个 thread 独立，天然支持水平扩展，配合 Redis/Postgres checkpointer</li>
+          </ul>
+          <div class="refs">
+            <a href="https://langchain-ai.github.io/langgraph/concepts/langgraph_platform/" target="_blank">LangGraph Platform 文档</a>
+            <a href="https://www.langchain.com/langgraph" target="_blank">LangGraph 官网</a>
+            <a href="https://github.com/langchain-ai/langgraph/releases" target="_blank">LangGraph 最新 Release</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 6 · 微调与训练
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>微调与训练 (Fine-tuning)</h2>
+      <span class="section-icon">⚡</span>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">LoRA / QLoRA 原理 — 低秩适配与量化微调</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">请解释 LoRA 的数学原理，rank 和 alpha 参数如何选择？</div>
+          <p><strong>LoRA 核心思想：</strong>大模型在特定任务上的适应过程具有"低秩"特性——不需要更新全部参数，只需在原始权重矩阵 W₀ 旁边添加低秩分解矩阵 ΔW = B·A（B ∈ R^(d×r), A ∈ R^(r×k)，r << d），只训练 A 和 B，参数量减少 >99%。</p>
+          <ul class="points">
+            <li><strong>rank (r)</strong>：低秩矩阵的秩，越大模型容量越强但显存/计算越多。通常 4-64，简单任务用 8，复杂任务 32-64</li>
+            <li><strong>lora_alpha</strong>：缩放系数，实际 scaling = alpha/r。通常设 alpha = 2r（如 r=16, alpha=32）</li>
+            <li><strong>target_modules</strong>：指定给哪些层添加 LoRA，q_proj/v_proj 是最常见选择；all-linear 覆盖最全效果最好</li>
+            <li><strong>QLoRA</strong>：基础模型用 4-bit NF4 量化加载（bitsandbytes），LoRA 适配器仍用 BF16 训练，单张 A100 可微调 70B 模型</li>
+            <li><strong>合并</strong>：<code>merge_and_unload()</code> 将 LoRA 权重合并回基础模型，推理时无额外开销</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> peft <span class="kw">import</span> LoraConfig, get_peft_model, TaskType
+<span class="kw">import</span> bitsandbytes <span class="kw">as</span> bnb
+
+<span class="cm"># QLoRA 配置（你项目的实际用法）</span>
+lora_config = LoraConfig(
+    task_type=TaskType.CAUSAL_LM,
+    r=<span class="nm">16</span>,                   <span class="cm"># rank</span>
+    lora_alpha=<span class="nm">32</span>,          <span class="cm"># alpha = 2*r</span>
+    target_modules=<span class="st">"all-linear"</span>,
+    lora_dropout=<span class="nm">0.1</span>,
+    bias=<span class="st">"none"</span>
+)
+model = get_peft_model(base_model, lora_config)
+model.print_trainable_parameters()
+<span class="cm"># trainable params: 0.64% of total — 节省99.36%参数</span></code></pre>
+          <div class="refs">
+            <a href="https://arxiv.org/abs/2106.09685" target="_blank">LoRA 原论文</a>
+            <a href="https://arxiv.org/abs/2305.14314" target="_blank">QLoRA 论文</a>
+            <a href="https://huggingface.co/docs/peft/main/conceptual_guides/lora" target="_blank">PEFT LoRA 文档</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">LLaMA-Factory — 工业级微调框架</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">为什么选择 LLaMA-Factory 而不是直接用 Transformers Trainer？</div>
+          <p><strong>LLaMA-Factory</strong> 是目前最活跃的开源微调框架（GitHub 40k+ stars），开箱即用支持 Qwen2-VL、LLaMA 3、Mistral 等几乎所有主流模型。相比裸 Trainer，它预配置了 QLoRA、Flash Attention 2、数据格式转换、评估指标等，大幅减少样板代码。</p>
+          <ul class="points">
+            <li><strong>YAML 配置驱动</strong>：所有超参、模型、数据集路径用 YAML 定义，可复现性强，适合实验管理</li>
+            <li><strong>支持多种训练方式</strong>：SFT、DPO、RLHF、KTO，一套框架全覆盖</li>
+            <li><strong>deepspeed / FSDP 集成</strong>：多机多卡分布式训练配置简化</li>
+            <li><strong>你项目场景</strong>：Qwen2-VL-7B 表格提取 + Qwen2.5-7B QA，都可以用 LLaMA-Factory 的 visual instruction tuning 模板</li>
+          </ul>
+          <div class="refs">
+            <a href="https://github.com/hiyouga/LLaMA-Factory" target="_blank">LLaMA-Factory GitHub</a>
+            <a href="https://github.com/hiyouga/LLaMA-Factory/blob/main/README.md" target="_blank">LLaMA-Factory 快速入门</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-deep">深入</span>
+          <span class="card-title">训练稳定性 — 梯度爆炸/消失 / 混合精度</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">训练过程中 loss 突然变成 NaN 怎么处理？</div>
+          <p>NaN loss 的常见原因：① 学习率过大导致梯度爆炸 → 加 <code>max_grad_norm=1.0</code> 梯度裁剪；② FP16 数值溢出 → 改用 BF16（BF16 动态范围更大，对大模型更稳定）；③ 训练数据有异常样本（超长序列、特殊字符）→ 数据清洗。</p>
+          <ul class="points">
+            <li><strong>gradient clipping</strong>：<code>max_grad_norm=1.0</code>，标准配置，防止梯度爆炸</li>
+            <li><strong>BF16 vs FP16</strong>：BF16 = 1 符号 + 8 指数 + 7 尾数，动态范围与 FP32 相同，不易溢出；FP16 = 1+5+10，范围小但精度略高</li>
+            <li><strong>warmup</strong>：前 N 步学习率从 0 线性增加，防止初始梯度过大，通常 warmup_ratio=0.03</li>
+            <li><strong>weight decay</strong>：L2 正则化，防止过拟合，通常 0.01-0.1</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">评估指标 — BLEU / ROUGE / 模型评估 (LLM-as-Judge)</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何评估微调后的模型效果？BLEU 和 ROUGE 有什么局限性？</div>
+          <p><strong>传统指标局限：</strong>BLEU 和 ROUGE 基于 n-gram 重叠，<strong>不能衡量语义等价性</strong>（换个说法得分低但实际对）。对于 LLM 生成任务，业界正在转向 <em>LLM-as-Judge</em> 方法。</p>
+          <ul class="points">
+            <li><strong>BLEU</strong>：机器翻译常用，precision-based，候选翻译与参考翻译的 n-gram 精确率</li>
+            <li><strong>ROUGE-L</strong>：LCS（最长公共子序列），文摘任务常用</li>
+            <li><strong>LLM-as-Judge</strong>：用强 LLM（GPT-4o/Claude）评判输出质量，可定制评分维度（准确性、相关性、格式）</li>
+            <li><strong>RAGAS</strong>：专门针对 RAG 系统的评估框架，指标：Faithfulness（忠实度）、Answer Relevancy（相关性）、Context Precision（上下文精准度）</li>
+            <li><strong>你项目评估</strong>：表格提取任务用字段级 F1；QA 任务用 RAGAS Faithfulness</li>
+          </ul>
+          <div class="refs">
+            <a href="https://docs.ragas.io/en/latest/" target="_blank">RAGAS 评估框架文档</a>
+            <a href="https://github.com/BerriAI/reliableGPT" target="_blank">LLM-as-Judge 实践</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 8 · FastAPI · SSE · WebSocket
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>FastAPI · SSE · WebSocket</h2>
+      <span class="section-icon">⚡</span>
+    </div>
+    <div class="tip"><strong>背景：</strong>LLM 服务的三种实时通信模式各有适用场景：<em>HTTP 轮询</em>（简单但低效）→ <em>SSE</em>（服务端单向推流，LLM streaming 标配）→ <em>WebSocket</em>（双向全双工，多轮对话/实时协作场景）。FastAPI 原生支持全部三种，且基于 asyncio，天然适合 IO 密集型 LLM 服务。</div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">FastAPI 核心机制 — 依赖注入 / 生命周期 / 异步路由</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">FastAPI 的依赖注入系统是怎么工作的？为什么适合 LLM 服务？</div>
+          <p><strong>FastAPI 的 Depends()</strong> 系统是其核心特性。每个 HTTP 请求处理前，FastAPI 会解析路由函数的类型注解，自动调用依赖项并将结果注入参数。这解决了 LLM 服务中<strong>共享昂贵资源</strong>（向量库连接、模型实例、LangGraph app）的核心问题——初始化一次，按需注入，无需全局变量。</p>
+          <ul class="points">
+            <li><strong>lifespan 事件</strong>（推荐方式）：用 <code>@asynccontextmanager</code> 统一管理应用启动/关闭时的资源初始化和清理，取代旧版 <code>on_event</code></li>
+            <li><strong>Depends()</strong>：将数据库连接池、向量库实例、LangGraph checkpointer 等注入路由，支持嵌套依赖</li>
+            <li><strong>async def 路由</strong>：LLM API 调用是纯 IO 操作，必须用 async，否则阻塞 event loop，并发性能断崖式下降</li>
+            <li><strong>BackgroundTasks</strong>：响应返回后异步执行后台任务（如写日志、发通知），不阻塞主请求</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> contextlib <span class="kw">import</span> asynccontextmanager
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, Depends
+<span class="kw">from</span> langgraph.checkpoint.postgres.aio <span class="kw">import</span> AsyncPostgresSaver
+
+<span class="cm"># ① lifespan: 统一管理启动/关闭资源</span>
+<span class="nm">@asynccontextmanager</span>
+<span class="kw">async def</span> <span class="fn">lifespan</span>(app: FastAPI):
+    <span class="cm"># 启动时初始化（只执行一次）</span>
+    async <span class="kw">with</span> AsyncPostgresSaver.from_conn_string(DB_URL) <span class="kw">as</span> cp:
+        app.state.agent = build_agent(checkpointer=cp)
+        app.state.vectorstore = init_vectorstore()
+        <span class="kw">yield</span>   <span class="cm"># 应用运行中...</span>
+    <span class="cm"># yield 后：关闭时清理（连接池自动释放）</span>
+
+app = FastAPI(lifespan=lifespan)
+
+<span class="cm"># ② 依赖注入：从 app.state 取出共享资源</span>
+<span class="kw">def</span> <span class="fn">get_agent</span>(request):
+    <span class="kw">return</span> request.app.state.agent
+
+<span class="nm">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">async def</span> <span class="fn">chat</span>(body: ChatRequest, agent=Depends(get_agent)):
+    result = <span class="kw">await</span> agent.ainvoke({<span class="st">"messages"</span>: body.messages})
+    <span class="kw">return</span> result</code></pre>
+          <div class="refs">
+            <a href="https://fastapi.tiangolo.com/advanced/events/" target="_blank">FastAPI Lifespan 文档</a>
+            <a href="https://fastapi.tiangolo.com/tutorial/dependencies/" target="_blank">FastAPI 依赖注入</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-hot">高频</span>
+          <span class="card-title">SSE (Server-Sent Events) — LLM Token 流式输出标配</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">SSE 和 WebSocket 的区别是什么？LLM streaming 为什么选 SSE？</div>
+          <p><strong>SSE</strong> 是基于 HTTP/1.1 的服务端→客户端单向推流协议，使用 <code>text/event-stream</code> MIME 类型。<strong>选择 SSE 而非 WebSocket 的理由</strong>：① LLM token streaming 本质是单向推送，不需要双向通信；② 基于标准 HTTP，穿透企业防火墙无障碍；③ 浏览器原生 <code>EventSource</code> API 支持自动重连；④ 比 WebSocket 更轻量，基础设施（Nginx、CDN）天然支持。</p>
+          <ul class="points">
+            <li><strong>SSE 数据格式</strong>：<code>data: {json}\n\n</code>，双换行为消息分隔符；<code>event:</code> 字段指定事件类型；<code>id:</code> 支持断点续传</li>
+            <li><strong>StreamingResponse</strong>：FastAPI 用 async generator 产生 SSE 数据流，<code>media_type="text/event-stream"</code></li>
+            <li><strong>LangGraph astream_events</strong>：v2 API，精细控制哪些事件暴露给前端（<code>on_chat_model_stream</code> 只取 token chunks）</li>
+            <li><strong>心跳保活</strong>：每隔 15-30 秒发送 <code>: ping\n\n</code>（注释行），防止代理服务器断开长连接</li>
+            <li><strong>错误处理</strong>：SSE 连接中断时发送 <code>data: [DONE]\n\n</code> 或错误 JSON，前端据此关闭 EventSource</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">import</span> asyncio, json
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.responses <span class="kw">import</span> StreamingResponse
+
+<span class="nm">@app.post</span>(<span class="st">"/stream"</span>)
+<span class="kw">async def</span> <span class="fn">stream_chat</span>(body: ChatRequest, agent=Depends(get_agent)):
+    <span class="kw">async def</span> <span class="fn">event_generator</span>():
+        config = {<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: body.session_id}}
+        <span class="kw">try</span>:
+            <span class="kw">async for</span> event <span class="kw">in</span> agent.astream_events(
+                {<span class="st">"messages"</span>: body.messages}, config, version=<span class="st">"v2"</span>
+            ):
+                kind = event[<span class="st">"event"</span>]
+                <span class="kw">if</span> kind == <span class="st">"on_chat_model_stream"</span>:
+                    token = event[<span class="st">"data"</span>][<span class="st">"chunk"</span>].content
+                    <span class="kw">if</span> token:
+                        <span class="cm"># SSE 标准格式：event类型 + data + 双换行</span>
+                        <span class="kw">yield</span> f<span class="st">"event: token\ndata: {json.dumps({'text': token})}\n\n"</span>
+                <span class="kw">elif</span> kind == <span class="st">"on_chain_end"</span>:
+                    <span class="kw">yield</span> <span class="st">"event: done\ndata: [DONE]\n\n"</span>
+                    <span class="kw">return</span>
+                <span class="cm"># 心跳保活（每隔一段时间）</span>
+                <span class="kw">yield</span> <span class="st">": ping\n\n"</span>
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            err = json.dumps({<span class="st">"error"</span>: <span class="nm">str</span>(e)})
+            <span class="kw">yield</span> f<span class="st">"event: error\ndata: {err}\n\n"</span>
+
+    <span class="kw">return</span> StreamingResponse(
+        event_generator(),
+        media_type=<span class="st">"text/event-stream"</span>,
+        headers={
+            <span class="st">"Cache-Control"</span>: <span class="st">"no-cache"</span>,
+            <span class="st">"X-Accel-Buffering"</span>: <span class="st">"no"</span>,   <span class="cm"># 关闭 Nginx 缓冲，立即推流</span>
+            <span class="st">"Connection"</span>: <span class="st">"keep-alive"</span>
+        }
+    )</code></pre>
+          <pre data-lang="JavaScript"><code><span class="cm">// 前端消费 SSE（原生 EventSource）</span>
+<span class="kw">const</span> response = <span class="kw">await</span> fetch(<span class="st">"/stream"</span>, {
+    method: <span class="st">"POST"</span>,
+    headers: {<span class="st">"Content-Type"</span>: <span class="st">"application/json"</span>},
+    body: JSON.stringify({ session_id, messages })
+});
+<span class="kw">const</span> reader = response.body.getReader();
+<span class="kw">const</span> decoder = <span class="kw">new</span> TextDecoder();
+
+<span class="kw">while</span> (<span class="nm">true</span>) {
+    <span class="kw">const</span> { done, value } = <span class="kw">await</span> reader.read();
+    <span class="kw">if</span> (done) <span class="kw">break</span>;
+    <span class="kw">const</span> text = decoder.decode(value);
+    <span class="kw">const</span> lines = text.split(<span class="st">"\n"</span>).filter(l => l.startsWith(<span class="st">"data:"</span>));
+    <span class="kw">for</span> (<span class="kw">const</span> line <span class="kw">of</span> lines) {
+        <span class="kw">const</span> data = JSON.parse(line.slice(<span class="nm">5</span>));
+        <span class="kw">if</span> (data === <span class="st">"[DONE]"</span>) <span class="kw">break</span>;
+        appendToken(data.text);   <span class="cm">// 逐 token 更新 UI</span>
+    }
+}</code></pre>
+          <div class="note"><strong>⚠️ Nginx 配置：</strong>必须设置 <code>proxy_buffering off;</code> 和 <code>proxy_read_timeout 300s;</code>，否则 Nginx 会缓存 SSE 数据，用户看不到流式效果。</div>
+          <div class="refs">
+            <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Server-sent_events" target="_blank">MDN SSE 规范</a>
+            <a href="https://langchain-ai.github.io/langgraph/how-tos/streaming/" target="_blank">LangGraph astream_events</a>
+            <a href="https://fastapi.tiangolo.com/advanced/custom-response/#streamingresponse" target="_blank">FastAPI StreamingResponse</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-core">核心</span>
+          <span class="card-title">WebSocket — 双向全双工，多轮实时对话场景</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">什么场景下 WebSocket 比 SSE 更合适？如何处理 WebSocket 并发连接？</div>
+          <p><strong>WebSocket 适用场景：</strong>① 用户打字时实时显示（前端→服务端方向的数据）；② 多用户协作编辑文档；③ 需要在流式生成途中发送"停止生成"指令；④ Agent 执行中需要用户插入反馈（非 HITL interrupt，而是实时引导）。WebSocket 是 TCP 之上的全双工协议，握手完成后双方可随时互发消息。</p>
+          <ul class="points">
+            <li><strong>FastAPI WebSocket</strong>：路由函数参数类型为 <code>WebSocket</code>，用 <code>await ws.accept()</code> 握手，<code>await ws.send_text()</code> 推数据</li>
+            <li><strong>连接管理器</strong>：生产环境需维护活跃连接集合，处理断线重连、消息广播（多人协作场景）</li>
+            <li><strong>并发模型</strong>：每个 WebSocket 连接是一个 asyncio 协程，天然支持数千并发连接（非线程模型）</li>
+            <li><strong>停止生成</strong>：客户端发送 <code>{"action": "stop"}</code>，服务端用 <code>asyncio.Event</code> 信号中断 LLM streaming</li>
+            <li><strong>心跳 / Ping-Pong</strong>：WebSocket 协议内置 Ping/Pong 帧，配置 <code>ping_interval=20</code> 保活</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> fastapi <span class="kw">import</span> WebSocket, WebSocketDisconnect
+
+<span class="cm"># 连接管理器（多连接/广播场景）</span>
+<span class="kw">class</span> <span class="fn">ConnectionManager</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.active: dict[str, WebSocket] = {}
+
+    <span class="kw">async def</span> <span class="fn">connect</span>(self, ws: WebSocket, session_id: <span class="nm">str</span>):
+        <span class="kw">await</span> ws.accept()
+        self.active[session_id] = ws
+
+    <span class="kw">def</span> <span class="fn">disconnect</span>(self, session_id: <span class="nm">str</span>):
+        self.active.pop(session_id, <span class="nm">None</span>)
+
+manager = ConnectionManager()
+
+<span class="nm">@app.websocket</span>(<span class="st">"/ws/{session_id}"</span>)
+<span class="kw">async def</span> <span class="fn">websocket_chat</span>(ws: WebSocket, session_id: <span class="nm">str</span>):
+    <span class="kw">await</span> manager.connect(ws, session_id)
+    stop_event = asyncio.Event()   <span class="cm"># 控制停止生成</span>
+    <span class="kw">try</span>:
+        <span class="kw">while</span> <span class="nm">True</span>:
+            data = <span class="kw">await</span> ws.receive_json()
+
+            <span class="kw">if</span> data.get(<span class="st">"action"</span>) == <span class="st">"stop"</span>:
+                stop_event.set()   <span class="cm"># 触发停止信号</span>
+                <span class="kw">continue</span>
+
+            stop_event.clear()
+            config = {<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: session_id}}
+
+            <span class="cm"># 并发：生成 + 监听客户端消息</span>
+            <span class="kw">async def</span> <span class="fn">stream_tokens</span>():
+                <span class="kw">async for</span> event <span class="kw">in</span> agent.astream_events(
+                    {<span class="st">"messages"</span>: data[<span class="st">"messages"</span>]}, config, version=<span class="st">"v2"</span>
+                ):
+                    <span class="kw">if</span> stop_event.is_set():
+                        <span class="kw">break</span>    <span class="cm"># 收到停止指令，中断生成</span>
+                    <span class="kw">if</span> event[<span class="st">"event"</span>] == <span class="st">"on_chat_model_stream"</span>:
+                        token = event[<span class="st">"data"</span>][<span class="st">"chunk"</span>].content
+                        <span class="kw">await</span> ws.send_json({<span class="st">"type"</span>: <span class="st">"token"</span>, <span class="st">"text"</span>: token})
+                <span class="kw">await</span> ws.send_json({<span class="st">"type"</span>: <span class="st">"done"</span>})
+
+            <span class="kw">await</span> stream_tokens()
+
+    <span class="kw">except</span> WebSocketDisconnect:
+        manager.disconnect(session_id)</code></pre>
+          <div class="refs">
+            <a href="https://fastapi.tiangolo.com/advanced/websockets/" target="_blank">FastAPI WebSocket 文档</a>
+            <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket" target="_blank">MDN WebSocket API</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-deep">深入</span>
+          <span class="card-title">SSE vs WebSocket vs HTTP Polling — 选型对比</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">三种实时通信方案如何选型？各自的性能和复杂度如何？</div>
+          <table>
+            <tr><th>维度</th><th>HTTP 短轮询</th><th>SSE</th><th>WebSocket</th></tr>
+            <tr><td>协议</td><td>HTTP/1.1</td><td>HTTP/1.1（长连接）</td><td>WS/WSS（TCP 升级）</td></tr>
+            <tr><td>方向</td><td>请求-响应</td><td>服务端 → 客户端</td><td>全双工双向</td></tr>
+            <tr><td>延迟</td><td>轮询间隔延迟</td><td>接近实时</td><td>实时</td></tr>
+            <tr><td>服务器压力</td><td>高（大量短连接）</td><td>中（长连接但单向）</td><td>中（长连接）</td></tr>
+            <tr><td>断线重连</td><td>天然（下次轮询）</td><td>浏览器自动重连（Last-Event-ID）</td><td>需手动实现指数退避重连</td></tr>
+            <tr><td>防火墙穿透</td><td>✅ 完全兼容</td><td>✅ 标准 HTTP</td><td>⚠️ 部分企业防火墙拦截</td></tr>
+            <tr><td>LLM 适用性</td><td>❌ 不适合</td><td>✅ Token streaming 首选</td><td>✅ 需双向交互场景</td></tr>
+            <tr><td>实现复杂度</td><td>极低</td><td>低</td><td>中（需连接状态管理）</td></tr>
+          </table>
+          <div class="tip"><strong>决策树：</strong>① 只需流式输出 token → <strong>SSE</strong>；② 需要"停止生成"按钮 / 用户实时输入影响生成 / 多人协作 → <strong>WebSocket</strong>；③ 简单问答无实时需求 → <strong>普通 HTTP POST</strong>（响应完整后返回）。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">FastAPI 生产配置 — 限流 / 认证 / 中间件 / 并发控制</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">LLM 服务的 FastAPI 生产配置有哪些关键点？如何防止单用户打满 GPU？</div>
+          <p>LLM API 的特殊性：单次请求耗时长（几秒到几分钟）、GPU 是稀缺资源、Token 计费成本高。生产环境必须做好<strong>并发限制、认证鉴权、速率控制</strong>三件事。</p>
+          <ul class="points">
+            <li><strong>Semaphore 并发控制</strong>：限制同时处理的 LLM 请求数，防止 OOM 或 vLLM 过载（通常设为 GPU 数 × 2-4）</li>
+            <li><strong>slowapi 速率限制</strong>：基于 Redis 的分布式限流，按用户/IP 限制每分钟请求数</li>
+            <li><strong>JWT 认证</strong>：<code>OAuth2PasswordBearer</code> 结合 <code>python-jose</code>，Depends 注入用户信息</li>
+            <li><strong>CORS 中间件</strong>：LLM API 通常需要跨域，配置 <code>CORSMiddleware</code></li>
+            <li><strong>请求超时</strong>：设置 <code>timeout</code> 防止长时间挂起请求，LLM 请求通常设 120-300 秒</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, HTTPException, Depends
+<span class="kw">from</span> fastapi.middleware.cors <span class="kw">import</span> CORSMiddleware
+<span class="kw">from</span> slowapi <span class="kw">import</span> Limiter
+<span class="kw">from</span> slowapi.util <span class="kw">import</span> get_remote_address
+
+<span class="cm"># 速率限制</span>
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+<span class="cm"># CORS</span>
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[<span class="st">"https://your-frontend.com"</span>],
+    allow_methods=[<span class="st">"*"</span>], allow_headers=[<span class="st">"*"</span>]
+)
+
+<span class="cm"># 并发控制：最多 8 个并发 LLM 请求</span>
+llm_semaphore = asyncio.Semaphore(<span class="nm">8</span>)
+
+<span class="nm">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="nm">@limiter.limit</span>(<span class="st">"20/minute"</span>)   <span class="cm"># 每用户每分钟 20 次</span>
+<span class="kw">async def</span> <span class="fn">chat</span>(request, body: ChatRequest, user=Depends(verify_token)):
+    <span class="kw">async with</span> llm_semaphore:    <span class="cm"># 超出并发上限时排队等待</span>
+        <span class="kw">try</span>:
+            result = <span class="kw">await</span> asyncio.wait_for(
+                agent.ainvoke({<span class="st">"messages"</span>: body.messages}),
+                timeout=<span class="nm">120.0</span>   <span class="cm"># 2分钟超时</span>
+            )
+            <span class="kw">return</span> result
+        <span class="kw">except</span> asyncio.TimeoutError:
+            <span class="kw">raise</span> HTTPException(<span class="nm">504</span>, <span class="st">"请求超时，请稍后重试"</span>)</code></pre>
+          <div class="refs">
+            <a href="https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/" target="_blank">FastAPI JWT 认证文档</a>
+            <a href="https://slowapi.readthedocs.io/en/latest/" target="_blank">slowapi 速率限制</a>
+            <a href="https://fastapi.tiangolo.com/tutorial/middleware/" target="_blank">FastAPI 中间件文档</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-deep">深入</span>
+          <span class="card-title">异步陷阱 — 同步代码阻塞 Event Loop 的排查</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">FastAPI 服务明明用了 async，但并发性能还是很差，可能是什么原因？</div>
+          <p>最常见的陷阱：在 <code>async def</code> 路由中调用了<strong>同步阻塞代码</strong>，导致整个 event loop 被挂起，所有并发请求排队。典型案例：用 <code>requests.get()</code>（同步）代替 <code>httpx.AsyncClient</code>；用同步的 <code>psycopg2</code> 连接数据库；调用了阻塞的 CPU 密集型操作。</p>
+          <ul class="points">
+            <li><strong>IO 阻塞</strong>：改用异步库。HTTP 请求用 <code>httpx.AsyncClient</code>；数据库用 <code>asyncpg</code> / <code>sqlalchemy[asyncio]</code>；Redis 用 <code>aioredis</code></li>
+            <li><strong>CPU 密集型</strong>（如图像处理、大量计算）：用 <code>loop.run_in_executor(executor, sync_fn)</code> 放入线程池/进程池，避免阻塞 event loop</li>
+            <li><strong>检测工具</strong>：<code>asyncio.set_event_loop_policy()</code> 结合 <code>asyncio-monitor</code>，检测执行时间超过阈值的协程</li>
+            <li><strong>uvicorn workers</strong>：<code>--workers 4</code> 配合 <code>--loop uvloop</code>，uvloop 基于 libuv，比标准 asyncio 快 2-4x</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">import</span> asyncio, httpx
+<span class="kw">from</span> concurrent.futures <span class="kw">import</span> ThreadPoolExecutor
+
+executor = ThreadPoolExecutor(max_workers=<span class="nm">4</span>)
+
+<span class="cm"># ❌ 错误：同步 requests 阻塞 event loop</span>
+<span class="kw">async def</span> <span class="fn">bad_handler</span>():
+    resp = requests.get(<span class="st">"https://api.example.com"</span>)  <span class="cm"># 阻塞！</span>
+
+<span class="cm"># ✅ 正确方案1：异步 httpx</span>
+<span class="kw">async def</span> <span class="fn">good_handler_io</span>():
+    <span class="kw">async with</span> httpx.AsyncClient() <span class="kw">as</span> client:
+        resp = <span class="kw">await</span> client.get(<span class="st">"https://api.example.com"</span>)
+
+<span class="cm"># ✅ 正确方案2：CPU 密集型放线程池</span>
+<span class="kw">async def</span> <span class="fn">good_handler_cpu</span>():
+    loop = asyncio.get_event_loop()
+    result = <span class="kw">await</span> loop.run_in_executor(
+        executor, cpu_intensive_function, arg1, arg2
+    )</code></pre>
+          <div class="refs">
+            <a href="https://fastapi.tiangolo.com/async/" target="_blank">FastAPI async 深度解析</a>
+            <a href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor" target="_blank">run_in_executor 文档</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div>LLM Interview Knowledge Base · 基于 LangChain v1.1 / LangGraph v1.1.7 / 2025-2026</div>
+    <div style="margin-top:8px;color:#3d4f63;">docs.langchain.com · langchain-ai.github.io/langgraph · huggingface.co/docs</div>
+  </footer>
+
+</div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECTION 7 · 生产部署与工具链
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>生产部署与工具链</h2>
+      <span class="section-icon">🚀</span>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">vLLM — 高性能 LLM 推理服务</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">生产环境部署 LLM 推理服务，为什么选 vLLM？PagedAttention 是什么？</div>
+          <p><strong>vLLM</strong> 是目前生产环境 LLM 推理的事实标准，核心创新是 <em>PagedAttention</em>：将 KV Cache 分块管理（类似操作系统分页内存），消除 KV Cache 的内存碎片，GPU 利用率从 20-40% 提升到 >90%，吞吐量提升 10-30x。</p>
+          <ul class="points">
+            <li><strong>连续批处理（Continuous Batching）</strong>：不等所有请求完成就处理新请求，GPU 利用率最大化</li>
+            <li><strong>OpenAI 兼容 API</strong>：vLLM 提供与 OpenAI 完全兼容的 HTTP 接口，LangChain 无缝对接</li>
+            <li><strong>AWQ / GPTQ 量化</strong>：支持预量化模型直接推理，4-bit 模型显存减半，速度基本不损失</li>
+            <li><strong>tensor parallelism</strong>：单模型跨多 GPU 分片，支持 70B+ 模型部署</li>
+          </ul>
+          <pre data-lang="Shell"><code><span class="cm"># 启动 vLLM OpenAI 兼容服务</span>
+vllm serve Qwen/Qwen2.5-7B-Instruct \
+  --port 8000 \
+  --tensor-parallel-size 2 \  <span class="cm"># 2 GPU 并行</span>
+  --gpu-memory-utilization 0.9 \
+  --max-model-len 16384
+
+<span class="cm"># LangChain 接入 vLLM</span>
+<span class="cm"># from langchain_openai import ChatOpenAI</span>
+<span class="cm"># llm = ChatOpenAI(base_url="http://localhost:8000/v1", model="Qwen2.5-7B")</span></code></pre>
+          <div class="refs">
+            <a href="https://docs.vllm.ai/en/latest/" target="_blank">vLLM 官方文档</a>
+            <a href="https://arxiv.org/abs/2309.06180" target="_blank">vLLM / PagedAttention 论文</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">模型量化 — GPTQ / AWQ / bitsandbytes</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">INT8 和 INT4 量化有什么区别？生产环境推荐哪种？</div>
+          <p>量化是将浮点权重映射到低精度整数的过程。<strong>权衡：</strong>精度损失 vs 显存/速度收益。</p>
+          <table>
+            <tr><th>量化方式</th><th>原理</th><th>精度损失</th><th>显存节省</th><th>推荐场景</th></tr>
+            <tr><td>BitsAndBytes INT8</td><td>LLM.int8()，混合精度异常值检测</td><td>极小（<1%）</td><td>约50%</td><td>微调加载基础模型（QLoRA）</td></tr>
+            <tr><td>BitsAndBytes NF4</td><td>NormalFloat4，正态分布优化</td><td>小（1-2%）</td><td>约75%</td><td>QLoRA 训练</td></tr>
+            <tr><td>GPTQ</td><td>逐层最优量化，需校准数据</td><td>小</td><td>约75%</td><td>部署推理，速度优化</td></tr>
+            <tr><td>AWQ</td><td>激活感知量化，保护重要权重</td><td>更小</td><td>约75%</td><td>生产推理首选</td></tr>
+          </table>
+          <div class="refs">
+            <a href="https://huggingface.co/docs/transformers/main/quantization/overview" target="_blank">HuggingFace 量化指南</a>
+            <a href="https://arxiv.org/abs/2306.00978" target="_blank">AWQ 论文</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">LangSmith — 可观测性与评估</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何监控生产环境中 Agent 的行为和性能？</div>
+          <p><strong>LangSmith</strong> 是 LangChain 官方的 LLM 可观测性平台，自动 trace 所有 LangChain / LangGraph 的调用链（支持嵌套 span），可以看到每个节点的输入输出、token 消耗、延迟、错误。</p>
+          <ul class="points">
+            <li><strong>Trace</strong>：每次 Agent 执行的完整调用树，节点级别可追溯</li>
+            <li><strong>Datasets & Evaluations</strong>：构建评估数据集，跑 A/B 对比，量化模型改进效果</li>
+            <li><strong>Insights Agent（2025 新功能）</strong>：自动聚类分析用户 query 模式，发现 Agent 的薄弱环节</li>
+            <li><strong>Multi-Turn Evals</strong>：评估完整对话而非单次响应，更贴近真实用户体验</li>
+            <li><strong>环境变量配置</strong>：<code>LANGSMITH_TRACING=true</code> + <code>LANGSMITH_API_KEY=xxx</code>，零代码改动即可接入</li>
+          </ul>
+          <div class="refs">
+            <a href="https://docs.smith.langchain.com/" target="_blank">LangSmith 官方文档</a>
+            <a href="https://changelog.langchain.com/" target="_blank">LangChain Changelog</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">FastAPI + LangGraph — 生产 API 服务架构</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">如何用 FastAPI 封装 LangGraph Agent 为生产级 HTTP 服务？</div>
+          <p>生产架构标准做法：FastAPI 负责 HTTP 路由和请求验证 → LangGraph 处理 Agent 逻辑 → PostgreSQL 做状态持久化 → Redis 做语义缓存 → vLLM 或 OpenAI API 做模型后端。</p>
+          <ul class="points">
+            <li><strong>SSE 流式响应</strong>：<code>StreamingResponse</code> + <code>EventSourceResponse</code> 实现流式 token 输出</li>
+            <li><strong>并发控制</strong>：用 <code>asyncio.Semaphore</code> 限制同时进行的 LLM 请求数，避免超出 API rate limit</li>
+            <li><strong>健康检查</strong>：<code>/health</code> 端点检查向量库、数据库连接状态，供 K8s 探活</li>
+            <li><strong>语义缓存</strong>：对相似问题返回缓存答案，RedisSemanticCache 用向量相似度判断缓存命中</li>
+          </ul>
+          <pre data-lang="Python"><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> fastapi.responses <span class="kw">import</span> StreamingResponse
+
+app = FastAPI()
+
+<span class="nm">@app.post</span>(<span class="st">"/chat"</span>)
+<span class="kw">async def</span> <span class="fn">chat</span>(request: ChatRequest):
+    <span class="kw">async def</span> <span class="fn">generate</span>():
+        config = {<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: request.session_id}}
+        <span class="kw">async for</span> event <span class="kw">in</span> agent.astream_events(
+            {<span class="st">"messages"</span>: request.messages}, config, version=<span class="st">"v2"</span>
+        ):
+            <span class="kw">if</span> event[<span class="st">"event"</span>] == <span class="st">"on_chat_model_stream"</span>:
+                chunk = event[<span class="st">"data"</span>][<span class="st">"chunk"</span>].content
+                <span class="kw">yield</span> f<span class="st">"data: {chunk}\n\n"</span>
+    <span class="kw">return</span> StreamingResponse(generate(), media_type=<span class="st">"text/event-stream"</span>)</code></pre>
+          <div class="refs">
+            <a href="https://langchain-ai.github.io/langgraph/how-tos/streaming/" target="_blank">LangGraph Streaming 指南</a>
+            <a href="https://fastapi.tiangolo.com/advanced/websockets/" target="_blank">FastAPI 流式响应</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggle(this)">
+          <span class="interview-tag tag-prod">生产</span>
+          <span class="card-title">MCP (Model Context Protocol) — 下一代 Tool 集成标准</span>
+          <span class="card-arrow">▶</span>
+        </div>
+        <div class="card-body">
+          <div class="q">什么是 MCP？它和 LangChain Tools 有什么关系？</div>
+          <p><strong>MCP（Model Context Protocol）</strong>是 Anthropic 于 2024 年提出的开放协议，定义 LLM 如何与外部工具/数据源通信的标准接口，类似 AI 领域的 USB 接口。LangChain 1.x 和 LangGraph 1.x 都已集成 MCP，工具服务器可以用任何语言实现，只要遵循 MCP 协议。</p>
+          <ul class="points">
+            <li><strong>Resources</strong>：暴露数据（文件、数据库记录）给 LLM，LLM 可以"读取"</li>
+            <li><strong>Tools</strong>：可执行操作（调用 API、运行代码），LLM 可以"调用"</li>
+            <li><strong>Prompts</strong>：可复用的 prompt 模板，服务端维护</li>
+            <li><strong>Transport</strong>：支持 stdio（本地进程）和 HTTP SSE（远程服务），LangGraph 1.x 支持 streamable HTTP</li>
+            <li><strong>生态</strong>：Claude Desktop、Cursor、GitHub Copilot 均已支持 MCP</li>
+          </ul>
+          <div class="refs">
+            <a href="https://modelcontextprotocol.io/introduction" target="_blank">MCP 官方文档</a>
+            <a href="https://docs.langchain.com/oss/python/integrations/tools/mcp" target="_blank">LangChain MCP 集成</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- .container -->
+</div><!-- .main-content -->
+
+<a class="back-top" href="#" title="返回顶部">↑</a>
+
+<script>
+  // ── Card toggle ──
+  function toggle(header) {
+    header.parentElement.classList.toggle('open');
+  }
+
+  // ── Sidebar section toggle ──
+  function toggleSidebar(link) {
+    const section = link.parentElement;
+    const wasOpen = section.classList.contains('open');
+    document.querySelectorAll('.sidebar-section').forEach(s => s.classList.remove('open'));
+    document.querySelectorAll('.sidebar-section-link').forEach(l => l.classList.remove('active'));
+    if (!wasOpen) {
+      section.classList.add('open');
+      link.classList.add('active');
+    }
+  }
+
+  // ── Scroll spy: highlight active sidebar section ──
+  const sectionIds = ['s1','s2','s3','s4','s5','s_vec','s6','s7','s8'];
+  function onScroll() {
+    let current = sectionIds[0];
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= 120) current = id;
+    }
+    document.querySelectorAll('.sidebar-section').forEach(sec => {
+      const target = sec.dataset.target;
+      const link = sec.querySelector('.sidebar-section-link');
+      if (target === current) {
+        link.classList.add('active');
+        sec.classList.add('open');
+      } else {
+        link.classList.remove('active');
+        sec.classList.remove('open');
+      }
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ── Sidebar search filter ──
+  document.getElementById('sidebarSearch').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.sidebar-section').forEach(sec => {
+      const title = sec.querySelector('.sidebar-section-title').textContent.toLowerCase();
+      const subTexts = [...sec.querySelectorAll('.sidebar-subitem-text')].map(t => t.textContent.toLowerCase()).join(' ');
+      sec.style.display = (!q || title.includes(q) || subTexts.includes(q)) ? '' : 'none';
+    });
+  });
+
+  // ── Main search filter (keep existing) ──
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.display = (!q || card.textContent.toLowerCase().includes(q)) ? '' : 'none';
+      });
+    });
+  }
+
+  // ── Stagger animation ──
+  document.querySelectorAll('.section').forEach((s, i) => {
+    s.style.animationDelay = `${i * 0.06}s`;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>底层原理体系 · OS · 网络 · Linux内核 · 并发 · 高性能</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f8fafc;--s:#fff;--s2:#f1f5f9;--s3:#e8f0fe;--bd:#e2e8f0;--bd2:#cbd5e1;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bl:#1d4ed8;--blbg:#eff6ff;--blbd:#bfdbfe;--sw:220px}
+html{font-size:14px;line-height:1.6;color:var(--tx)}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+.hdr{position:sticky;top:0;z-index:100;background:var(--s);border-bottom:1px solid var(--bd);padding:8px 16px;display:flex;align-items:center;gap:12px}
+.htit{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.hsub{font-size:10px;color:var(--tx3);font-weight:400}
+.srch{flex:1;max-width:380px;position:relative}
+.srch input{width:100%;padding:5px 11px 5px 28px;border:1px solid var(--bd2);border-radius:7px;font-size:12px;background:var(--s2);color:var(--tx);outline:none}
+.srch input:focus{border-color:#93c5fd;background:#fff}
+.si{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx3)}
+.stag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blbg);color:var(--bl);border:1px solid var(--blbd);white-space:nowrap}
+.lay{display:flex;min-height:calc(100vh - 41px)}
+.sb{width:var(--sw);flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;background:var(--s);border-right:1px solid var(--bd);padding:8px 0}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.nlbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;padding:7px 12px 2px;margin-top:4px}
+.nl{display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:11px;color:var(--tx2);cursor:pointer;transition:background .1s}
+.nl:hover{background:var(--s2);color:var(--tx)}
+.nl.active{background:var(--blbg);color:var(--bl)}
+.ndot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nc{margin-left:auto;font-size:9px;padding:1px 4px;background:var(--s2);border-radius:8px;color:var(--tx3)}
+.main{flex:1;padding:16px 22px 60px;overflow-x:hidden}
+.sec{margin-bottom:28px;scroll-margin-top:50px}
+.sch{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--bd)}
+.sdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stit{font-size:14px;font-weight:600}
+.intro-txt{font-size:12px;color:var(--tx3);margin-bottom:10px;padding:8px 12px;border-radius:6px;border-left:3px solid #93c5fd;background:var(--blbg);line-height:1.6}
+.tabs{display:flex;gap:3px;margin-bottom:10px}
+.tab-btn{padding:5px 14px;font-size:12px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);color:var(--tx2);cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--s);color:var(--tx);border-color:var(--bl);font-weight:500}
+.tab-btn:hover:not(.active){background:var(--s)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.acc{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:8px;transition:box-shadow .15s}
+.acc:hover{box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.acc-hdr{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--s2);cursor:pointer;user-select:none;transition:background .15s}
+.acc-hdr:hover{background:#e8edf2}
+.acc-arrow{font-size:9px;color:var(--tx3);transition:transform .2s;flex-shrink:0}
+.acc-hdr.open .acc-arrow{transform:rotate(90deg)}
+.acc-htxt{font-size:12.5px;font-weight:500;color:var(--tx)}
+.acc-body{display:none}
+.acc-body.open{display:block}
+.pts-wrap{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.pt{font-size:12.5px;color:var(--tx2);line-height:1.75;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-left:3px solid #cbd5e1;border-radius:0 7px 7px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--bd2);box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.card.hidden{display:none}
+.ctop{display:flex;align-items:flex-start;gap:6px}
+.badge{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;flex-shrink:0;white-space:nowrap;margin-top:1px;border:1px solid transparent}
+.ctit{font-size:12px;font-weight:500;color:var(--tx);line-height:1.4}
+.ctit a{color:inherit;text-decoration:none}
+.ctit a:hover{color:var(--bl);text-decoration:underline}
+.cdesc{font-size:11px;color:var(--tx2);line-height:1.4}
+.cmeta{display:flex;align-items:center;gap:6px;margin-top:1px}
+.csrc{font-size:10px;color:var(--tx3)}
+.cdiff{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.de{background:#f0fdf4;color:#15803d}.dm{background:#fffbeb;color:#b45309}.da{background:#fef2f2;color:#b91c1c}
+.curl{font-size:10px;color:#64748b;word-break:break-all;text-decoration:none}
+.curl:hover{color:var(--bl)}
+.b-paper{background:#f8fafc;color:#334155;border-color:#cbd5e1}
+.b-blog{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.b-video{background:#dbeafe;color:#1e40af;border-color:#bfdbfe}
+.b-docs{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe}
+.b-github{background:#f0fdf4;color:#14532d;border-color:#bbf7d0}
+.b-course{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+.b-book{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.b-tool{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}
+.b-visual{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.sec.hidden-sec{display:none}
+.nr{display:none;text-align:center;padding:40px;color:var(--tx3);font-size:13px}
+.btt{position:fixed;bottom:20px;right:20px;width:32px;height:32px;background:var(--bl);color:#fff;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:13px}
+.btt.show{opacity:1}.btt:hover{background:#1e3a8a}
+.leg{display:flex;flex-wrap:wrap;gap:4px;padding:14px 0 0;border-top:1px solid var(--bd);margin-top:4px}
+.res-block{margin-top:14px}.res-section-label{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding-top:12px;border-top:1px solid var(--bd)}/* ── READABILITY OVERRIDES ── */
+.acc-body{display:block!important}
+.acc{border:none!important;border-radius:0!important;box-shadow:none!important;margin-bottom:0!important}
+.acc+.acc{border-top:1px solid var(--bd)!important}
+.acc:hover{box-shadow:none!important}
+.acc-hdr{background:transparent!important;padding:16px 0 5px!important;cursor:default!important;gap:0!important}
+.acc-hdr:hover,.acc-hdr.open{background:transparent!important}
+.acc-arrow{display:none!important}
+.acc-htxt{font-size:13.5px!important;font-weight:600!important;color:var(--tx)!important;letter-spacing:-.01em}
+.pts-wrap{padding:4px 0 22px!important;gap:16px!important}
+.pt{font-size:13.5px!important;line-height:1.85!important;color:var(--tx2)!important;padding:0!important;background:transparent!important;border:none!important;border-radius:0!important}
+.pt:hover{border-left-color:transparent!important}
+.intro-txt{font-size:13px!important;line-height:1.72!important}
+.intro-txt{font-style:normal!important;color:var(--tx)!important;background:transparent!important;padding:2px 0 2px 14px!important;border-radius:0!important}.intro-lines{margin-top:11px;display:flex;flex-direction:column;gap:6px}.intro-line{font-size:13px;line-height:1.65;color:var(--tx2)}.intro-line strong{color:var(--tx);font-weight:600}
+/* ── THREE-COLUMN LAYOUT ── */
+.content-area{flex:1;display:flex;align-items:flex-start;min-width:0;gap:0}
+.main{flex:1;max-width:720px;min-width:0}
+.toc-rail{width:190px;flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;padding:14px 0 20px 14px;border-left:1px solid var(--bd);background:var(--s)}
+.toc-rail::-webkit-scrollbar{width:2px}.toc-rail::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.toc-head{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd);padding-right:14px}
+.toc-sec{display:block;font-size:11px;color:var(--tx3);text-decoration:none;padding:3px 0;line-height:1.4;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px;transition:color .12s}
+.toc-sec:hover{color:var(--tx2)}
+.toc-sec.active{color:var(--bl)!important;font-weight:600}
+.toc-notes{flex-direction:column;display:none}
+.toc-notes.open{display:flex}
+.toc-note{display:block;font-size:10.5px;color:var(--tx3);text-decoration:none;padding:2px 14px 2px 10px;line-height:1.4;cursor:pointer;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.toc-note:hover{color:var(--tx2)}
+.toc-note.active{color:var(--bl);border-left-color:var(--bl)}
+[id^="nh-"]{scroll-margin-top:60px}
+@media(max-width:1200px){.toc-rail{display:none}}
+/* ── GUIDE RAIL REDESIGN ── */
+.content-area{gap:40px!important}
+.toc-rail{background:transparent!important;border-left:none!important;padding:18px 0 20px 0!important}
+.guide-head{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin-bottom:14px}
+.guide-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:none}
+.guide-check{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s}
+.guide-check:hover{border-color:var(--bl)}
+.guide-item.done .guide-check{background:var(--bl);border-color:var(--bl);color:#fff}
+.guide-text{font-size:11.5px;color:var(--tx3);line-height:1.6;cursor:pointer;flex:1;transition:color .12s}
+.guide-text:hover{color:var(--tx2)}
+.guide-text strong{color:var(--tx2);font-weight:600}
+.guide-item.done .guide-text{opacity:.4;text-decoration:line-through;text-decoration-color:var(--bd2)}
+.guide-item.done .guide-text strong{color:inherit}
+/* ── RESPONSIVE 3-COLUMN GRID (overrides all previous layout rules) ── */
+.lay{display:grid!important;align-items:start!important;gap:0!important;
+     grid-template-columns:clamp(180px,16%,240px) 1fr clamp(220px,22%,320px)!important}
+.content-area{display:contents!important;flex:unset!important;gap:unset!important}
+.main{flex:unset!important;max-width:none!important;min-width:0!important;padding-right:36px!important}
+.toc-rail{width:unset!important;min-width:unset!important;flex-shrink:unset!important;
+          padding-left:22px!important;border-left:1px solid var(--bd)!important;
+          background:transparent!important}
+@media(max-width:1200px){
+  .toc-rail{display:none!important}
+  .lay{grid-template-columns:clamp(180px,16%,240px) 1fr!important}
+}
+/* ── RESIZE HANDLE ── */
+.toc-rail{position:relative!important}
+.resize-handle{position:absolute;left:-1px;top:0;bottom:0;width:8px;cursor:col-resize;
+  z-index:20;background:transparent;border-left:2px solid transparent;transition:border-color .15s,background .15s}
+.resize-handle:hover,.resize-handle.dragging{border-left-color:var(--bl);background:rgba(99,102,241,.07)}
+.guide-content{width:100%}
+/* === STICKY GUIDE FIX === */
+.toc-rail{
+  position:sticky!important;
+  top:41px!important;
+  height:calc(100vh - 41px)!important;
+  overflow-y:auto!important;
+  align-self:start!important;
+}
+.lay{align-items:start!important}
+
+.note-fig{margin:12px 0 16px 0;text-align:center}
+.note-fig img{max-width:100%;height:auto;border-radius:6px;border:1px solid var(--bd);background:var(--s)}
+.note-fig figcaption{font-size:11px;color:var(--tx3);margin-top:6px;line-height:1.5}
+
+.note-fig{margin:14px 0 10px;background:var(--bg,#fff);border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden}
+.note-fig svg{width:100%;height:auto;display:block}
+.diag-caption{font-size:11px;color:var(--tx3);margin-top:6px;text-align:center;line-height:1.5}
+.note-fig{margin:12px 0 16px;border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden;background:var(--s)}
+.note-fig svg{width:100%;height:auto;display:block;max-height:280px}
+.diag-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--accent,#2563eb);text-decoration:none;opacity:.8}
+.diag-link:hover{opacity:1;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htit">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    AI · LLM · 多模态 完整学习笔记
+    <span class="hsub">· 硬件 / 训练 / 推理 / 架构 / 对齐 / Agent / RAG / 多模态 / 生产工程 / Evals</span>
+  </div>
+  <div class="srch"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="搜索OS · 网络 · 内核 · 并发..."></div>
+  <span class="stag" id="stag">加载中…</span>
+</div>
+<div class="lay">
+<nav class="sb" id="sb"><div id="nav"></div></nav>
+<div class="content-area"><main class="main"><div id="cont"></div><div id="nr" class="nr">未找到匹配内容</div><div class="leg" id="leg"></div></main><nav class="toc-rail" id="toc-rail"></nav></div>
+</div>
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- DIAGRAM TEMPLATES -->
+<div id="diag_von_neumann" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.b{rx:7;ry:7} .lbl{font:600 12px sans-serif} .sub{font:10px sans-serif;fill:#555}</style>
+<rect class="b" x="200" y="10" width="120" height="80" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="lbl" x="260" y="32" text-anchor="middle" fill="#1e40af">CPU</text>
+<rect class="b" x="210" y="38" width="45" height="22" fill="#fff" stroke="#93c5fd"/>
+<text class="sub" x="232" y="53" text-anchor="middle" fill="#1e40af">控制单元</text>
+<rect class="b" x="265" y="38" width="45" height="22" fill="#fff" stroke="#93c5fd"/>
+<text class="sub" x="287" y="53" text-anchor="middle" fill="#1e40af">ALU</text>
+<rect class="b" x="210" y="65" width="100" height="18" fill="#eff6ff" stroke="#93c5fd"/>
+<text class="sub" x="260" y="78" text-anchor="middle" fill="#1e40af">寄存器 Registers</text>
+<rect class="b" x="30" y="25" width="100" height="50" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="lbl" x="80" y="47" text-anchor="middle" fill="#14532d">内存 Memory</text>
+<text class="sub" x="80" y="63" text-anchor="middle" fill="#15803d">指令 + 数据</text>
+<rect class="b" x="390" y="25" width="100" height="50" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+<text class="lbl" x="440" y="47" text-anchor="middle" fill="#78350f">输入/输出</text>
+<text class="sub" x="440" y="63" text-anchor="middle" fill="#92400e">I/O Devices</text>
+<line x1="130" y1="50" x2="200" y2="50" stroke="#6b7280" stroke-width="2" marker-end="url(#a)" marker-start="url(#a)"/>
+<text class="sub" x="165" y="44" text-anchor="middle" fill="#6b7280">总线</text>
+<line x1="320" y1="50" x2="390" y2="50" stroke="#6b7280" stroke-width="2" marker-end="url(#a)" marker-start="url(#a)"/>
+<text class="sub" x="355" y="44" text-anchor="middle" fill="#6b7280">总线</text>
+<rect class="b" x="30" y="120" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="lbl" x="70" y="138" text-anchor="middle" fill="#4c1d95">取指 IF</text>
+<text class="sub" x="70" y="153" text-anchor="middle" fill="#6d28d9">读取PC地址</text>
+<rect class="b" x="130" y="120" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="lbl" x="170" y="138" text-anchor="middle" fill="#4c1d95">译码 ID</text>
+<text class="sub" x="170" y="153" text-anchor="middle" fill="#6d28d9">解析操作数</text>
+<rect class="b" x="230" y="120" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="lbl" x="270" y="138" text-anchor="middle" fill="#4c1d95">执行 EX</text>
+<text class="sub" x="270" y="153" text-anchor="middle" fill="#6d28d9">ALU运算</text>
+<rect class="b" x="330" y="120" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="lbl" x="370" y="138" text-anchor="middle" fill="#4c1d95">访存 MEM</text>
+<text class="sub" x="370" y="153" text-anchor="middle" fill="#6d28d9">读写内存</text>
+<rect class="b" x="430" y="120" width="80" height="40" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="lbl" x="470" y="138" text-anchor="middle" fill="#4c1d95">写回 WB</text>
+<text class="sub" x="470" y="153" text-anchor="middle" fill="#6d28d9">结果→寄存器</text>
+<line x1="110" y1="140" x2="130" y2="140" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#p)"/>
+<line x1="210" y1="140" x2="230" y2="140" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#p)"/>
+<line x1="310" y1="140" x2="330" y2="140" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#p)"/>
+<line x1="410" y1="140" x2="430" y2="140" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#p)"/>
+<text style="font:11px sans-serif;fill:#374151" x="260" y="190" text-anchor="middle">五级流水线：每个时钟周期 5 条指令同时运行，吞吐量提升 5 倍</text>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round"/></marker>
+<marker id="p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"/></marker>
+</defs>
+</svg></div>
+<div id="diag_mem_hierarchy" style="display:none"><svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg">
+<style>.row{rx:5;ry:5} .lbl{font:600 12px sans-serif} .num{font:11px monospace}</style>
+<polygon points="260,8 180,44 340,44" fill="#7c3aed"/>
+<text class="lbl" x="260" y="32" text-anchor="middle" fill="white">寄存器</text>
+<polygon points="180,46 126,82 394,82 340,46" fill="#2563eb"/>
+<text class="lbl" x="260" y="70" text-anchor="middle" fill="white">L1 Cache（分 I$ 和 D$）</text>
+<polygon points="126,84 88,120 432,120 394,84" fill="#0891b2"/>
+<text class="lbl" x="260" y="108" text-anchor="middle" fill="white">L2 Cache（统一）</text>
+<polygon points="88,122 44,158 476,158 432,122" fill="#059669"/>
+<text class="lbl" x="260" y="146" text-anchor="middle" fill="white">L3 Cache（多核共享 LLC）</text>
+<rect class="row" x="44" y="160" width="432" height="30" fill="#d97706"/>
+<text class="lbl" x="260" y="180" text-anchor="middle" fill="white">主内存 DRAM</text>
+<rect class="row" x="44" y="194" width="432" height="28" fill="#dc2626"/>
+<text class="lbl" x="260" y="213" text-anchor="middle" fill="white">NVMe SSD / HDD</text>
+<text class="num" x="478" y="30" fill="#4c1d95">~1 ns · B级</text>
+<text class="num" x="478" y="68" fill="#1e40af">~4 ns · 32-64KB</text>
+<text class="num" x="478" y="106" fill="#0e7490">~12 ns · 256KB-1MB</text>
+<text class="num" x="478" y="144" fill="#065f46">~40 ns · 8-32MB</text>
+<text class="num" x="478" y="178" fill="#78350f">~100 ns · GB级</text>
+<text class="num" x="478" y="212" fill="#7f1d1d">μs~ms · TB级</text>
+<text style="font:11px sans-serif;fill:#6b7280" x="0" y="110" transform="rotate(-90,12,120)">速度/成本递减 ↓</text>
+</svg></div>
+<div id="diag_pipeline" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.s{rx:5;ry:5} .t{font:500 11px sans-serif} .sm{font:10px sans-serif;fill:#555}</style>
+<text style="font:600 13px sans-serif;fill:#111" x="260" y="18" text-anchor="middle">流水线时空图：4 条指令 × 5 阶段，第 4 周期后满负荷运行</text>
+<text class="t" x="10" y="38" fill="#374151">周期:</text>
+<text class="t" x="80" y="38" fill="#374151" text-anchor="middle">1</text>
+<text class="t" x="155" y="38" fill="#374151" text-anchor="middle">2</text>
+<text class="t" x="230" y="38" fill="#374151" text-anchor="middle">3</text>
+<text class="t" x="305" y="38" fill="#374151" text-anchor="middle">4</text>
+<text class="t" x="380" y="38" fill="#374151" text-anchor="middle">5</text>
+<text class="t" x="455" y="38" fill="#374151" text-anchor="middle">6</text>
+<text class="t" x="10" y="65" fill="#374151">I₁</text>
+<rect class="s" x="55" y="45" width="50" height="24" fill="#7c3aed" opacity=".85"/><text class="t" x="80" y="61" text-anchor="middle" fill="white">IF</text>
+<rect class="s" x="130" y="45" width="50" height="24" fill="#2563eb" opacity=".85"/><text class="t" x="155" y="61" text-anchor="middle" fill="white">ID</text>
+<rect class="s" x="205" y="45" width="50" height="24" fill="#0891b2" opacity=".85"/><text class="t" x="230" y="61" text-anchor="middle" fill="white">EX</text>
+<rect class="s" x="280" y="45" width="50" height="24" fill="#059669" opacity=".85"/><text class="t" x="305" y="61" text-anchor="middle" fill="white">MEM</text>
+<rect class="s" x="355" y="45" width="50" height="24" fill="#d97706" opacity=".85"/><text class="t" x="380" y="61" text-anchor="middle" fill="white">WB</text>
+<text class="t" x="10" y="100" fill="#374151">I₂</text>
+<rect class="s" x="130" y="80" width="50" height="24" fill="#7c3aed" opacity=".85"/><text class="t" x="155" y="96" text-anchor="middle" fill="white">IF</text>
+<rect class="s" x="205" y="80" width="50" height="24" fill="#2563eb" opacity=".85"/><text class="t" x="230" y="96" text-anchor="middle" fill="white">ID</text>
+<rect class="s" x="280" y="80" width="50" height="24" fill="#0891b2" opacity=".85"/><text class="t" x="305" y="96" text-anchor="middle" fill="white">EX</text>
+<rect class="s" x="355" y="80" width="50" height="24" fill="#059669" opacity=".85"/><text class="t" x="380" y="96" text-anchor="middle" fill="white">MEM</text>
+<rect class="s" x="430" y="80" width="50" height="24" fill="#d97706" opacity=".85"/><text class="t" x="455" y="96" text-anchor="middle" fill="white">WB</text>
+<text class="t" x="10" y="135" fill="#374151">I₃</text>
+<rect class="s" x="205" y="115" width="50" height="24" fill="#7c3aed" opacity=".85"/><text class="t" x="230" y="131" text-anchor="middle" fill="white">IF</text>
+<rect class="s" x="280" y="115" width="50" height="24" fill="#2563eb" opacity=".85"/><text class="t" x="305" y="131" text-anchor="middle" fill="white">ID</text>
+<rect class="s" x="355" y="115" width="50" height="24" fill="#0891b2" opacity=".85"/><text class="t" x="380" y="131" text-anchor="middle" fill="white">EX</text>
+<rect class="s" x="430" y="115" width="50" height="24" fill="#059669" opacity=".85"/><text class="t" x="455" y="131" text-anchor="middle" fill="white">MEM</text>
+<text class="t" x="10" y="165" fill="#374151">I₄</text>
+<rect class="s" x="280" y="150" width="50" height="24" fill="#7c3aed" opacity=".85"/><text class="t" x="305" y="166" text-anchor="middle" fill="white">IF</text>
+<rect class="s" x="355" y="150" width="50" height="24" fill="#2563eb" opacity=".85"/><text class="t" x="380" y="166" text-anchor="middle" fill="white">ID</text>
+<rect class="s" x="430" y="150" width="50" height="24" fill="#0891b2" opacity=".85"/><text class="t" x="455" y="166" text-anchor="middle" fill="white">EX</text>
+</svg></div>
+<div id="diag_process_states" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.s{rx:28;ry:18} .t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<ellipse cx="100" cy="80" rx="70" ry="30" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="100" y="76" text-anchor="middle" fill="#14532d">Running</text>
+<text class="sm" x="100" y="92" text-anchor="middle" fill="#15803d">占用 CPU 执行中</text>
+<ellipse cx="280" cy="80" rx="70" ry="30" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="280" y="76" text-anchor="middle" fill="#1e40af">Ready</text>
+<text class="sm" x="280" y="92" text-anchor="middle" fill="#3b82f6">可运行·等待调度</text>
+<ellipse cx="440" cy="80" rx="70" ry="30" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+<text class="t" x="440" y="76" text-anchor="middle" fill="#78350f">Blocked</text>
+<text class="sm" x="440" y="92" text-anchor="middle" fill="#92400e">等待IO/锁·不占CPU</text>
+<ellipse cx="100" cy="160" rx="70" ry="25" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text class="t" x="100" y="157" text-anchor="middle" fill="#831843">Zombie</text>
+<text class="sm" x="100" y="172" text-anchor="middle" fill="#be185d">已退出·等父进程wait()</text>
+<defs>
+<marker id="pa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker>
+</defs>
+<line x1="170" y1="70" x2="210" y2="70" stroke="#374151" stroke-width="1.2" marker-end="url(#pa)"/>
+<text class="sm" x="190" y="65" text-anchor="middle" fill="#374151">调度</text>
+<line x1="210" y1="90" x2="170" y2="90" stroke="#374151" stroke-width="1.2" marker-end="url(#pa)"/>
+<text class="sm" x="190" y="105" text-anchor="middle" fill="#374151">抢占</text>
+<line x1="350" y1="72" x2="372" y2="72" stroke="#374151" stroke-width="1.2" marker-end="url(#pa)"/>
+<text class="sm" x="362" y="67" text-anchor="middle" fill="#374151">IO请求</text>
+<line x1="370" y1="90" x2="348" y2="90" stroke="#374151" stroke-width="1.2" marker-end="url(#pa)"/>
+<text class="sm" x="360" y="104" text-anchor="middle" fill="#374151">IO完成</text>
+<line x1="100" y1="110" x2="100" y2="135" stroke="#db2777" stroke-width="1.2" marker-end="url(#pa)"/>
+<text class="sm" x="115" y="126" fill="#be185d">exit()</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="192" text-anchor="middle">D(Uninterruptible)=IO等待  Z(Zombie)=内存泄漏信号  top的STAT列可见状态</text>
+</svg></div>
+<div id="diag_cfs" style="display:none"><svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="18" text-anchor="middle" fill="#111">CFS：红黑树按 vruntime 排序，始终选最小值运行</text>
+<rect x="220" y="30" width="80" height="40" rx="20" fill="#7c3aed"/>
+<text class="t" x="260" y="47" text-anchor="middle" fill="white">最左节点</text>
+<text class="sm" x="260" y="62" text-anchor="middle" fill="#ede9fe">vruntime 最小</text>
+<text class="sm" x="260" y="76" text-anchor="middle" fill="#ede9fe">→ 下次运行</text>
+<rect x="100" y="105" width="70" height="36" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="135" y="121" text-anchor="middle" fill="#1e40af">进程 A</text>
+<text class="sm" x="135" y="135" text-anchor="middle" fill="#3b82f6">vt=120ms</text>
+<rect x="195" y="105" width="70" height="36" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="230" y="121" text-anchor="middle" fill="#14532d">进程 B</text>
+<text class="sm" x="230" y="135" text-anchor="middle" fill="#15803d">vt=145ms</text>
+<rect x="290" y="105" width="70" height="36" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="325" y="121" text-anchor="middle" fill="#78350f">进程 C</text>
+<text class="sm" x="325" y="135" text-anchor="middle" fill="#92400e">vt=180ms</text>
+<rect x="385" y="105" width="70" height="36" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="420" y="121" text-anchor="middle" fill="#831843">进程 D</text>
+<text class="sm" x="420" y="135" text-anchor="middle" fill="#be185d">vt=210ms</text>
+<line x1="260" y1="70" x2="200" y2="105" stroke="#7c3aed" stroke-width="1.2"/>
+<line x1="260" y1="70" x2="230" y2="105" stroke="#7c3aed" stroke-width="1.2"/>
+<line x1="260" y1="70" x2="325" y2="105" stroke="#7c3aed" stroke-width="1.2"/>
+<line x1="260" y1="70" x2="420" y2="105" stroke="#7c3aed" stroke-width="1.2"/>
+<text class="sm" x="108" y="158" fill="#1e40af">← vruntime 最小，先运行</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="180" text-anchor="middle">vruntime 累积速度和 nice 值相关：低优先级进程积累更快 → 等待更久</text>
+</svg></div>
+<div id="diag_virtual_mem" style="display:none"><svg viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="10" width="110" height="180" rx="7" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text class="t" x="65" y="28" text-anchor="middle" fill="#4c1d95">进程 A</text>
+<text class="sm" x="65" y="42" text-anchor="middle" fill="#6d28d9">虚拟地址</text>
+<rect x="18" y="50" width="94" height="20" rx="3" fill="#c4b5fd"/><text class="sm" x="65" y="64" text-anchor="middle" fill="#4c1d95">栈 0xFFFF…</text>
+<rect x="18" y="74" width="94" height="20" rx="3" fill="#a78bfa"/><text class="sm" x="65" y="88" text-anchor="middle" fill="white">堆 Heap</text>
+<rect x="18" y="98" width="94" height="20" rx="3" fill="#8b5cf6"/><text class="sm" x="65" y="112" text-anchor="middle" fill="white">代码段 .text</text>
+<rect x="18" y="122" width="94" height="20" rx="3" fill="#7c3aed"/><text class="sm" x="65" y="136" text-anchor="middle" fill="white">数据段 .data</text>
+<rect x="200" y="10" width="120" height="180" rx="7" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text class="t" x="260" y="28" text-anchor="middle" fill="#78350f">物理内存</text>
+<text class="sm" x="260" y="42" text-anchor="middle" fill="#92400e">实际页框</text>
+<rect x="208" y="50" width="104" height="18" rx="3" fill="#fde68a"/><text class="sm" x="260" y="63" text-anchor="middle" fill="#78350f">Page Frame 0</text>
+<rect x="208" y="72" width="104" height="18" rx="3" fill="#fcd34d"/><text class="sm" x="260" y="85" text-anchor="middle" fill="#78350f">Page Frame 1 (A.堆)</text>
+<rect x="208" y="94" width="104" height="18" rx="3" fill="#fbbf24"/><text class="sm" x="260" y="107" text-anchor="middle" fill="#78350f">Page Frame 2 (A.栈)</text>
+<rect x="208" y="116" width="104" height="18" rx="3" fill="#f59e0b"/><text class="sm" x="260" y="129" text-anchor="middle" fill="white">Page Frame 3 (B.栈)</text>
+<rect x="208" y="138" width="104" height="18" rx="3" fill="#d97706"/><text class="sm" x="260" y="151" text-anchor="middle" fill="white">Page Frame 4 (共享库)</text>
+<rect x="390" y="10" width="110" height="180" rx="7" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+<text class="t" x="445" y="28" text-anchor="middle" fill="#064e3b">进程 B</text>
+<text class="sm" x="445" y="42" text-anchor="middle" fill="#065f46">虚拟地址</text>
+<rect x="398" y="50" width="94" height="20" rx="3" fill="#86efac"/><text class="sm" x="445" y="64" text-anchor="middle" fill="#064e3b">栈 0xFFFF…</text>
+<rect x="398" y="74" width="94" height="20" rx="3" fill="#34d399"/><text class="sm" x="445" y="88" text-anchor="middle" fill="white">共享库</text>
+<defs><marker id="va" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="112" y1="84" x2="200" y2="80" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#va)"/>
+<line x1="112" y1="60" x2="200" y2="101" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#va)"/>
+<line x1="390" y1="60" x2="320" y2="122" stroke="#059669" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#va)"/>
+<line x1="390" y1="84" x2="320" y2="147" stroke="#059669" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#va)"/>
+<text style="font:10px sans-serif;fill:#374151" x="130" y="205" text-anchor="middle">页表（Page Table）</text>
+<text style="font:10px sans-serif;fill:#374151" x="390" y="205" text-anchor="middle">页表（Page Table）</text>
+</svg></div>
+<div id="diag_vfs" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="180" y="8" width="160" height="36" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="260" y="22" text-anchor="middle" fill="#1e40af">应用程序</text>
+<text class="sm" x="260" y="38" text-anchor="middle" fill="#3b82f6">read() / write() / open()</text>
+<rect x="140" y="56" width="240" height="36" rx="7" fill="#7c3aed"/>
+<text class="t" x="260" y="72" text-anchor="middle" fill="white">VFS（虚拟文件系统层）</text>
+<text class="sm" x="260" y="87" text-anchor="middle" fill="#ede9fe">统一 inode/dentry/file/super_block 抽象</text>
+<rect x="40" y="106" width="100" height="36" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="90" y="122" text-anchor="middle" fill="#14532d">ext4</text>
+<text class="sm" x="90" y="136" text-anchor="middle" fill="#15803d">通用</text>
+<rect x="160" y="106" width="100" height="36" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="210" y="122" text-anchor="middle" fill="#78350f">XFS</text>
+<text class="sm" x="210" y="136" text-anchor="middle" fill="#92400e">高并发写</text>
+<rect x="280" y="106" width="100" height="36" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="330" y="122" text-anchor="middle" fill="#831843">tmpfs</text>
+<text class="sm" x="330" y="136" text-anchor="middle" fill="#be185d">内存文件</text>
+<rect x="400" y="106" width="100" height="36" rx="7" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="450" y="122" text-anchor="middle" fill="#4c1d95">NFS</text>
+<text class="sm" x="450" y="136" text-anchor="middle" fill="#6d28d9">网络文件</text>
+<rect x="140" y="155" width="240" height="36" rx="7" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="t" x="260" y="171" text-anchor="middle" fill="#334155">Page Cache（内核缓冲区）</text>
+<text class="sm" x="260" y="186" text-anchor="middle" fill="#64748b">write()→Page Cache→pdflush→磁盘  fsync()强制落盘</text>
+<defs><marker id="va" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="260" y1="44" x2="260" y2="56" stroke="#374151" stroke-width="1.5" marker-end="url(#va)"/>
+<line x1="90" y1="142" x2="90" y2="165" stroke="#374151" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#va)"/>
+<line x1="210" y1="142" x2="210" y2="155" stroke="#374151" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#va)"/>
+<line x1="330" y1="142" x2="330" y2="155" stroke="#374151" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#va)"/>
+<line x1="260" y1="92" x2="90" y2="106" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#va)"/>
+<line x1="260" y1="92" x2="210" y2="106" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#va)"/>
+<line x1="260" y1="92" x2="330" y2="106" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#va)"/>
+<line x1="260" y1="92" x2="450" y2="106" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#va)"/>
+</svg></div>
+<div id="diag_ipc" style="display:none"><svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif} .sm{font:10px sans-serif}</style>
+<text style="font:600 13px sans-serif;fill:#111" x="260" y="16" text-anchor="middle">Linux IPC 机制对比</text>
+<rect x="10" y="26" width="155" height="50" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="87" y="43" text-anchor="middle" fill="#1e40af">Pipe / 管道</text>
+<text class="sm" x="87" y="56" text-anchor="middle" fill="#3b82f6">单向·父子进程</text>
+<text class="sm" x="87" y="68" text-anchor="middle" fill="#3b82f6">shell | 就是 pipe</text>
+<rect x="180" y="26" width="155" height="50" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="257" y="43" text-anchor="middle" fill="#14532d">Unix Domain Socket</text>
+<text class="sm" x="257" y="56" text-anchor="middle" fill="#15803d">双向·同机进程间</text>
+<text class="sm" x="257" y="68" text-anchor="middle" fill="#15803d">Docker 常用</text>
+<rect x="350" y="26" width="160" height="50" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="430" y="43" text-anchor="middle" fill="#78350f">Shared Memory</text>
+<text class="sm" x="430" y="56" text-anchor="middle" fill="#92400e">最快·无拷贝</text>
+<text class="sm" x="430" y="68" text-anchor="middle" fill="#92400e">需手动同步</text>
+<rect x="10" y="92" width="155" height="50" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="87" y="109" text-anchor="middle" fill="#4c1d95">Signal / 信号</text>
+<text class="sm" x="87" y="122" text-anchor="middle" fill="#6d28d9">轻量通知·无数据</text>
+<text class="sm" x="87" y="134" text-anchor="middle" fill="#6d28d9">SIGKILL/SIGTERM</text>
+<rect x="180" y="92" width="155" height="50" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="257" y="109" text-anchor="middle" fill="#831843">Message Queue</text>
+<text class="sm" x="257" y="122" text-anchor="middle" fill="#be185d">异步·内核缓冲</text>
+<text class="sm" x="257" y="134" text-anchor="middle" fill="#be185d">无需同时在线</text>
+<rect x="350" y="92" width="160" height="50" rx="6" fill="#ecfdf5" stroke="#059669"/>
+<text class="t" x="430" y="109" text-anchor="middle" fill="#064e3b">Futex</text>
+<text class="sm" x="430" y="122" text-anchor="middle" fill="#065f46">无竞争→用户态CAS</text>
+<text class="sm" x="430" y="134" text-anchor="middle" fill="#065f46">Mutex/RWLock基础</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="182" text-anchor="middle">速度：SharedMem &gt; Socket &gt; Pipe &gt; MsgQueue  |  Futex 是 Java synchronized / Go Mutex 的底层</text>
+</svg></div>
+<div id="diag_tcpip_layers" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<text style="font:600 13px sans-serif;fill:#111" x="260" y="16" text-anchor="middle">一个 HTTP 请求的封装路径（发送方从上到下）</text>
+<rect x="30" y="24" width="200" height="32" rx="5" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="130" y="38" text-anchor="middle" fill="#1e40af">应用层 HTTP</text>
+<text class="sm" x="130" y="50" text-anchor="middle" fill="#3b82f6">GET /index.html HTTP/1.1</text>
+<rect x="30" y="60" width="200" height="32" rx="5" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="130" y="74" text-anchor="middle" fill="#14532d">传输层 TCP/UDP</text>
+<text class="sm" x="130" y="86" text-anchor="middle" fill="#15803d">+ TCP 头（端口/序号/ACK）</text>
+<rect x="30" y="96" width="200" height="32" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="130" y="110" text-anchor="middle" fill="#78350f">网络层 IP</text>
+<text class="sm" x="130" y="122" text-anchor="middle" fill="#92400e">+ IP 头（源/目的IP/TTL）</text>
+<rect x="30" y="132" width="200" height="32" rx="5" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="130" y="146" text-anchor="middle" fill="#831843">链路层 Ethernet</text>
+<text class="sm" x="130" y="158" text-anchor="middle" fill="#be185d">+ Eth 头（MAC地址）+ FCS</text>
+<rect x="30" y="168" width="200" height="24" rx="5" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="sm" x="130" y="184" text-anchor="middle" fill="#334155">物理层：01010101 电信号/光信号</text>
+<text style="font:600 12px sans-serif;fill:#374151" x="290" y="38" text-anchor="start">数据帧结构：</text>
+<rect x="280" y="44" width="220" height="24" rx="3" fill="#be185d"/>
+<rect x="282" y="46" width="40" height="20" rx="2" fill="#db2777"/><text class="sm" x="302" y="60" text-anchor="middle" fill="white">Eth</text>
+<rect x="322" y="46" width="35" height="20" rx="2" fill="#ca8a04"/><text class="sm" x="339" y="60" text-anchor="middle" fill="white">IP</text>
+<rect x="357" y="46" width="40" height="20" rx="2" fill="#16a34a"/><text class="sm" x="377" y="60" text-anchor="middle" fill="white">TCP</text>
+<rect x="397" y="46" width="65" height="20" rx="2" fill="#3b82f6"/><text class="sm" x="429" y="60" text-anchor="middle" fill="white">HTTP Data</text>
+<rect x="462" y="46" width="36" height="20" rx="2" fill="#be185d"/><text class="sm" x="480" y="60" text-anchor="middle" fill="white">FCS</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="390" y="88">每层加自己的头部（封装），</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="390" y="102">接收方逐层解封装（去头）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="390" y="118">IP 头不变，Eth 头每跳更新</text>
+<defs><marker id="da" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="230" y1="40" x2="280" y2="40" stroke="#374151" stroke-width="1" marker-end="url(#da)"/>
+</svg></div>
+<div id="diag_tcp_handshake" style="display:none"><svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="30" y="10" width="90" height="32" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="75" y="30" text-anchor="middle" fill="#1e40af">Client</text>
+<rect x="400" y="10" width="90" height="32" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="445" y="30" text-anchor="middle" fill="#14532d">Server</text>
+<line x1="75" y1="42" x2="75" y2="215" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4,3"/>
+<line x1="445" y1="42" x2="445" y2="215" stroke="#86efac" stroke-width="1" stroke-dasharray="4,3"/>
+<text class="sm" x="75" y="62" text-anchor="middle" fill="#6b7280">CLOSED</text>
+<text class="sm" x="445" y="62" text-anchor="middle" fill="#6b7280">LISTEN</text>
+<line x1="75" y1="80" x2="435" y2="110" stroke="#2563eb" stroke-width="1.8" marker-end="url(#ba)"/>
+<rect x="195" y="75" width="145" height="22" rx="4" fill="#eff6ff"/><text class="sm" x="267" y="90" text-anchor="middle" fill="#1d4ed8">① SYN (seq=x)</text>
+<text class="sm" x="75" y="130" text-anchor="middle" fill="#9333ea">SYN_SENT</text>
+<text class="sm" x="445" y="130" text-anchor="middle" fill="#9333ea">SYN_RCVD</text>
+<line x1="445" y1="148" x2="85" y2="178" stroke="#16a34a" stroke-width="1.8" marker-end="url(#ga)"/>
+<rect x="165" y="143" width="185" height="22" rx="4" fill="#f0fdf4"/><text class="sm" x="257" y="158" text-anchor="middle" fill="#14532d">② SYN-ACK (seq=y, ack=x+1)</text>
+<line x1="75" y1="196" x2="435" y2="226" stroke="#2563eb" stroke-width="1.8" marker-end="url(#ba)"/>
+<rect x="195" y="191" width="155" height="22" rx="4" fill="#eff6ff"/><text class="sm" x="272" y="206" text-anchor="middle" fill="#1d4ed8">③ ACK (ack=y+1)</text>
+<text class="sm" x="75" y="220" text-anchor="middle" fill="#065f46" style="font-weight:600">ESTABLISHED</text>
+<defs>
+<marker id="ba" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></marker>
+<marker id="ga" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round"/></marker>
+</defs>
+</svg></div>
+<div id="diag_http_evolution" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="10" width="145" height="115" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="82" y="28" text-anchor="middle" fill="#831843">HTTP/1.1</text>
+<text class="sm" x="82" y="44" text-anchor="middle" fill="#831843">请求 ①</text>
+<line x1="30" y1="52" x2="140" y2="52" stroke="#db2777" stroke-width="8" stroke-linecap="round"/>
+<text class="sm" x="82" y="72" text-anchor="middle" fill="#831843">请求 ② (等①完成)</text>
+<line x1="30" y1="80" x2="140" y2="80" stroke="#db2777" stroke-width="8" stroke-linecap="round"/>
+<text class="sm" x="82" y="100" text-anchor="middle" fill="#be185d">Head-of-Line 阻塞</text>
+<text class="sm" x="82" y="117" text-anchor="middle" fill="#be185d">串行·6个并发连接</text>
+<rect x="185" y="10" width="145" height="115" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="257" y="28" text-anchor="middle" fill="#78350f">HTTP/2</text>
+<text class="sm" x="257" y="44" text-anchor="middle" fill="#78350f">同一 TCP 连接上多路复用</text>
+<line x1="200" y1="55" x2="320" y2="55" stroke="#ca8a04" stroke-width="5" stroke-linecap="round"/>
+<line x1="200" y1="68" x2="310" y2="68" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+<line x1="200" y1="81" x2="315" y2="81" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+<text class="sm" x="257" y="100" text-anchor="middle" fill="#78350f">Header 压缩(HPACK)</text>
+<text class="sm" x="257" y="114" text-anchor="middle" fill="#92400e">TCP层 HOL 仍存在</text>
+<rect x="360" y="10" width="148" height="115" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="434" y="28" text-anchor="middle" fill="#14532d">HTTP/3 (QUIC)</text>
+<text class="sm" x="434" y="44" text-anchor="middle" fill="#14532d">UDP 上的 QUIC</text>
+<line x1="375" y1="55" x2="495" y2="55" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+<line x1="375" y1="68" x2="495" y2="68" stroke="#059669" stroke-width="5" stroke-linecap="round"/>
+<line x1="375" y1="81" x2="495" y2="81" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+<text class="sm" x="434" y="100" text-anchor="middle" fill="#14532d">0-RTT 连接建立</text>
+<text class="sm" x="434" y="114" text-anchor="middle" fill="#065f46">彻底消除 HOL 阻塞</text>
+<text class="sm" x="10" y="150" fill="#374151">问题：每次请求等上一个完成</text>
+<text class="sm" x="185" y="150" fill="#374151">改进：并发流·但TCP丢包仍串行</text>
+<text class="sm" x="360" y="150" fill="#374151">革命：流独立·丢包不影响其他流</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="185" text-anchor="middle">连接迁移：切 WiFi/4G 时连接不中断 | 0-RTT：再次连接无需握手 | Cloudflare/Google 已大规模部署</text>
+</svg></div>
+<div id="diag_dns" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="80" width="85" height="36" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="52" y="96" text-anchor="middle" fill="#1e40af">Browser</text>
+<text class="sm" x="52" y="110" text-anchor="middle" fill="#3b82f6">DNS缓存→OS缓存</text>
+<rect x="125" y="80" width="85" height="36" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="167" y="96" text-anchor="middle" fill="#4c1d95">递归解析器</text>
+<text class="sm" x="167" y="110" text-anchor="middle" fill="#6d28d9">ISP/8.8.8.8</text>
+<rect x="280" y="10" width="80" height="36" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="320" y="26" text-anchor="middle" fill="#78350f">根服务器</text>
+<text class="sm" x="320" y="40" text-anchor="middle" fill="#92400e">. (13组)</text>
+<rect x="280" y="80" width="80" height="36" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="320" y="96" text-anchor="middle" fill="#14532d">TLD服务器</text>
+<text class="sm" x="320" y="110" text-anchor="middle" fill="#15803d">.com/.cn等</text>
+<rect x="280" y="150" width="80" height="36" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="320" y="166" text-anchor="middle" fill="#831843">权威服务器</text>
+<text class="sm" x="320" y="180" text-anchor="middle" fill="#be185d">example.com NS</text>
+<rect x="415" y="80" width="90" height="36" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="460" y="96" text-anchor="middle" fill="#14532d">A记录</text>
+<text class="sm" x="460" y="110" text-anchor="middle" fill="#15803d">93.184.216.34</text>
+<defs><marker id="da" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="95" y1="98" x2="125" y2="98" stroke="#374151" stroke-width="1.5" marker-end="url(#da)"/>
+<line x1="210" y1="90" x2="280" y2="35" stroke="#ca8a04" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#da)"/>
+<text class="sm" x="242" y="55" fill="#92400e">②问根</text>
+<line x1="280" y1="40" x2="215" y2="90" stroke="#ca8a04" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#da)"/>
+<text class="sm" x="230" y="78" fill="#92400e">③→.com</text>
+<line x1="225" y1="96" x2="280" y2="96" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#da)"/>
+<text class="sm" x="252" y="90" fill="#15803d">④问TLD</text>
+<line x1="280" y1="104" x2="224" y2="104" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#da)"/>
+<text class="sm" x="252" y="118" fill="#15803d">⑤→NS</text>
+<line x1="220" y1="110" x2="280" y2="155" stroke="#db2777" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#da)"/>
+<text class="sm" x="244" y="142" fill="#be185d">⑥问NS</text>
+<line x1="280" y1="165" x2="215" y2="120" stroke="#db2777" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#da)"/>
+<text class="sm" x="236" y="160" fill="#be185d">⑦IP</text>
+<line x1="360" y1="98" x2="415" y2="98" stroke="#16a34a" stroke-width="1.5" marker-end="url(#da)"/>
+<line x1="125" y1="103" x2="95" y2="103" stroke="#374151" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#da)"/>
+<text class="sm" x="112" y="118" text-anchor="middle" fill="#374151">⑧返回</text>
+</svg></div>
+<div id="diag_nat" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="30" width="100" height="130" rx="7" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="60" y="48" text-anchor="middle" fill="#4c1d95">私网</text>
+<rect x="20" y="58" width="80" height="22" rx="4" fill="#c4b5fd"/><text class="sm" x="60" y="73" text-anchor="middle" fill="#4c1d95">192.168.1.2</text>
+<rect x="20" y="84" width="80" height="22" rx="4" fill="#a78bfa"/><text class="sm" x="60" y="99" text-anchor="middle" fill="white">192.168.1.3</text>
+<rect x="20" y="110" width="80" height="22" rx="4" fill="#8b5cf6"/><text class="sm" x="60" y="125" text-anchor="middle" fill="white">192.168.1.4</text>
+<rect x="200" y="60" width="130" height="80" rx="7" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text class="t" x="265" y="78" text-anchor="middle" fill="#78350f">NAT 路由器</text>
+<text class="sm" x="265" y="93" text-anchor="middle" fill="#92400e">公网 IP: 1.2.3.4</text>
+<text class="sm" x="265" y="108" text-anchor="middle" fill="#78350f">NAT 表：内网IP:Port</text>
+<text class="sm" x="265" y="121" text-anchor="middle" fill="#78350f">→ 公网IP:Port 映射</text>
+<rect x="400" y="60" width="100" height="80" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="450" y="80" text-anchor="middle" fill="#14532d">互联网</text>
+<text class="sm" x="450" y="96" text-anchor="middle" fill="#15803d">只看到</text>
+<text class="sm" x="450" y="110" text-anchor="middle" fill="#15803d">1.2.3.4:xxxxx</text>
+<defs><marker id="na" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="110" y1="100" x2="200" y2="100" stroke="#374151" stroke-width="1.5" marker-end="url(#na)"/>
+<line x1="330" y1="100" x2="400" y2="100" stroke="#374151" stroke-width="1.5" marker-end="url(#na)"/>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="170" text-anchor="middle">NAT 破坏端到端连接性：外网无法主动连内网（P2P 打洞/STUN 的来源）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="185" text-anchor="middle">ARP：知道 IP 不知 MAC 时广播「谁是 x.x.x.x」→ 收到 MAC 后缓存到 ARP 表</text>
+</svg></div>
+<div id="diag_epoll" style="display:none"><svg viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<text style="font:600 13px sans-serif;fill:#111" x="260" y="16" text-anchor="middle">select/poll vs epoll 对比</text>
+<rect x="10" y="26" width="225" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="122" y="44" text-anchor="middle" fill="#831843">select / poll</text>
+<text class="sm" x="122" y="60" text-anchor="middle" fill="#be185d">每次调用：拷贝所有fd到内核 O(n)</text>
+<text class="sm" x="122" y="76" text-anchor="middle" fill="#be185d">内核遍历所有fd检查状态 O(n)</text>
+<text class="sm" x="122" y="92" text-anchor="middle" fill="#be185d">返回后再遍历找就绪fd O(n)</text>
+<text class="sm" x="122" y="108" text-anchor="middle" fill="#be185d">1000连接 = 每次扫描1000次</text>
+<text class="sm" x="122" y="124" text-anchor="middle" fill="#be185d">C10K 瓶颈</text>
+<rect x="285" y="26" width="225" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="397" y="44" text-anchor="middle" fill="#14532d">epoll</text>
+<text class="sm" x="397" y="60" text-anchor="middle" fill="#15803d">epoll_ctl：fd 注册一次，内核红黑树</text>
+<text class="sm" x="397" y="76" text-anchor="middle" fill="#15803d">就绪时回调加入 ready list</text>
+<text class="sm" x="397" y="92" text-anchor="middle" fill="#15803d">epoll_wait 只返回就绪fd</text>
+<text class="sm" x="397" y="108" text-anchor="middle" fill="#15803d">O(就绪数) 而非 O(总数)</text>
+<text class="sm" x="397" y="124" text-anchor="middle" fill="#065f46">百万连接中只处理活跃的</text>
+<rect x="140" y="160" width="240" height="44" rx="7" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="260" y="178" text-anchor="middle" fill="#4c1d95">LT (水平触发) vs ET (边缘触发)</text>
+<text class="sm" x="260" y="194" text-anchor="middle" fill="#6d28d9">LT: 缓冲区有数据就一直触发 | ET: 新数据到来才触发一次，必须读完</text>
+</svg></div>
+<div id="diag_zerocopy" style="display:none"><svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif} .sm{font:10px sans-serif}</style>
+<text style="font:600 13px sans-serif;fill:#111" x="260" y="16" text-anchor="middle">传统 read+send vs sendfile 零拷贝</text>
+<text class="t" x="10" y="36" fill="#db2777">传统方式（4次拷贝）</text>
+<rect x="10" y="44" width="70" height="25" rx="4" fill="#fce7f3" stroke="#db2777"/><text class="sm" x="45" y="60" text-anchor="middle" fill="#831843">磁盘</text>
+<line x1="80" y1="57" x2="110" y2="57" stroke="#db2777" stroke-width="1.5" marker-end="url(#ra)"/>
+<text class="sm" x="95" y="52" text-anchor="middle" fill="#be185d">DMA</text>
+<rect x="110" y="44" width="80" height="25" rx="4" fill="#fce7f3" stroke="#db2777"/><text class="sm" x="150" y="60" text-anchor="middle" fill="#831843">Page Cache</text>
+<line x1="190" y1="57" x2="220" y2="57" stroke="#db2777" stroke-width="1.5" marker-end="url(#ra)"/>
+<text class="sm" x="205" y="52" text-anchor="middle" fill="#be185d">CPU拷贝①</text>
+<rect x="220" y="44" width="80" height="25" rx="4" fill="#fce7f3" stroke="#db2777"/><text class="sm" x="260" y="60" text-anchor="middle" fill="#831843">用户缓冲区</text>
+<line x1="300" y1="57" x2="330" y2="57" stroke="#db2777" stroke-width="1.5" marker-end="url(#ra)"/>
+<text class="sm" x="315" y="52" text-anchor="middle" fill="#be185d">CPU拷贝②</text>
+<rect x="330" y="44" width="80" height="25" rx="4" fill="#fce7f3" stroke="#db2777"/><text class="sm" x="370" y="60" text-anchor="middle" fill="#831843">Socket缓冲</text>
+<line x1="410" y1="57" x2="440" y2="57" stroke="#db2777" stroke-width="1.5" marker-end="url(#ra)"/>
+<text class="sm" x="425" y="52" text-anchor="middle" fill="#be185d">DMA</text>
+<rect x="440" y="44" width="70" height="25" rx="4" fill="#fce7f3" stroke="#db2777"/><text class="sm" x="475" y="60" text-anchor="middle" fill="#831843">网卡</text>
+<text class="t" x="10" y="100" fill="#16a34a">sendfile（2次拷贝）</text>
+<rect x="10" y="108" width="70" height="25" rx="4" fill="#dcfce7" stroke="#16a34a"/><text class="sm" x="45" y="124" text-anchor="middle" fill="#14532d">磁盘</text>
+<line x1="80" y1="121" x2="160" y2="121" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ga)"/>
+<text class="sm" x="120" y="116" text-anchor="middle" fill="#14532d">DMA拷贝</text>
+<rect x="160" y="108" width="80" height="25" rx="4" fill="#dcfce7" stroke="#16a34a"/><text class="sm" x="200" y="124" text-anchor="middle" fill="#14532d">Page Cache</text>
+<line x1="240" y1="121" x2="320" y2="121" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ga)"/>
+<text class="sm" x="280" y="116" text-anchor="middle" fill="#14532d">fd描述符传递</text>
+<rect x="320" y="108" width="80" height="25" rx="4" fill="#dcfce7" stroke="#16a34a"/><text class="sm" x="360" y="124" text-anchor="middle" fill="#14532d">Socket缓冲</text>
+<line x1="400" y1="121" x2="440" y2="121" stroke="#16a34a" stroke-width="1.5" marker-end="url(#ga)"/>
+<text class="sm" x="420" y="116" text-anchor="middle" fill="#14532d">DMA</text>
+<rect x="440" y="108" width="70" height="25" rx="4" fill="#dcfce7" stroke="#16a34a"/><text class="sm" x="475" y="124" text-anchor="middle" fill="#14532d">网卡</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="158" text-anchor="middle">● Nginx 静态文件：sendfile 大幅降低 CPU 使用率</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="172" text-anchor="middle">● Kafka：mmap 读日志 + sendfile 发给消费者 = 近零拷贝，吞吐量极高</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="186" text-anchor="middle">● io_uring Fixed Buffers：注册固定缓冲区，真正零拷贝</text>
+<defs>
+<marker id="ra" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#db2777" stroke-width="1.5" stroke-linecap="round"/></marker>
+<marker id="ga" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round"/></marker>
+</defs>
+</svg></div>
+<div id="diag_mesi" style="display:none"><svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<ellipse cx="130" cy="80" rx="80" ry="32" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="130" y="75" text-anchor="middle" fill="#14532d">M · Modified</text>
+<text class="sm" x="130" y="92" text-anchor="middle" fill="#15803d">被修改·脏数据·独占</text>
+<ellipse cx="390" cy="80" rx="80" ry="32" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+<text class="t" x="390" y="75" text-anchor="middle" fill="#1e40af">E · Exclusive</text>
+<text class="sm" x="390" y="92" text-anchor="middle" fill="#3b82f6">干净·独占·只有本核有</text>
+<ellipse cx="130" cy="175" rx="80" ry="32" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+<text class="t" x="130" y="170" text-anchor="middle" fill="#78350f">S · Shared</text>
+<text class="sm" x="130" y="187" text-anchor="middle" fill="#92400e">干净·多核共有副本</text>
+<ellipse cx="390" cy="175" rx="80" ry="32" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+<text class="t" x="390" y="170" text-anchor="middle" fill="#831843">I · Invalid</text>
+<text class="sm" x="390" y="187" text-anchor="middle" fill="#be185d">无效·需从内存/其他核取</text>
+<defs><marker id="ma" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="210" y1="80" x2="310" y2="80" stroke="#374151" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#ma)"/>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#374151">其他核读→S</text>
+<line x1="130" y1="112" x2="130" y2="143" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="145" y="132" fill="#374151">写回</text>
+<line x1="390" y1="112" x2="390" y2="143" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="405" y="132" fill="#374151">写→M</text>
+<line x1="210" y1="175" x2="310" y2="175" stroke="#374151" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#ma)"/>
+<text class="sm" x="260" y="168" text-anchor="middle" fill="#374151">其他核写→I</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="212" text-anchor="middle">False Sharing：两个变量在同一 Cache Line(64B)，不同核修改 → 反复失效 → 性能暴跌10-100倍</text>
+</svg></div>
+<div id="diag_lock_types" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="10" width="150" height="110" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="85" y="28" text-anchor="middle" fill="#831843">自旋锁 Spinlock</text>
+<text class="sm" x="85" y="44" text-anchor="middle" fill="#be185d">等待时：CPU 忙等</text>
+<text class="sm" x="85" y="58" text-anchor="middle" fill="#be185d">while(lock) {}</text>
+<text class="sm" x="85" y="72" text-anchor="middle" fill="#be185d">不让出 CPU</text>
+<text class="sm" x="85" y="88" text-anchor="middle" fill="#be185d">适合：持锁极短(&lt;100ns)</text>
+<text class="sm" x="85" y="104" text-anchor="middle" fill="#be185d">内核中断处理</text>
+<rect x="185" y="10" width="150" height="110" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="260" y="28" text-anchor="middle" fill="#1e40af">互斥锁 Mutex</text>
+<text class="sm" x="260" y="44" text-anchor="middle" fill="#3b82f6">等待时：进入 Blocked</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#3b82f6">让出 CPU</text>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#3b82f6">底层：Futex 用户态快路径</text>
+<text class="sm" x="260" y="88" text-anchor="middle" fill="#3b82f6">有竞争才进内核（~1μs）</text>
+<text class="sm" x="260" y="104" text-anchor="middle" fill="#1e40af">适合：大多数场景</text>
+<rect x="360" y="10" width="150" height="110" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="435" y="28" text-anchor="middle" fill="#14532d">读写锁 RWLock</text>
+<text class="sm" x="435" y="44" text-anchor="middle" fill="#15803d">读：多个并发</text>
+<text class="sm" x="435" y="58" text-anchor="middle" fill="#15803d">写：独占</text>
+<text class="sm" x="435" y="72" text-anchor="middle" fill="#15803d">适合：读多写少</text>
+<text class="sm" x="435" y="88" text-anchor="middle" fill="#15803d">注意写饥饿问题</text>
+<text class="sm" x="435" y="104" text-anchor="middle" fill="#065f46">配置缓存/服务发现</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="140" text-anchor="middle">Futex 原理：无竞争时 CAS 原子指令（用户态，~10ns）；竞争时进内核 futex() 等待（~1μs）</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="158" text-anchor="middle">Java synchronized / Go sync.Mutex / pthread_mutex 底层都是 Futex</text>
+</svg></div>
+<div id="diag_cas" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="18" text-anchor="middle" fill="#111">CAS 原子操作：Compare-And-Swap</text>
+<rect x="10" y="28" width="240" height="90" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="130" y="46" text-anchor="middle" fill="#1e40af">CAS 伪代码（原子执行）</text>
+<text style="font:11px monospace;fill:#1e40af" x="22" y="64">if (mem == expected) {</text>
+<text style="font:11px monospace;fill:#16a34a" x="22" y="80">  mem = new_value;</text>
+<text style="font:11px monospace;fill:#16a34a" x="22" y="96">  return true;</text>
+<text style="font:11px monospace;fill:#1e40af" x="22" y="108">} return false;</text>
+<rect x="280" y="28" width="230" height="90" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="395" y="46" text-anchor="middle" fill="#831843">ABA 问题</text>
+<text class="sm" x="395" y="62" text-anchor="middle" fill="#be185d">值 A → B → A</text>
+<text class="sm" x="395" y="78" text-anchor="middle" fill="#be185d">CAS 认为没变化，但中间经历了 B</text>
+<text class="sm" x="395" y="94" text-anchor="middle" fill="#be185d">解法：AtomicStampedReference</text>
+<text class="sm" x="395" y="110" text-anchor="middle" fill="#be185d">值 + 版本号一起原子更新</text>
+<rect x="10" y="132" width="500" height="60" rx="7" fill="#f0fdf4" stroke="#059669"/>
+<text class="t" x="260" y="150" text-anchor="middle" fill="#14532d">无锁队列（Michael-Scott Queue）</text>
+<text class="sm" x="260" y="166" text-anchor="middle" fill="#15803d">enqueue: CAS 更新队尾 | dequeue: CAS 更新队头 | Helping机制: CAS失败不重试，而是帮助完成未完成操作</text>
+<text class="sm" x="260" y="182" text-anchor="middle" fill="#15803d">内存回收难题：Hazard Pointer 或 Epoch-based GC 解决「谁还持有引用」问题</text>
+</svg></div>
+<div id="diag_storage_latency" style="display:none"><svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif} .bar{rx:4;ry:4}</style>
+<text class="t" x="260" y="16" text-anchor="middle" fill="#111">存储介质延迟对比（对数尺度）</text>
+<text class="sm" x="100" y="40" text-anchor="end" fill="#374151">L1 Cache</text>
+<rect class="bar" x="105" y="28" width="5" height="16" fill="#7c3aed"/>
+<text class="sm" x="115" y="40" fill="#7c3aed">~1 ns</text>
+<text class="sm" x="100" y="65" text-anchor="end" fill="#374151">L3 Cache</text>
+<rect class="bar" x="105" y="53" width="20" height="16" fill="#2563eb"/>
+<text class="sm" x="130" y="65" fill="#2563eb">~40 ns</text>
+<text class="sm" x="100" y="90" text-anchor="end" fill="#374151">DRAM</text>
+<rect class="bar" x="105" y="78" width="50" height="16" fill="#0891b2"/>
+<text class="sm" x="160" y="90" fill="#0891b2">~100 ns</text>
+<text class="sm" x="100" y="115" text-anchor="end" fill="#374151">NVMe SSD</text>
+<rect class="bar" x="105" y="103" width="140" height="16" fill="#059669"/>
+<text class="sm" x="250" y="115" fill="#059669">~20-100 μs</text>
+<text class="sm" x="100" y="140" text-anchor="end" fill="#374151">SATA SSD</text>
+<rect class="bar" x="105" y="128" width="200" height="16" fill="#d97706"/>
+<text class="sm" x="310" y="140" fill="#d97706">~100-300 μs</text>
+<text class="sm" x="100" y="165" text-anchor="end" fill="#374151">机械硬盘</text>
+<rect class="bar" x="105" y="153" width="380" height="16" fill="#dc2626"/>
+<text class="sm" x="490" y="165" fill="#dc2626">~5-10 ms</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="185" text-anchor="middle">HDD 顺序读 200MB/s vs 随机4K 仅100 IOPS | NVMe 随机4K 可达 1M+ IOPS</text>
+</svg></div>
+<div id="diag_wal" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="16" text-anchor="middle" fill="#111">WAL Write-Ahead Log：随机写 → 顺序写</text>
+<rect x="10" y="28" width="120" height="140" rx="7" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+<text class="t" x="70" y="46" text-anchor="middle" fill="#831843">不用WAL</text>
+<text class="sm" x="70" y="62" text-anchor="middle" fill="#be185d">直接写数据文件</text>
+<rect x="22" y="70" width="96" height="20" rx="3" fill="#fda4af"/><text class="sm" x="70" y="84" text-anchor="middle" fill="#831843">写 page 47</text>
+<rect x="22" y="94" width="96" height="20" rx="3" fill="#fda4af"/><text class="sm" x="70" y="108" text-anchor="middle" fill="#831843">写 page 3</text>
+<rect x="22" y="118" width="96" height="20" rx="3" fill="#fda4af"/><text class="sm" x="70" y="132" text-anchor="middle" fill="#831843">写 page 199</text>
+<text class="sm" x="70" y="155" text-anchor="middle" fill="#be185d">随机 IO → 慢</text>
+<rect x="160" y="28" width="340" height="140" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="330" y="46" text-anchor="middle" fill="#14532d">用 WAL（PostgreSQL/MySQL/RocksDB）</text>
+<rect x="175" y="56" width="140" height="98" rx="5" fill="#bbf7d0" stroke="#16a34a"/>
+<text class="t" x="245" y="72" text-anchor="middle" fill="#14532d">WAL Log</text>
+<text class="sm" x="245" y="88" text-anchor="middle" fill="#14532d">append-only</text>
+<rect x="185" y="96" width="120" height="16" rx="3" fill="#34d399"/><text class="sm" x="245" y="108" text-anchor="middle" fill="#064e3b">LSN 001: page47+=5</text>
+<rect x="185" y="116" width="120" height="16" rx="3" fill="#34d399"/><text class="sm" x="245" y="128" text-anchor="middle" fill="#064e3b">LSN 002: page3+=2</text>
+<rect x="185" y="136" width="120" height="16" rx="3" fill="#34d399"/><text class="sm" x="245" y="148" text-anchor="middle" fill="#064e3b">LSN 003: commit</text>
+<text class="sm" x="245" y="164" text-anchor="middle" fill="#15803d">顺序写 → 快</text>
+<rect x="340" y="56" width="145" height="98" rx="5" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="412" y="72" text-anchor="middle" fill="#1e40af">数据文件</text>
+<text class="sm" x="412" y="90" text-anchor="middle" fill="#3b82f6">异步写（checkpoint）</text>
+<text class="sm" x="412" y="108" text-anchor="middle" fill="#3b82f6">崩溃恢复：</text>
+<text class="sm" x="412" y="124" text-anchor="middle" fill="#3b82f6">重放 WAL Redo</text>
+<text class="sm" x="412" y="140" text-anchor="middle" fill="#3b82f6">回滚 WAL Undo</text>
+</svg></div>
+<div id="diag_ebpf" style="display:none"><svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="10" width="500" height="40" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="260" y="26" text-anchor="middle" fill="#1e40af">用户态：eBPF 程序（C语言编写）</text>
+<text class="sm" x="260" y="42" text-anchor="middle" fill="#3b82f6">bpf() 系统调用加载 | 编译为 eBPF 字节码</text>
+<rect x="180" y="62" width="160" height="30" rx="5" fill="#7c3aed"/>
+<text class="t" x="260" y="82" text-anchor="middle" fill="white">内核 Verifier（验证器）</text>
+<rect x="180" y="104" width="160" height="30" rx="5" fill="#059669"/>
+<text class="t" x="260" y="124" text-anchor="middle" fill="white">JIT 编译 → 原生机器码</text>
+<rect x="10" y="146" width="140" height="34" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="sm" x="80" y="161" text-anchor="middle" fill="#78350f">XDP（网卡驱动层）</text>
+<text class="sm" x="80" y="174" text-anchor="middle" fill="#92400e">最早处理·DDoS防护</text>
+<rect x="165" y="146" width="140" height="34" rx="5" fill="#fce7f3" stroke="#db2777"/>
+<text class="sm" x="235" y="161" text-anchor="middle" fill="#831843">kprobe/tracepoint</text>
+<text class="sm" x="235" y="174" text-anchor="middle" fill="#be185d">内核函数追踪</text>
+<rect x="320" y="146" width="140" height="34" rx="5" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="390" y="161" text-anchor="middle" fill="#14532d">uprobe</text>
+<text class="sm" x="390" y="174" text-anchor="middle" fill="#15803d">用户态函数追踪</text>
+<defs><marker id="ea" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="260" y1="50" x2="260" y2="62" stroke="#374151" stroke-width="1.5" marker-end="url(#ea)"/>
+<line x1="260" y1="92" x2="260" y2="104" stroke="#374151" stroke-width="1.5" marker-end="url(#ea)"/>
+<line x1="200" y1="134" x2="80" y2="146" stroke="#374151" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#ea)"/>
+<line x1="260" y1="134" x2="260" y2="146" stroke="#374151" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#ea)"/>
+<line x1="320" y1="134" x2="390" y2="146" stroke="#374151" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#ea)"/>
+</svg></div>
+<div id="diag_spectre" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<rect x="10" y="10" width="235" height="150" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="122" y="28" text-anchor="middle" fill="#831843">Spectre 攻击原理</text>
+<text class="sm" x="122" y="46" text-anchor="middle" fill="#be185d">① 训练分支预测器走向 X</text>
+<text class="sm" x="122" y="62" text-anchor="middle" fill="#be185d">② CPU 推测执行越界访问</text>
+<text class="sm" x="122" y="78" text-anchor="middle" fill="#be185d">③ 越界数据放入缓存</text>
+<text class="sm" x="122" y="94" text-anchor="middle" fill="#be185d">④ 权限检查失败→指令撤销</text>
+<text class="sm" x="122" y="110" text-anchor="middle" fill="#be185d">⑤ 但缓存状态已泄露！</text>
+<text class="sm" x="122" y="126" text-anchor="middle" fill="#be185d">⑥ Flush+Reload 测量访问时间</text>
+<text class="sm" x="122" y="142" text-anchor="middle" fill="#be185d">推断出秘密数据</text>
+<rect x="275" y="10" width="235" height="150" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="392" y="28" text-anchor="middle" fill="#14532d">Meltdown vs Spectre</text>
+<text class="sm" x="392" y="48" text-anchor="middle" fill="#14532d">Meltdown：用户态读内核内存</text>
+<text class="sm" x="392" y="64" text-anchor="middle" fill="#15803d">修复：KPTI（内核页表隔离）</text>
+<text class="sm" x="392" y="80" text-anchor="middle" fill="#15803d">代价：syscall性能-5~30%</text>
+<text class="sm" x="392" y="100" text-anchor="middle" fill="#14532d">Spectre：训练分支预测器</text>
+<text class="sm" x="392" y="116" text-anchor="middle" fill="#15803d">修复：Retpoline/IBRS/IBPB</text>
+<text class="sm" x="392" y="132" text-anchor="middle" fill="#15803d">无法完全修复，只能缓解</text>
+<text class="sm" x="392" y="148" text-anchor="middle" fill="#065f46">云环境多租户：影响最大</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="180" text-anchor="middle">SGX：在 CPU 内建 Enclave 加密内存区域，即使 OS/Hypervisor 也无法读取，适合密钥管理</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="196" text-anchor="middle">微码（Microcode）更新是修复 CPU 级漏洞的主要手段，云厂商密集更新的主要原因</text>
+</svg></div>
+<div id="diag_raft" style="display:none"><svg viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif} .sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="16" text-anchor="middle" fill="#111">Raft：Leader 选举 + 日志复制</text>
+<rect x="200" y="24" width="120" height="50" rx="7" fill="#7c3aed"/>
+<text class="t" x="260" y="44" text-anchor="middle" fill="white">Leader</text>
+<text class="sm" x="260" y="60" text-anchor="middle" fill="#ede9fe">处理所有写请求</text>
+<rect x="30" y="110" width="100" height="44" rx="7" fill="#2563eb"/>
+<text class="t" x="80" y="128" text-anchor="middle" fill="white">Follower 1</text>
+<text class="sm" x="80" y="144" text-anchor="middle" fill="#bfdbfe">收到AppendEntries</text>
+<rect x="210" y="110" width="100" height="44" rx="7" fill="#2563eb"/>
+<text class="t" x="260" y="128" text-anchor="middle" fill="white">Follower 2</text>
+<text class="sm" x="260" y="144" text-anchor="middle" fill="#bfdbfe">收到AppendEntries</text>
+<rect x="390" y="110" width="100" height="44" rx="7" fill="#6b7280"/>
+<text class="t" x="440" y="128" text-anchor="middle" fill="white">Follower 3</text>
+<text class="sm" x="440" y="144" text-anchor="middle" fill="#d1d5db">网络分区</text>
+<defs><marker id="ra" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="230" y1="74" x2="100" y2="110" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ra)"/>
+<text class="sm" x="145" y="90" fill="#7c3aed">AppendEntries</text>
+<line x1="260" y1="74" x2="260" y2="110" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ra)"/>
+<line x1="290" y1="74" x2="420" y2="110" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#ra)"/>
+<text class="sm" x="370" y="90" fill="#6b7280">失败</text>
+<line x1="100" y1="154" x2="220" y2="70" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#ra)"/>
+<text class="sm" x="148" y="165" fill="#16a34a">ACK(多数派已确认)</text>
+<line x1="260" y1="154" x2="261" y2="75" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#ra)"/>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="175" text-anchor="middle">多数派(3中2)确认 → Leader 提交 → 通知Followers提交 → 响应客户端</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="191" text-anchor="middle">选举：随机超时(150-300ms)，超时→Candidate，收多数票→Leader</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="207" text-anchor="middle">etcd = Kubernetes 状态存储，基于 Raft 实现</text>
+</svg></div>
+<div id="diag_consistency" style="display:none"><svg viewBox="0 0 520 210" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif} .sm{font:10px sans-serif}</style>
+<text style="font:600 13px sans-serif;fill:#111" x="260" y="16" text-anchor="middle">一致性模型谱系（由强到弱）</text>
+<rect x="10" y="26" width="145" height="64" rx="7" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+<text class="t" x="82" y="44" text-anchor="middle" fill="#1e40af">线性一致性</text>
+<text class="sm" x="82" y="58" text-anchor="middle" fill="#3b82f6">Linearizability</text>
+<text class="sm" x="82" y="72" text-anchor="middle" fill="#3b82f6">最强·操作像瞬间发生</text>
+<text class="sm" x="82" y="84" text-anchor="middle" fill="#6b7280">代价：高延迟(Raft/Paxos)</text>
+<rect x="170" y="26" width="145" height="64" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="242" y="44" text-anchor="middle" fill="#14532d">顺序一致性</text>
+<text class="sm" x="242" y="58" text-anchor="middle" fill="#15803d">Sequential Consistency</text>
+<text class="sm" x="242" y="72" text-anchor="middle" fill="#15803d">全局顺序一致</text>
+<text class="sm" x="242" y="84" text-anchor="middle" fill="#6b7280">比线性弱·非实时</text>
+<rect x="330" y="26" width="145" height="64" rx="7" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+<text class="t" x="402" y="44" text-anchor="middle" fill="#78350f">因果一致性</text>
+<text class="sm" x="402" y="58" text-anchor="middle" fill="#92400e">Causal Consistency</text>
+<text class="sm" x="402" y="72" text-anchor="middle" fill="#92400e">有因果关系→顺序一致</text>
+<text class="sm" x="402" y="84" text-anchor="middle" fill="#6b7280">无关操作可乱序</text>
+<rect x="10" y="104" width="300" height="64" rx="7" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text class="t" x="160" y="122" text-anchor="middle" fill="#831843">最终一致性 Eventual Consistency</text>
+<text class="sm" x="160" y="138" text-anchor="middle" fill="#be185d">最终收敛·中间可读到旧值</text>
+<text class="sm" x="160" y="152" text-anchor="middle" fill="#be185d">Cassandra/DynamoDB 默认</text>
+<text class="sm" x="160" y="166" text-anchor="middle" fill="#6b7280">高可用·低延迟·牺牲一致性</text>
+<rect x="330" y="104" width="180" height="64" rx="7" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="t" x="420" y="118" text-anchor="middle" fill="#334155">2PC 分布式事务</text>
+<text class="sm" x="420" y="132" text-anchor="middle" fill="#475569">Prepare → Commit/Abort</text>
+<text class="sm" x="420" y="146" text-anchor="middle" fill="#be185d">缺陷：协调者宕机→阻塞</text>
+<text class="sm" x="420" y="160" text-anchor="middle" fill="#15803d">Saga：本地事务+补偿</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="190" text-anchor="middle">CAP 定理：分区容错（P）时，一致性(C)和可用性(A)只能择一</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="206" text-anchor="middle">Zookeeper/etcd 选 CP | Cassandra/DynamoDB 选 AP</text>
+</svg></div>
+<!-- END DIAGRAM TEMPLATES -->
+<script>
+const D=[{"id":"arch","phase":"计算机基础","title":"计算机组成原理 · CPU · 存储层次 · 指令集","color":"#374151","bg":"#F9FAFB","intro":"计算机组成原理是所有上层软件性能问题的物理根基。理解 CPU 如何执行指令、数据如何在存储层次中流动，是写出「真正理解机器」的代码的前提。","intro_lines":["▸ <strong>冯诺依曼架构</strong> — CPU/内存/IO 的基本模型，取指-译码-执行-写回的指令周期","▸ <strong>存储层次结构</strong> — 寄存器/L1/L2/L3/内存/磁盘 的延迟和带宽数量级差异","▸ <strong>指令集架构</strong> — CISC vs RISC 的设计哲学，x86/ARM/RISC-V 的定位差异","▸ <strong>CPU 流水线</strong> — 五级流水线，数据相关/结构相关/控制相关 hazard 的处理","▸ <strong>总线与 IO</strong> — PCIe/DMA/中断控制器，CPU 和外设如何通信"],"notes":[{"h":"冯诺依曼架构与指令执行周期","pts":["冯诺依曼架构的核心是「程序存储」——指令和数据都存在同一块内存里，CPU 顺序取指执行。现代 CPU 实现了这个模型但大幅超越了它：超标量（同时发射多条指令）、乱序执行（打乱指令顺序但保证语义正确）、分支预测（提前执行可能的路径）。理解这些特性是理解为什么某些代码模式快、某些慢的基础。","指令执行的经典五级流水线：IF（取指，从 PC 指向的内存地址取指令）→ ID（译码，确定操作类型和操作数）→ EX（执行，ALU 运算）→ MEM（内存访问，load/store）→ WB（写回，结果写入寄存器）。流水线的目标是让每个周期都有一条指令完成，CPI（每指令周期数）趋近 1。Pipeline hazard（相关性）是流水线停顿的主要原因：数据相关（前条指令的结果还没写回，后条就要读）、控制相关（分支跳转方向未知导致流水线冲刷）。","超标量与乱序执行：现代 CPU 每个周期可以同时发射 4-6 条指令（超标量），并且可以打乱指令的执行顺序（乱序执行，Out-of-Order Execution）以充分利用执行单元。但对程序员可见的语义必须保持和顺序执行一致——Tomasulo 算法通过寄存器重命名和保留站（Reservation Station）实现了这一保证。乱序执行是 Spectre 漏洞的根本原因：CPU 推测性地执行了不该执行的指令，留下了缓存侧信道。"],"img_key":"von_neumann","img_link":"https://en.wikipedia.org/wiki/Von_Neumann_architecture","img_title":"Von Neumann Architecture"},{"h":"存储层次：延迟是最重要的约束","pts":["存储层次是理解性能的第一课。各级延迟数量级（2024 年典型值）：L1 缓存 ~4 周期（1ns）→ L2 缓存 ~12 周期（3ns）→ L3 缓存 ~40 周期（10ns）→ 主内存（DRAM）~100ns → NVMe SSD ~50-100μs → 机械硬盘 ~5ms。每跨一级，延迟增加 10-100 倍。程序的性能极限往往不是 CPU 算力，而是数据能否及时到达 CPU——这就是「Memory Wall」问题。","缓存的工作原理：CPU 访问内存时，以缓存行（Cache Line，通常 64 字节）为单位加载到缓存。缓存命中率（Hit Rate）对性能影响巨大：99% 命中率和 95% 命中率在高频访问下性能差距可达 5 倍以上。空间局部性（访问相邻内存）和时间局部性（反复访问同一内存）是提高缓存命中率的两个关键原则。实际优化：数组遍历比链表遍历快（空间局部性），热数据尽量放一起（减少 Cache Miss）。","DRAM 的物理特性：DRAM 用电容存储信息，电容会漏电所以需要周期性刷新（Refresh），这是为什么 DRAM 称为「动态」RAM。访问 DRAM 需要先激活 Row（~35ns），再访问 Column（~15ns），所以顺序访问比随机访问快得多（充分利用已激活的 Row）。LPDDR5（手机）和 DDR5（桌面/服务器）的理论带宽已经超过 100GB/s，但延迟改善很小——延迟是 DRAM 的根本物理限制。"],"img_key":"mem_hierarchy","img_link":"https://en.wikipedia.org/wiki/Memory_hierarchy","img_title":"Memory Hierarchy"},{"h":"指令集与 CPU 微架构","pts":["CISC（复杂指令集，x86）vs RISC（精简指令集，ARM/RISC-V）的根本差异不是指令数量，而是设计哲学：CISC 允许一条指令做很多事情（如「把内存地址的值加到寄存器里」），RISC 要求每条指令做一件简单的事（load → add → store 三步）。现代 x86 CPU 在内部把 CISC 指令「译码」成 RISC 风格的微操作（μop）再执行，所以微架构层面两者趋于相似。ARM 在移动端和服务器端（AWS Graviton/Apple M系列）的崛起主要来自功耗效率优势。","RISC-V 是近年最重要的 ISA 进展：完全开源的指令集架构，没有授权费用，允许任何人自由实现。在嵌入式/边缘计算/AI 加速器领域快速渗透。对开发者的实际影响：未来 5-10 年内，工程师需要同时熟悉 x86（服务器主导）、ARM（移动端/Apple 生态/云服务器）、RISC-V（嵌入式/AI芯片）三套指令集生态。"],"img_key":"pipeline","img_link":"https://en.wikipedia.org/wiki/Instruction_pipelining","img_title":"Instruction Pipelining"}],"res":[{"tp":"书籍","tc":"b-book","t":"Computer Organization and Design — Patterson & Hennessy","d":"RISC-V 版本，计算机组成原理最权威教材，Patterson 是 RISC 的发明者","u":"https://www.elsevier.com/books/computer-organization-and-design-risc-v-edition/patterson/978-0-12-820331-6","lv":"mid","s":"elsevier.com"},{"tp":"视频","tc":"b-video","t":"Nand to Tetris（从门电路到操作系统）","d":"从基本逻辑门开始，一步步构建完整计算机系统，最好的计算机底层入门","u":"https://www.nand2tetris.org/","lv":"entry","s":"nand2tetris.org"},{"tp":"博客","tc":"b-blog","t":"Latency Numbers Every Programmer Should Know","d":"各级存储和网络延迟的经典参考数字，每年更新版本","u":"https://colin-scott.github.io/personal_website/research/interactive_latency.html","lv":"entry","s":"colin-scott.github.io"}]},{"id":"os_core","phase":"计算机基础","title":"操作系统核心 · 进程 · 调度 · 内存管理","color":"#1e40af","bg":"#EFF6FF","intro":"操作系统是硬件和应用之间的仲裁者，核心职责是资源的抽象、隔离和调度。理解 OS 的运作方式是写出「理解 OS 在做什么」的应用代码的基础——锁的开销、上下文切换的代价、内存分配的逻辑都根植于此。","intro_lines":["▸ <strong>进程与线程</strong> — 进程是资源的容器，线程是执行流，两者的创建/切换代价差异","▸ <strong>CPU 调度器</strong> — CFS（完全公平调度器）的工作原理，调度延迟与吞吐量的权衡","▸ <strong>虚拟内存</strong> — 页表/TLB/缺页中断，进程地址空间的布局与保护","▸ <strong>文件系统</strong> — VFS 抽象层，ext4/XFS 的设计，inode/dentry/page cache","▸ <strong>进程间通信</strong> — Pipe/Socket/共享内存/信号/Futex 的适用场景","▸ <strong>系统调用</strong> — 用户态到内核态的切换机制，syscall 的代价"],"notes":[{"h":"进程、线程与上下文切换","pts":["进程是操作系统资源分配的基本单位，拥有独立的地址空间、文件描述符表、信号处理等。线程是进程内的执行流，同一进程的线程共享地址空间和文件描述符，但各有独立的栈和寄存器状态。创建进程（fork）的代价远高于创建线程（pthread_create），因为前者需要复制/映射整个地址空间（Linux 用 Copy-on-Write 优化，但仍有开销）。Go 的 goroutine 和 Java 的虚拟线程本质上是用户态的「绿色线程」，由运行时调度，初始栈只需 2-8KB，可以轻易创建百万个。","上下文切换（Context Switch）是线程/进程调度的代价：保存当前执行线程的 CPU 寄存器（包括 PC、SP、通用寄存器）到内核栈，加载下一个线程的寄存器状态，切换 TLB（如果是进程切换还要切换页表）。用户态线程切换约 100-200ns，内核线程切换约 1-5μs（需要 syscall），进程切换更贵（TLB flush）。高并发服务选 Go/Kotlin Coroutine 而不是传统线程的核心原因之一就是减少内核级上下文切换。","Linux 的进程状态机：Running（在 CPU 上执行）→ Ready（可运行但在等待 CPU）→ Blocked（等待 IO 或锁，不占 CPU）→ Zombie（已退出但父进程未 wait()）。理解这个状态机对排查生产问题很重要：大量进程处于 D 状态（Uninterruptible Sleep，通常是等待磁盘 IO）是 IO 瓶颈的信号；大量 Z 状态是父进程没有正确处理子进程退出的信号。`ps aux` 和 `top` 的 STAT 列显示进程状态。"],"img_key":"process_states","img_link":"https://en.wikipedia.org/wiki/Process_state","img_title":"Process States"},{"h":"Linux CFS 调度器","pts":["Linux 的完全公平调度器（CFS，Completely Fair Scheduler）的核心思想是「所有可运行进程的 CPU 时间随时间平均分配」。CFS 用红黑树管理所有可运行进程，按 vruntime（虚拟运行时间）排序。vruntime 累积的速度和进程优先级（nice 值）相关：低优先级进程的 vruntime 增长更快，因此更快被移出队列头部，获得 CPU 时间更少。调度决策是：始终选择 vruntime 最小（等待最久）的进程运行。","调度延迟和最小粒度：CFS 的 `sched_latency_ns`（默认 6ms）是「所有可运行进程至少每 6ms 得到一次 CPU」的保证。当进程数量很多时，每个进程的时间片会被等比例缩小；当进程数 × `sched_min_granularity_ns` 超过 `sched_latency_ns` 时，时间片由最小粒度限制（默认 0.75ms）。对高并发服务的影响：数百个线程争抢 CPU 时，实际调度延迟可能达到几十毫秒，用 taskset/cgroups cpuset 绑核是减少调度干扰的常见优化。","实时调度类：Linux 除了 CFS 还有 SCHED_FIFO 和 SCHED_RR 两种实时调度类，优先级高于所有普通进程，用于延迟敏感的任务（音频处理/HFT/工业控制）。SCHED_FIFO 是抢占式先来先服务（不会主动让出 CPU，除非更高优先级的实时进程来了），SCHED_RR 是带时间片的轮转。使用实时调度类需要 CAP_SYS_NICE 权限，错误使用可能导致系统卡死（实时进程占满 CPU，内核进程也无法运行）。"],"img_key":"cfs","img_link":"https://en.wikipedia.org/wiki/Completely_Fair_Scheduler","img_title":"Linux CFS Scheduler"},{"h":"虚拟内存与页表","pts":["虚拟内存给每个进程提供了一个独立的、连续的地址空间假象（64 位系统通常 128TB 可用虚拟地址）。物理内存可能是碎片化的，虚拟地址到物理地址的映射由页表（Page Table）维护，以页（通常 4KB）为单位管理。进程地址空间从低到高通常布局为：代码段（只读）→ 数据段（全局/静态变量）→ BSS 段（未初始化数据）→ 堆（向上增长）→ …空洞… → 栈（向下增长）→ 内核映射区。","TLB（Translation Lookaside Buffer）是页表的高速缓存，存储最近使用的虚拟→物理地址映射。TLB Miss 需要遍历多级页表（x86-64 用 4 级页表），代价约 10-100ns。Hugepages（2MB 或 1GB 大页）通过减少页表条目数来提高 TLB 命中率，对大内存工作负载（数据库/KV 存储）有显著性能提升（5-15%）。内核 THP（Transparent Hugepages）自动尝试合并小页，但可能导致延迟抖动（合并过程需要暂停），HFT 系统通常禁用 THP 改为手动管理 Hugepages。","缺页中断（Page Fault）：进程访问的虚拟地址没有对应的物理内存映射时触发。三种类型：Minor Fault（映射存在但页框不在内存，如匿名页首次访问）触发内核分配物理页并建立映射；Major Fault（需要从磁盘读取，如文件映射、swap）代价高（磁盘 IO 级延迟）；Segmentation Fault（访问无效地址，如 NULL 解引用）终止进程。mmap 是很多高性能框架（RocksDB/Kafka 日志）的底层机制，它通过懒加载（只有实际访问才触发缺页）来避免预先分配物理内存。"],"img_key":"virtual_mem","img_link":"https://en.wikipedia.org/wiki/Virtual_memory","img_title":"Virtual Memory"},{"h":"文件系统与 VFS","pts":["VFS（Virtual File System）是 Linux 内核对所有文件系统的统一抽象层，让 read()/write()/open() 等系统调用可以无感知地工作于 ext4/XFS/tmpfs/NFS 等任意文件系统上。VFS 的四个核心对象：inode（文件元数据：权限/大小/时间戳/数据块指针，没有文件名）、dentry（目录项，文件名到 inode 的映射，组成目录树）、file（打开的文件实例，每个 open() 返回一个 file 对象）、super_block（文件系统全局信息）。","Page Cache 是 Linux 内存管理和文件 IO 的连接点：所有文件读写都经过 Page Cache（除非用 O_DIRECT），内核把磁盘数据缓存在内存的 Page Cache 里，读命中时不需要磁盘 IO，写先写到 Cache（write-back），由 pdflush/writeback 定期刷到磁盘。`free` 命令里的 buff/cache 就是 Page Cache，它是可以被内核随时回收的「可用内存」，不是内存泄漏。数据库（MySQL/PostgreSQL）通常关闭 OS Page Cache（O_DIRECT）自己管理 Buffer Pool，避免双重缓存。","ext4 vs XFS vs io_uring：ext4 是 Linux 最常用的文件系统，适合通用负载；XFS 对大文件和高并发写优化更好，是 RHEL/CentOS 的默认选择；btrfs 支持快照/校验和但性能和稳定性仍有争议。io_uring（Linux 5.1+）是革命性的异步 IO 接口，通过共享内存的 ring buffer 完全消除了系统调用开销，对 io_uring 优化的 IO 密集型服务（如 ScyllaDB）性能可提升 40%+。"],"img_key":"vfs","img_link":"https://en.wikipedia.org/wiki/Virtual_file_system","img_title":"Virtual File System"},{"h":"进程间通信（IPC）机制","pts":["六种 IPC 机制各有适用场景：Pipe（管道）——单向，父子进程间，shell 的 | 就是 pipe；Unix Domain Socket——双向，同机器进程间，Docker 容器与宿主机通信常用；TCP/UDP Socket——跨机器通信，最通用但有网络栈开销；Shared Memory（共享内存）——速度最快（无拷贝），适合大数据量，但需要手动同步；Message Queue——有内核缓冲，发送方和接收方可以异步，不需要同时在线；Signal——轻量通知机制，但只能传递信号编号（很少携带数据），常用于进程控制（SIGKILL/SIGTERM）。","Futex（Fast Userspace muTEX）是 Linux 锁实现的基石：在无竞争时完全在用户态完成（一个原子 CAS 操作），只有在真正需要等待时才进入内核（futex() 系统调用）。Java 的 synchronized、Go 的 sync.Mutex、pthreads 的 mutex 在底层都用到了 Futex。理解 Futex 的意义：「锁的快路径是用户态的，慢路径才是内核的」——这解释了为什么争用少的锁很快，争用多的锁很慢（大量线程在内核等待）。"],"img_key":"ipc","img_link":"https://en.wikipedia.org/wiki/Inter-process_communication","img_title":"IPC in Linux"}],"res":[{"tp":"书籍","tc":"b-book","t":"Operating Systems: Three Easy Pieces（OSTEP）","d":"最好的 OS 入门教材，免费在线，进程/内存/文件系统三部分结构清晰","u":"https://pages.cs.wisc.edu/~remzi/OSTEP/","lv":"entry","s":"cs.wisc.edu"},{"tp":"书籍","tc":"b-book","t":"Linux Kernel Development — Robert Love","d":"Linux 内核主要子系统的深度讲解，调度/内存/VFS/设备驱动","u":"https://www.oreilly.com/library/view/linux-kernel-development/9780768696974/","lv":"mid","s":"oreilly.com"},{"tp":"视频","tc":"b-video","t":"MIT 6.S081: Operating System Engineering","d":"MIT 最新版 OS 课程，用 xv6 实践，Lab 从零实现 OS 各模块","u":"https://pdos.csail.mit.edu/6.S081/","lv":"mid","s":"mit.edu"},{"tp":"工具","tc":"b-tool","t":"Linux Performance Tools — Brendan Gregg","d":"Linux 性能分析工具全景图，top/perf/strace/lsof/ss 等工具的正确用法","u":"https://www.brendangregg.com/linuxperf.html","lv":"mid","s":"brendangregg.com"}]},{"id":"cpu_adv","phase":"计算机基础","title":"硬件性能深挖 · Cache优化 · 流水线 · SIMD","color":"#374151","bg":"#F3F4F6","intro":"理解 CPU 微架构是写出「机器友好」代码的基础。Cache 友好的数据结构、避免分支预测失败、利用 SIMD 向量化——这些是从算法复杂度之外再提速 2-10 倍的手段。","intro_lines":["▸ <strong>Cache 优化</strong> — Cache Line 对齐，False Sharing，循环顺序的性能差异","▸ <strong>分支预测</strong> — 分支预测失败的代价（15-20 周期），Profile-Guided Optimization","▸ <strong>SIMD 向量化</strong> — SSE/AVX/NEON，自动向量化条件，手动 intrinsics","▸ <strong>NUMA 优化</strong> — 跨 NUMA 节点访问的代价，CPU 亲和性绑核","▸ <strong>性能分析工具</strong> — perf/VTune/火焰图，硬件性能计数器"],"notes":[{"h":"Cache 友好的代码模式","pts":["False Sharing（伪共享）是多线程性能陷阱：两个线程各自修改不同变量，但两个变量恰好在同一 Cache Line（64 字节）上，导致 Cache Line 在两个核的 L1 Cache 之间反复 Ping-Pong，性能下降 10-100 倍。解法：把频繁被不同线程修改的变量用 padding 隔开到不同 Cache Line，或使用 __attribute__((aligned(64)))。Java 的 LongAdder 用 Contended 注解处理这个问题。","循环顺序影响巨大：矩阵乘法的 ijk 顺序（行优先访问）比 ikj 顺序（列优先访问）慢 3-10 倍，原因是列访问破坏了空间局部性，每次访问都是 Cache Miss。数据结构选择也影响 Cache：Array of Struct（AoS）在随机访问时好，Struct of Array（SoA）在批量处理同一字段时好（SIMD 向量化更容易）——游戏引擎的 ECS 架构就是 SoA 的工程应用。","预取（Prefetch）：CPU 有硬件预取器，可以识别顺序访问模式并提前把数据加载到 Cache。对于不规则的访问模式（链表遍历/指针追逐），硬件预取无法帮忙，可以用软件预取指令（__builtin_prefetch）手动提示。RocksDB 的 Block Cache 读取路径大量使用软件预取来隐藏内存延迟。"]},{"h":"SIMD 向量化：单指令处理多数据","pts":["SIMD（Single Instruction Multiple Data）让 CPU 用一条指令同时处理多个数据元素：SSE2（128 位，4 个 float 或 2 个 double），AVX2（256 位，8 个 float），AVX-512（512 位，16 个 float）。对于数值密集型计算（图像处理/信号处理/ML 推理），SIMD 可提速 4-16 倍。自动向量化需要满足：循环无依赖（本次迭代不依赖上次结果），内存对齐（aligned），编译器能分析别名（restrict 关键字）。","Intel VTune 和 Linux perf 是分析 CPU 微架构瓶颈的专业工具：VTune 提供前端瓶颈（指令解码）/后端瓶颈（执行单元争用）/内存瓶颈的量化分析；perf stat 可以读取硬件性能计数器（cache-misses/branch-misses/cycles/instructions），计算 IPC（每周期指令数，正常应 > 1，< 0.5 说明有严重瓶颈）。火焰图（Flame Graph）是定位 CPU 热点的最直观工具：x 轴是 CPU 时间占比，y 轴是调用栈深度，最宽的平顶矩形是热点。"]}],"res":[{"tp":"书籍","tc":"b-book","t":"Computer Systems: A Programmer's Perspective (CSAPP)","d":"CMU 经典教材，从底层视角理解程序性能，Cache/内存/IO/并发","u":"https://csapp.cs.cmu.edu/","lv":"mid","s":"cmu.edu"},{"tp":"工具","tc":"b-tool","t":"perf + 火焰图（Brendan Gregg）","d":"Linux CPU 性能分析，火焰图生成，热点定位","u":"https://www.brendangregg.com/flamegraphs.html","lv":"mid","s":"brendangregg.com"}]},{"id":"network","phase":"网络协议","title":"网络协议栈 · TCP/IP · HTTP · DNS · 路由","color":"#0f766e","bg":"#F0FDFA","intro":"网络协议栈是分布式系统的血管。从电信号到 HTTP 请求，每一层都有明确的职责划分。理解 TCP 的可靠传输机制、HTTP 的演进、以及数据包的实际路径，是排查网络问题和设计高性能服务的基础。","intro_lines":["▸ <strong>TCP/IP 四层模型</strong> — 链路层/网络层/传输层/应用层的职责划分，每层解决什么问题","▸ <strong>TCP 可靠传输</strong> — 三次握手/四次挥手，滑动窗口，拥塞控制（CUBIC/BBR）","▸ <strong>HTTP 演进</strong> — HTTP/1.1 的 HOL 阻塞，HTTP/2 多路复用，HTTP/3 基于 QUIC","▸ <strong>DNS 工作原理</strong> — 递归查询与迭代查询，缓存与 TTL，DNSSEC","▸ <strong>路由与交换</strong> — ARP/MAC/VLAN，BGP/OSPF，NAT 的工作原理"],"notes":[{"h":"TCP/IP 分层模型与数据包封装","pts":["TCP/IP 四层模型（从上到下）：应用层（HTTP/DNS/SMTP，关心「发什么数据」）→ 传输层（TCP/UDP，关心「可靠性和端口」）→ 网络层（IP，关心「如何路由到目标主机」）→ 链路层（以太网/WiFi，关心「在一段链路上传帧」）。每一层封装（Encapsulation）：发送时，每层在上层数据前加自己的头部，形成层层包裹的数据包（SDU 变 PDU）；接收时逐层解封装。","一个 HTTP 请求的完整旅程：① DNS 解析域名为 IP；② TCP 三次握手（SYN/SYN-ACK/ACK）建立连接；③ TLS 握手（HTTPS）；④ HTTP 请求通过 TCP 传输；⑤ IP 路由选择（经过多个路由器）；⑥ ARP 解析下一跳的 MAC 地址；⑦ 以太网帧在物理链路传输；⑧ 对端解封装后应用层处理；⑨ TCP 返回 ACK；⑩ HTTP 响应返回。这个过程里每一步都有可能是性能瓶颈或故障点。","UDP vs TCP：UDP 是无连接无可靠性的传输协议——没有握手、没有重传、没有拥塞控制、数据可能乱序或丢失。适合：实时性优先于可靠性的场景（视频会议/游戏/DNS查询）。UDP 的「不可靠」不是缺陷，是设计选择——应用层可以自己实现必要的可靠性机制（QUIC 就是在 UDP 上实现了比 TCP 更好的可靠传输）。"],"img_key":"tcpip_layers","img_link":"https://en.wikipedia.org/wiki/Internet_protocol_suite","img_title":"TCP/IP Model"},{"h":"TCP 可靠传输机制","pts":["TCP 三次握手：Client 发 SYN（seq=x）→ Server 回 SYN-ACK（seq=y, ack=x+1）→ Client 发 ACK（ack=y+1）。目的是「同步双方的初始序列号（ISN）」，确保双方都有发送和接收能力。为什么不能是两次握手：如果只有两次，Server 无法知道自己的 SYN 是否被 Client 收到（Server 的 SYN 可能丢失）。TIME_WAIT 状态（主动关闭方最后保持 2MSL）是为了确保最后一个 ACK 能到达对端，以及让旧连接的迷路数据包在网络中消亡。","滑动窗口和流量控制：TCP 用窗口（Window）机制控制发送速率。接收方在 ACK 中携带 rwnd（接收窗口）告知自己还能接收多少字节——这是流量控制（Flow Control），防止发送方压垮接收方的缓冲区。发送方的实际发送量 = min(rwnd, cwnd)，其中 cwnd（拥塞窗口）由拥塞控制算法维护——这是拥塞控制，防止发送方压垮网络。","拥塞控制算法演进：TCP Reno（经典）——慢启动（指数增长）→ 拥塞避免（线性增长）→ 丢包时减半。CUBIC（Linux 默认）——以三次函数增长，在高带宽高延迟（BDP 大）的网络里比 Reno 更激进。BBR（Google，2016）——基于带宽和 RTT 的探测，不依赖丢包信号来判断拥塞，在有一定丢包率的网络（如无线网络）里表现好得多，被 Google 内部大规模使用。Kubernetes 等云环境现在普遍开启 BBR。"],"img_key":"tcp_handshake","img_link":"https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Connection_establishment","img_title":"TCP Handshake"},{"h":"HTTP 协议演进","pts":["HTTP/1.1 的根本问题是 HOL 阻塞（Head-of-Line Blocking）：TCP 连接上的请求必须串行，前一个请求的响应没收到就不能发下一个。浏览器的解法是开多个并行 TCP 连接（通常 6 个），但每个连接都有建立代价，且服务器连接数有限。HTTP/1.1 的 Keep-Alive 减少了 TCP 握手次数，Pipeline 试图解决 HOL 但实现困难几乎没有应用。","HTTP/2 在单个 TCP 连接上实现了多路复用（Multiplexing）——多个请求/响应并发交错传输，每个请求是一个独立的 Stream，头部用 HPACK 压缩（减少重复 Header 的传输量）。HTTP/2 解决了应用层 HOL，但 TCP 层的 HOL 仍然存在：丢一个包，整个连接上所有 Stream 都要等待重传。Server Push 允许服务端主动推送资源，但实际应用有限。","HTTP/3 基于 QUIC（Quick UDP Internet Connections）：把传输层从 TCP 换成 UDP 上实现的 QUIC 协议。QUIC 的核心优势：① 0-RTT 或 1-RTT 连接建立（TCP+TLS 需要 3-RTT）；② 每个 Stream 独立，一个 Stream 的丢包不阻塞其他 Stream（彻底解决 HOL）；③ 连接迁移（换 IP/切换 WiFi 到 4G 时连接不断）。代价是 UDP 无法利用中间件的 TCP 优化，在某些网络环境下 UDP 被 QoS 限速。Cloudflare 和 Google 已经在大规模使用 HTTP/3。"],"img_key":"http_evolution","img_link":"https://en.wikipedia.org/wiki/HTTP/3","img_title":"HTTP/3 & QUIC"},{"h":"DNS 工作原理","pts":["DNS 查询的两种模式：递归查询（Recursive）——客户端问递归解析器（通常是 ISP 的 DNS 或 8.8.8.8），解析器代替客户端完成所有查询，最终返回结果；迭代查询（Iterative）——根服务器告诉你下一级的地址，你再去问下一级，直到找到答案。实际上，客户端发起递归查询，递归解析器内部使用迭代查询访问权威服务器。DNS 查询走 UDP（53 端口），响应超过 512 字节改用 TCP。","DNS 解析的完整路径：① 浏览器缓存 → ② OS 缓存（/etc/hosts + nscd）→ ③ 本地递归解析器（ISP DNS）→ ④ 根域名服务器（返回 .com 的 TLD 服务器地址）→ ⑤ TLD 服务器（返回 example.com 的权威服务器地址）→ ⑥ 权威服务器（返回 www.example.com 的 A 记录）。TTL（Time To Live）控制缓存有效期，低 TTL 允许快速切换（故障转移），高 TTL 减少 DNS 查询次数。","DNS 记录类型：A（IPv4 地址）、AAAA（IPv6 地址）、CNAME（别名，指向另一个域名）、MX（邮件服务器）、TXT（文本，用于 SPF/DKIM 邮件认证/证书验证）、NS（权威服务器地址）、SOA（权威区域信息）。CDN 经常用 CNAME 把流量引到最近的边缘节点（www.example.com CNAME → example.cdn.net）。DNSSEC 通过数字签名防止 DNS 劫持，但部署复杂，国内使用不普遍。"],"img_key":"dns","img_link":"https://en.wikipedia.org/wiki/Domain_Name_System","img_title":"DNS"},{"h":"路由、交换与 NAT","pts":["ARP（Address Resolution Protocol）解决「知道 IP，不知道 MAC」的问题：发送方广播「谁的 IP 是 x.x.x.x？」，拥有该 IP 的设备回复自己的 MAC 地址，发送方缓存这个映射（ARP 表）。ARP 只在局域网（同一广播域）内有效，跨网段需要经过路由器（路由器有两张网卡，每个网卡有自己的 MAC，它「接收-查路由表-转发」时目标 MAC 会变，但目标 IP 不变）。","路由协议分为 IGP（内部）和 EGP（外部）：OSPF 是最常用的 IGP，基于链路状态（每个路由器知道整个拓扑），用 Dijkstra 算法计算最短路径，收敛快；BGP（Border Gateway Protocol）是互联网的「粘合剂」，所有 AS（自治系统，ISP/大公司的网络）之间用 BGP 交换路由信息，BGP 路由决策基于 AS-PATH 等路径属性，不只是距离最短。BGP 配置错误（BGP Hijacking）是互联网路由事故的主要原因。","NAT（Network Address Translation）让一个公网 IP 背后的多台私网设备共享出口。NAT 表记录「内网 IP:Port → 公网 IP:Port」的映射，出站时替换源地址，入站时替换目标地址。NAT 破坏了端到端连接性（外部无法主动连接内网设备），这是 P2P 应用需要打洞（NAT Traversal）的原因，也是 IPv6 普及后 NAT 会减少的原因。CGNAT（运营商级 NAT）是另一层 NAT，移动网络大量使用，给端到端连接带来更多挑战。"],"img_key":"nat","img_link":"https://en.wikipedia.org/wiki/Network_address_translation","img_title":"NAT"}],"res":[{"tp":"书籍","tc":"b-book","t":"TCP/IP Illustrated Vol.1 — W. Richard Stevens","d":"网络协议的圣经，用 tcpdump 抓包配合讲解，每个协议细节清晰","u":"https://www.informit.com/store/tcp-ip-illustrated-volume-1-the-protocols-9780321336316","lv":"mid","s":"informit.com"},{"tp":"书籍","tc":"b-book","t":"Computer Networking: A Top-Down Approach — Kurose","d":"自顶向下讲网络，从应用层到物理层，最好的教材之一","u":"https://gaia.cs.umass.edu/kurose_ross/","lv":"entry","s":"umass.edu"},{"tp":"工具","tc":"b-tool","t":"Wireshark — 网络抓包分析","d":"最强大的网络协议分析工具，可视化显示 TCP 握手/HTTP/DNS 等协议","u":"https://www.wireshark.org/","lv":"entry","s":"wireshark.org"},{"tp":"博客","tc":"b-blog","t":"Julia Evans — Networking Zines","d":"漫画风格解释网络概念，DNS/HTTP/TCP 的最易懂图解","u":"https://wizardzines.com/","lv":"entry","s":"wizardzines.com"}]},{"id":"net_adv","phase":"网络协议","title":"内核旁路网络 · DPDK · RDMA · 纳秒通信","color":"#0f766e","bg":"#E6FFF8","intro":"当常规内核网络栈成为瓶颈时，需要绕过内核。DPDK 用用户态轮询替代中断，RDMA 让 CPU 完全退出数据路径。这是电信/CDN/HFT/AI 训练集群的基础设施层。","intro_lines":["▸ <strong>DPDK</strong> — 完全绕过内核，轮询代替中断，单核百万 PPS","▸ <strong>RDMA</strong> — CPU 零参与内存传输，AI 训练集群互联基础","▸ <strong>XDP</strong> — eBPF 在网卡驱动层的高速包处理，DDoS 防护","▸ <strong>HFT 纳秒哲学</strong> — CPU 亲和性/NUMA/内核旁路，每纳秒都有来处"],"notes":[{"h":"DPDK 与用户态网络","pts":["传统内核网络栈的性能瓶颈：每个网络包需要硬中断（~2μs）、软中断、多次内存拷贝、系统调用、协议栈处理，单核处理能力约 1-2 Mpps（百万包/秒）。DPDK（Data Plane Development Kit）完全绕过内核：UIO/VFIO 驱动让网卡直接由用户态进程控制，PMD（Poll Mode Driver）用 CPU 轮询代替中断，巨页（Hugepages）避免 TLB Miss，锁核（CPU Affinity）消除调度抖动。单核可达 10-14 Mpps，多核可达 100Mpps+。代价是独占 CPU 核（轮询不让出），适合对延迟极度敏感的场景（电信/CDN/防火墙）。","SR-IOV（Single Root I/O Virtualization）是 DPDK 在虚拟化场景的关键支撑：一块物理网卡可以虚拟出多个 VF（Virtual Function），每个 VF 直接分配给虚拟机，绕过 hypervisor 的软件网络层，实现接近物理网卡的延迟和吞吐。云原生场景下，Kubernetes 上的 SR-IOV 是高性能网络（如 5G 边缘计算、金融核心交易系统）的基础设施选择。"]},{"h":"RDMA 与 AI 训练互联","pts":["RDMA（Remote Direct Memory Access）允许一台机器直接读写另一台机器的内存，不需要对端 CPU 参与（Zero-Copy，Zero-CPU），延迟约 1-2μs（比 TCP socket 低 10-100 倍）。三种实现：InfiniBand（专用网络，AI 训练集群主流，NVIDIA H100/A100 集群标配）、RoCE（RDMA over Converged Ethernet，在以太网上实现 RDMA，成本更低）、iWARP（TCP 上的 RDMA，应用最少）。","RDMA 在 AI 训练中的价值：大模型训练需要在数百到数千张 GPU 之间传递梯度，AllReduce 通信量极大（如 GPT-3 训练时通信量约 300GB/step）。RDMA 通过 GPUDirect 让 GPU 显存直接通过网卡传输，不经过 CPU 内存，通信延迟和 CPU 占用大幅降低。NCCL（NVIDIA 的集合通信库）在 InfiniBand 上实现了高效的 AllReduce/AllGather/ReduceScatter，是分布式训练的基础组件。"]}],"res":[{"tp":"文档","tc":"b-docs","t":"DPDK 官方文档","d":"DPDK 编程指南，PMD 驱动/内存池/队列模型","u":"https://doc.dpdk.org/guides/","lv":"adv","s":"dpdk.org"},{"tp":"博客","tc":"b-blog","t":"RDMA 技术详解 — RDMAmojo","d":"InfiniBand/RoCE/iWARP 技术对比，RDMA 编程实践","u":"https://www.rdmamojo.com/","lv":"adv","s":"rdmamojo.com"}]},{"id":"linux_kernel","phase":"Linux 内核","title":"Linux 内核机制 · 内存分配 · epoll · 内核网络栈","color":"#7c3aed","bg":"#F5F3FF","intro":"Linux 是服务端的事实标准操作系统，理解其核心机制——epoll 如何实现高并发 IO、内存分配器如何工作、内核网络栈的数据路径——对构建高性能服务至关重要。","intro_lines":["▸ <strong>IO 多路复用</strong> — select/poll/epoll 的演进，epoll 的 ET/LT 模式，libevent/tokio 的底层基础","▸ <strong>内核内存分配</strong> — Buddy System/Slab/kmalloc，用户态 malloc 与 glibc ptmalloc 的实现","▸ <strong>内核网络栈</strong> — sk_buff，从网卡中断到 socket 接收缓冲区的数据路径","▸ <strong>零拷贝技术</strong> — mmap/sendfile/splice/io_uring，减少内核-用户态数据复制","▸ <strong>eBPF 可编程内核</strong> — eBPF 的安全沙箱模型，XDP 高性能包处理，生产诊断用途"],"notes":[{"h":"epoll：高并发 IO 的基础","pts":["select/poll 的问题：每次调用都需要把所有监听的 fd 从用户态拷贝到内核（O(n)），内核遍历所有 fd 检查是否就绪（O(n)），返回时把整个 fd 集合拷贝回用户态。1000 个连接就需要扫描 1000 个 fd，C10K 问题（1 万并发连接）的瓶颈之一。epoll 的解法：fd 注册一次，内核维护一个红黑树存储关注的 fd 集合，就绪事件通过回调函数加入 ready list，epoll_wait 只返回就绪的 fd——O(就绪事件数) 而非 O(总 fd 数)。","Level Triggered（LT，水平触发，默认）vs Edge Triggered（ET，边缘触发）：LT 模式下，只要缓冲区有数据，每次 epoll_wait 都会返回该 fd 就绪，读一半没关系；ET 模式下，只有状态变化时（有新数据到来）才触发一次，必须一次性把缓冲区读完（通常用 while 循环读到 EAGAIN）。ET 减少了 epoll_wait 的返回次数，但实现更复杂，未读完的数据会丢失触发机会。Nginx 默认用 ET，大多数框架用 LT。","epoll 是 Linux 的特性，macOS 的对应物是 kqueue，Windows 是 IOCP（I/O Completion Ports）。Rust 的 Tokio、Go 的 netpoller、Node.js 的 libuv 都在内部根据平台选择最优的 IO 多路复用机制。理解 epoll 能帮你理解为什么 Go 的网络 IO 和 Node.js 都能高效处理大量并发连接——底层都是 epoll（Linux）。"],"img_key":"epoll","img_link":"https://en.wikipedia.org/wiki/Epoll","img_title":"epoll"},{"h":"内存分配器：从内核到用户态","pts":["Linux 内核内存分配的两层结构：Buddy System（伙伴系统）管理物理页框，以 2 的幂次数量分配（1/2/4/.../1024 页），解决外部碎片；Slab Allocator（SLUB/SLAB）在 Buddy System 之上，为频繁分配释放的内核对象（task_struct/inode/sk_buff）维护对象池，避免重复初始化，解决内部碎片和分配速度。kmalloc 用 Slab 分配小对象，vmalloc 分配大块虚拟连续内存（物理不一定连续）。","用户态 malloc 实现（glibc ptmalloc）：小内存（< 128KB）用 brk() 从堆顶扩展；大内存（>= 128KB）用 mmap() 分配匿名映射，free() 后立即归还内核。ptmalloc 的 chunk 结构：每块内存前后有元数据（大小/标志位），用于合并相邻空闲 chunk（防止碎片）。多线程下每个线程有独立的 Arena（内存池），减少锁竞争。jemalloc（Firefox/Redis 使用）和 tcmalloc（Google 使用）在多线程性能和内存碎片率上都优于 ptmalloc，是高性能服务的常见替换选项。","内存泄漏的底层原因：应用层 malloc 后没有 free，ptmalloc 维护的空闲链表不会归还 OS（因为下次 malloc 可能还要用），除非是大块 mmap 分配的内存（free 后用 munmap 归还）。这解释了为什么 Java/Go 的 GC 语言也可能有「内存增长不释放」问题——GC 决定回收对象但运行时不一定立即把内存归还 OS（为了减少 mmap/munmap 系统调用）。Go 的 GOMEMLIMIT（1.19+）可以控制最大内存使用，防止 OOM。"]},{"h":"内核网络栈：sk_buff 的数据路径","pts":["sk_buff（Socket Buffer）是 Linux 内核网络栈的核心数据结构，代表一个网络数据包。它不只存储数据，还存储包的元信息（协议层信息、checksum、时间戳、设备指针等）。设计的关键是「头部预留空间」——每层协议可以在不复制数据的情况下在头部加自己的头部（push 操作），发送时从应用层数据开始，逐层往前加 TCP/IP/以太网头部，零拷贝实现协议封装。","数据包的接收路径：网卡（NIC）收到帧 → 通过 DMA 写入内核 Ring Buffer → 触发硬中断（IRQ）→ 内核的中断处理函数快速确认，调度软中断（NET_RX_SOFTIRQ）→ NAPI poll 函数批量处理 Ring Buffer 里的包（避免每包一次硬中断）→ 内核网络协议栈处理（IP/TCP）→ 数据写入 Socket 的接收缓冲区（sk->sk_receive_queue）→ 唤醒阻塞在 recv() 的应用进程。缓冲区满了就丢包（可通过 netstat -s 看 Receive Buffer Overflow）。"]},{"h":"零拷贝：减少数据搬运","pts":["传统文件发送的 4 次拷贝：① 磁盘 → 内核 Page Cache（DMA）② Page Cache → 用户态缓冲区（CPU 拷贝）③ 用户态缓冲区 → 内核 Socket 缓冲区（CPU 拷贝）④ Socket 缓冲区 → 网卡（DMA）。sendfile() 优化到 2 次（消除两次用户态拷贝）：磁盘 → Page Cache（DMA）→ 网卡（DMA），CPU 只传递文件描述符信息。Nginx 的静态文件服务大量使用 sendfile，大幅降低 CPU 使用率。","mmap + write 是另一种零拷贝：mmap 把文件映射到用户态地址空间（与 Page Cache 共享物理页），write 时 CPU 从 mmap 地址拷贝到 Socket 缓冲区（还是一次 CPU 拷贝，但省了一次从磁盘到用户缓冲区的拷贝）。Kafka 用 mmap 读取日志文件，加上 sendfile 发送给消费者，实现了近乎零拷贝的消息传递，这是 Kafka 吞吐量极高的原因之一。io_uring 通过注册固定缓冲区（Fixed Buffers）和 Buffer Ring，在某些场景下实现真正的零拷贝。"],"img_key":"zerocopy","img_link":"https://en.wikipedia.org/wiki/Zero-copy","img_title":"Zero-copy"}],"res":[{"tp":"书籍","tc":"b-book","t":"Understanding the Linux Kernel — Bovet & Cesati","d":"Linux 内核各子系统深度解析，进程调度/内存/文件系统/网络","u":"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/","lv":"adv","s":"oreilly.com"},{"tp":"博客","tc":"b-blog","t":"Brendan Gregg 博客","d":"Linux 性能分析权威，perf/eBPF/火焰图的最佳实践","u":"https://www.brendangregg.com/","lv":"mid","s":"brendangregg.com"},{"tp":"视频","tc":"b-video","t":"Linux 内核网络栈解析 — Thomas Graf","d":"Cilium 作者讲解 eBPF 和内核网络栈，结合 Kubernetes 网络实践","u":"https://www.youtube.com/watch?v=7pmXdG8-7WU","lv":"adv","s":"youtube.com"},{"tp":"工具","tc":"b-tool","t":"bpftrace — eBPF 追踪工具","d":"高级 eBPF 前端，单行命令追踪内核函数、用户态函数、性能事件","u":"https://github.com/iovisor/bpftrace","lv":"adv","s":"github.com"}]},{"id":"concurrency","phase":"Linux 内核","title":"并发原语 · 内存模型 · 无锁数据结构","color":"#dc2626","bg":"#FEF2F2","intro":"并发是现代软件最复杂的领域之一——并发 bug 难以复现，难以调试，往往只在高负载生产环境才暴露。从硬件内存序到语言级内存模型，从互斥锁到无锁数据结构，这是构建正确并发系统的基础知识。","intro_lines":["▸ <strong>硬件内存序</strong> — CPU 为什么会乱序，Store Buffer/Invalidation Queue，内存屏障的必要性","▸ <strong>原子操作与 CAS</strong> — 原子操作的硬件实现，Compare-and-Swap，ABA 问题","▸ <strong>锁的实现</strong> — 自旋锁/互斥锁/读写锁/Futex，锁的代价与优化策略","▸ <strong>Java/Go 内存模型</strong> — happens-before 关系，volatile/synchronized/channel 的语义保证","▸ <strong>无锁数据结构</strong> — CAS-based 链表/队列，Hazard Pointer，epoch-based 内存回收"],"notes":[{"h":"硬件内存序：CPU 为什么会乱序","pts":["现代多核 CPU 有多个 Cache，各核的 Cache 可能存有同一内存地址的不同版本。MESI 协议（Modified/Exclusive/Shared/Invalid）是 Cache 一致性协议，保证最终一致性，但不保证「你写入的值立即被其他核看到」。Store Buffer（写缓冲）让写操作先进队列，CPU 继续执行下条指令（写不阻塞），之后异步刷入 Cache；Invalidation Queue 让 Cache 失效消息先排队，CPU 继续用旧值，之后再处理失效。这两个结构导致了内存序的「松弛」——读可能读到旧值，写可能对其他核不可见。","内存屏障（Memory Barrier / Memory Fence）是告诉 CPU「屏障之前的所有 Load/Store 必须在屏障之后的 Load/Store 之前完成」的指令。x86 是 TSO（Total Store Order）内存模型，Store-Load 乱序是唯一允许的，硬件自动插入了大量屏障，程序员很少需要显式插入。ARM 是弱内存序（Weak Memory Ordering），几乎所有组合都可能乱序，需要显式的 DMB/DSB/ISB 指令。这是为什么 ARM 上跑「正确率」不如 x86 的并发代码时更容易出问题——x86 的强内存模型「掩盖」了很多并发 bug。","语言级内存模型是对硬件内存序的抽象：Java Memory Model（JMM）定义了 happens-before 关系——如果 A happens-before B，A 的写操作对 B 可见。具体规则：① 同一线程内按顺序 happens-before；② unlock happens-before 之后的 lock；③ volatile 写 happens-before 之后的 volatile 读；④ Thread.start() happens-before 线程内的任何操作。C++ 的 std::atomic 有 6 种内存序（从最宽松的 relaxed 到最严格的 seq_cst），允许程序员精细控制。Go 的内存模型比 JMM 更简单：channel 发送 happens-before 对应接收，sync.Mutex 保证 unlock happens-before 后续 lock。"],"img_key":"mesi","img_link":"https://en.wikipedia.org/wiki/MESI_protocol","img_title":"MESI Protocol"},{"h":"锁的实现与代价","pts":["自旋锁（Spinlock）：等待时在 CPU 上忙等（循环检查锁是否释放），不让出 CPU，适合锁持有时间极短的场景（< 几十 ns，如内核中断处理）。代价是浪费 CPU 周期，且在单核上自旋会死锁（持锁线程没机会运行）。互斥锁（Mutex）：等待时让出 CPU（进入 Blocked 状态），由 OS 在锁释放时唤醒，适合锁持有时间长的场景。代价是两次系统调用（sleep + wakeup），各约 1-5μs。Futex 实现了「无竞争时纯用户态」的优化。","读写锁（RWLock）允许多个读操作并发，但写操作独占。适合「读多写少」的场景，如配置缓存、服务发现数据。实现时需要注意写饥饿（大量读请求导致写操作长期等待），常见解法是写请求到来后阻止新的读请求。Java 的 ReentrantReadWriteLock 和 Go 的 sync.RWMutex 都有这个问题，StampedLock 提供了乐观读模式（不获取读锁，读完后验证版本号）进一步减少竞争。","锁的性能陷阱：Lock Contention（锁竞争）是最常见的并发性能问题——多个线程同时争同一把锁，只有一个能运行，其他都在等待，极限情况下等效于单线程串行。诊断工具：Java 的 JFR（Java Flight Recorder）可以记录锁等待时间；Linux 的 perf 可以找出锁竞争热点。优化方向：缩小临界区（减少持锁时间）、锁分片（多把锁分管不同的数据分区，如 ConcurrentHashMap）、无锁化（CAS）、读写分离。"],"img_key":"lock_types","img_link":"https://en.wikipedia.org/wiki/Futex","img_title":"Locks & Futex"},{"h":"CAS 与无锁数据结构","pts":["CAS（Compare-and-Swap）是原子操作的基础：「如果当前值等于期望值，则更新为新值，否则不更新，返回当前值」——整个操作是原子的，不可中断。x86 的 CMPXCHG 指令，ARM 的 STXR/LDXR 指令对实现。CAS 是大多数无锁算法的基础操作。ABA 问题：A → B → A，第二个 CAS 看到值是 A，以为没变化，但实际上经历了 B 的中间状态，可能导致错误。解法：版本号（AtomicStampedReference，值 + 版本号一起原子更新）。","无锁队列（Michael-Scott Queue）：经典的无锁并发队列，用 CAS 在队尾追加节点（enqueue）和在队头移除节点（dequeue）。核心是「帮助机制」（Helping）：如果 CAS 失败，不是简单重试，而是帮助完成未完成的操作，防止某个线程无限等待。Java 的 ConcurrentLinkedQueue 就是基于这个算法。","内存回收是无锁数据结构最难的问题：不能在其他线程还持有引用时释放内存，但「谁还持有引用」在无锁场景下无法用锁来保护。两种主流方案：Hazard Pointer（危险指针，每个线程声明自己正在访问哪个节点，GC 时跳过这些节点，之后再回收）；Epoch-Based Reclamation（纪元回收，用全局纪元计数，所有线程都在新纪元时才释放旧纪元的内存）。crossbeam（Rust）和 folly（Facebook C++）都实现了这两种方案。"],"img_key":"cas","img_link":"https://en.wikipedia.org/wiki/Compare-and-swap","img_title":"Compare-and-swap"}],"res":[{"tp":"书籍","tc":"b-book","t":"The Art of Multiprocessor Programming — Herlihy & Shavit","d":"并发算法圣经，从理论到无锁数据结构的完整体系","u":"https://www.elsevier.com/books/the-art-of-multiprocessor-programming/herlihy/978-0-12-397337-5","lv":"adv","s":"elsevier.com"},{"tp":"书籍","tc":"b-book","t":"Java Concurrency in Practice — Goetz","d":"Java 并发的权威实践指南，JMM/锁/原子变量/并发集合","u":"https://jcip.net/","lv":"mid","s":"jcip.net"},{"tp":"博客","tc":"b-blog","t":"Preshing on Programming — 内存序系列","d":"最好的硬件内存序和内存屏障系列文章，深入浅出","u":"https://preshing.com/20120625/memory-ordering-at-compile-time/","lv":"mid","s":"preshing.com"}]},{"id":"storage_io","phase":"Linux 内核","title":"存储体系 · 磁盘 IO · 文件系统 · 数据持久化","color":"#b45309","bg":"#FEF3C7","intro":"数据最终都要落到存储介质上。从 Page Cache 到 SSD 内部的 FTL，从 WAL 到 RAID，理解存储体系和 IO 路径是构建可靠持久化系统的基础。","intro_lines":["▸ <strong>存储介质特性</strong> — HDD/SSD/NVMe 的物理特性和性能数字，选型依据","▸ <strong>IO 栈与 Page Cache</strong> — 从 write() 到磁盘的完整路径，fsync 的语义","▸ <strong>WAL 与持久化模式</strong> — Write-Ahead Log 的原理，fsync/O_DSYNC/group commit","▸ <strong>RAID 与可靠性</strong> — RAID0/1/5/10 的性能和可靠性对比","▸ <strong>SSD 内部机制</strong> — FTL/Write Amplification/GC，SSD 的「陷阱」"],"notes":[{"h":"存储介质的物理特性","pts":["机械硬盘（HDD）的性能瓶颈是寻道时间（磁头移动到正确磁道，约 5-10ms）和旋转延迟（等待目标扇区转到磁头下，平均半圈，7200RPM 约 4ms）。顺序读写（不需要寻道）可达 100-200 MB/s，随机 4K IOPS 只有 100-200。HDD 的优势是成本低和容量大（TB 级别价格极低），适合大容量冷存储（备份/归档）。","SSD（NAND Flash）没有机械部件，延迟约 100μs（比 HDD 低 50-100 倍），随机 4K IOPS 达到 10-100 万。但 NAND Flash 有写寿命（P/E Cycle，SLC > MLC > TLC > QLC，写寿命依次递减）和写放大（Write Amplification，逻辑写 1 字节可能触发物理写几字节到几十字节）的问题。NVMe SSD 通过 PCIe 直接连接 CPU，延迟进一步降到 20-100μs，IOPS 可达百万级。数据库的 WAL、日志写入对 SSD 的写寿命有影响，设计时需要考虑写放大。","NVMe 与 SATA 的差异：传统 SSD 用 SATA 接口，受 SATA 协议（AHCI，设计于 HDD 时代）限制，队列深度只有 1，吞吐量上限约 600 MB/s。NVMe 专为闪存设计，支持 65535 个队列每队列 65535 深度，充分利用闪存的并行性，带宽可达 7-14 GB/s。对服务器选型的影响：IO 密集型工作负载（数据库/Kafka）应优先选 NVMe SSD，而不是 SATA SSD。"],"img_key":"storage_latency","img_link":"https://colin-scott.github.io/personal_website/research/interactive_latency.html","img_title":"Storage Latency Numbers"},{"h":"IO 栈与数据持久化","pts":["write() 系统调用只是把数据写到 Page Cache（内核缓冲区），不保证落盘——系统崩溃就丢失。fsync() 强制把 Page Cache 中对应文件的所有脏页（Dirty Page）刷到磁盘，返回后才保证持久化。fsync 的代价很高（需要等待磁盘 IO 完成），是数据库写性能的主要瓶颈。O_DIRECT（绕过 Page Cache，直接写磁盘）用于数据库自管理 Buffer Pool 的场景（MySQL InnoDB 默认用 O_DIRECT），避免双重缓存。O_SYNC/O_DSYNC 让每次 write 都同步落盘（等价于 write + fsync），代价最高。","WAL（Write-Ahead Log）是数据库持久化的核心机制：修改数据前，先把「要做什么修改」写到日志文件（WAL），日志 fsync 成功后才修改数据文件。系统崩溃后，根据 WAL 重放未完成的修改（Redo）或回滚未提交的事务（Undo）。WAL 的关键优势：把随机写（修改数据文件的任意位置）变成顺序写（追加到日志文件尾部），顺序写比随机写快 10-100 倍（无论 HDD 还是 SSD）。PostgreSQL/MySQL InnoDB/LevelDB/RocksDB 都用 WAL。","Group Commit（组提交）是减少 fsync 次数的优化：在短时间窗口内积累多个事务的日志，一次 fsync 把它们全部持久化，然后同时给这些事务返回提交成功。代价是轻微增加单个事务的延迟（等待积累），但大幅提升整体吞吐量（fsync 从每事务一次变成每批次一次）。MySQL InnoDB 的 binlog group commit 就是这个机制，在高并发写入时能把 TPS 提升几倍。"],"img_key":"wal","img_link":"https://en.wikipedia.org/wiki/Write-ahead_logging","img_title":"Write-ahead logging"}],"res":[{"tp":"博客","tc":"b-blog","t":"Database Internals 文摘 — Alex Petrov","d":"存储引擎/WAL/MVCC/B-Tree/LSM 的深度讲解","u":"https://www.databass.dev/","lv":"adv","s":"databass.dev"},{"tp":"博客","tc":"b-blog","t":"Designing Data-Intensive Applications 配套资料","d":"Kleppmann 对存储/复制/分区/事务的系统性讲解","u":"https://dataintensive.net/","lv":"mid","s":"dataintensive.net"},{"tp":"工具","tc":"b-tool","t":"fio — IO 基准测试工具","d":"测量磁盘/SSD 的真实 IOPS/带宽/延迟，选型和性能诊断","u":"https://fio.readthedocs.io/","lv":"mid","s":"fio.readthedocs.io"}]},{"id":"kern_adv","phase":"Linux 内核","title":"内核安全与追踪 · eBPF · Spectre · SGX","color":"#7c3aed","bg":"#F3F0FF","intro":"内核的可编程扩展（eBPF）和硬件安全边界（Spectre/SGX）是生产系统工程师的高阶工具箱。eBPF 让你在不改内核的情况下追踪任意系统行为；理解 Spectre 则是云安全的基础知识。","intro_lines":["▸ <strong>eBPF 架构</strong> — 安全沙箱验证，JIT 编译，挂载点类型（kprobe/tracepoint/XDP）","▸ <strong>Spectre/Meltdown</strong> — 推测执行侧信道攻击原理，KPTI 的性能代价","▸ <strong>SGX 机密计算</strong> — Enclave 隔离模型，使用中的数据安全","▸ <strong>生产追踪实践</strong> — bpftrace 一行命令，火焰图，系统级诊断"],"notes":[{"h":"eBPF 与可编程内核","pts":["eBPF（extended Berkeley Packet Filter）是 Linux 内核的安全可编程扩展：用户态编写的 eBPF 程序经过内核的验证器（Verifier）安全性检查后，JIT 编译为原生机器码在内核中执行。挂载点极多：网络包处理（XDP/TC）、系统调用追踪（tracepoint/kprobe）、用户态函数追踪（uprobe）、性能事件（perf_event）。不需要修改内核代码或加载内核模块，动态可插拔。","XDP（eXpress Data Path）是 eBPF 在网络栈最早的挂载点（网卡驱动层，在 sk_buff 分配之前），实现最低延迟的包处理：DROP（直接丢包，DDoS 防护）/ TX（从同网卡发出）/ PASS（交给内核继续处理）/ REDIRECT（转发到其他网卡或用户态）。Cloudflare 用 XDP 实现 Gatebot DDoS 防护，单台服务器可处理 Mpps 级的攻击流量。"],"img_key":"ebpf","img_link":"https://en.wikipedia.org/wiki/EBPF","img_title":"eBPF"},{"h":"Spectre、Meltdown 与侧信道攻击","pts":["Meltdown（熔断，CVE-2017-5754）利用 CPU 的乱序执行：内核内存在用户态是不可访问的，但 CPU 的乱序执行会在权限检查完成之前就预测性地读取内核内存并放入缓存（虽然最终这条指令会被撤销）。攻击者通过 Flush+Reload 缓存侧信道技术，测量哪个缓存行被加载了，从而推断出内核内存的内容。修复是 KPTI（Kernel Page-Table Isolation）：用户态和内核态维护两套完全分离的页表，切换到内核态时 TLB 全部刷新，代价是系统调用性能下降 5-30%（视工作负载）。","Spectre（幽灵，CVE-2017-5753/5715）更难修复——它利用了分支预测器可以被「训练」的特性：攻击者精心构造输入，让 CPU 的分支预测器走向攻击者想要的分支，推测性地执行越界内存访问，留下缓存侧信道。Spectre 的根本原因是 CPU 的推测执行机制，而不是某个具体的实现错误，因此无法完全修复，只能针对具体变种打补丁（Retpoline/IBRS/IBPB 等）。云环境（多租户共享物理 CPU）对 Spectre 类攻击格外敏感，这是云厂商密集更新微码和内核的主要原因之一。","SGX（Software Guard Extensions）是 Intel 提供的机密计算技术：在 CPU 内划出一块称为 Enclave 的加密内存区域，即使操作系统/Hypervisor/物理攻击者也无法读取其中的数据和代码（Enclave 内存加密，密钥仅在 CPU 内部）。适合场景：密钥管理服务、远程认证、多方计算中需要保护的敏感数据处理。SGX 的代价：Enclave 内存（EPC）有限（早期 128MB，后续扩展），跨 Enclave 边界的函数调用（ECALL/OCALL）代价高，Enclave 内无法使用 OS 系统调用（需要特殊 SDK）。"],"img_key":"spectre","img_link":"https://en.wikipedia.org/wiki/Spectre_(security_vulnerability)","img_title":"Spectre & Meltdown"}],"res":[{"tp":"书籍","tc":"b-book","t":"BPF Performance Tools — Brendan Gregg","d":"eBPF 生产实践圣经","u":"https://www.brendangregg.com/bpf-performance-tools-book.html","lv":"adv","s":"brendangregg.com"},{"tp":"工具","tc":"b-tool","t":"bpftrace — eBPF 追踪工具","d":"高级 eBPF 前端，单行命令追踪内核/用户态","u":"https://github.com/iovisor/bpftrace","lv":"adv","s":"github.com"}]},{"id":"dist","phase":"分布式系统","title":"Raft 共识 · 一致性模型 · 分布式事务","color":"#b45309","bg":"#FFFBEB","intro":"分布式系统的核心问题是：在节点可能故障、网络可能分区的前提下，如何保证数据的一致性和系统的可用性。Raft/2PC/Saga 是这个问题的工程答案。","intro_lines":["▸ <strong>Raft 共识协议</strong> — Leader 选举，日志复制，安全性保证，和 Paxos 的对比","▸ <strong>一致性模型谱系</strong> — 线性一致性/顺序一致性/因果一致性/最终一致性的权衡","▸ <strong>分布式事务</strong> — 2PC 的阻塞问题，Saga 的补偿模式，微服务场景选型"],"notes":[{"h":"Raft 共识协议","pts":["Raft 是为「可理解性」设计的共识算法（相比 Paxos 难以理解的名声）。三个角色：Leader（处理所有写请求，向 Follower 复制日志）、Follower（被动接收 Leader 的 AppendEntries）、Candidate（选举过程中的临时状态）。正常情况下只有一个 Leader，所有写操作路由到 Leader，读操作可以在 Leader 或 Follower 上（视一致性要求）。","Leader 选举：每个节点有随机的选举超时（150-300ms），超时后自增 Term，转为 Candidate，给其他节点发 RequestVote。收到多数票（> N/2）成为 Leader，开始向其他节点发心跳（AppendEntries，空日志）重置它们的选举超时。日志复制：Leader 收到写请求后，先追加到本地日志（未提交），然后并行发给所有 Follower，等多数节点确认后，Leader 提交（Commit）并通知 Follower 提交，之后响应客户端。安全性保证：已提交的日志不会被覆盖（Leader 必须拥有所有已提交日志才能当选）。","Raft 的工程实现：etcd 是 Raft 最成功的工程实现，是 Kubernetes 的状态存储。Raft 的关键参数：选举超时（election timeout，太短导致频繁选举，太长导致故障恢复慢）、心跳间隔（heartbeat interval，通常是选举超时的 1/10）。实际部署通常用 5 节点（可容忍 2 个节点同时故障），3 节点是最小可用配置（可容忍 1 个故障）。"],"img_key":"raft","img_link":"https://raft.github.io/","img_title":"Raft Consensus"},{"h":"分布式一致性模型与分布式事务","pts":["一致性模型是「系统对并发读写操作的可见性保证」的规范。从强到弱：线性一致性（Linearizability）——每个操作看起来像在某个时间点原子发生，是分布式系统的最强保证，代价是高延迟（需要等待多数确认）；顺序一致性（Sequential Consistency）——所有进程看到相同的操作顺序，但不一定是实时的；因果一致性（Causal Consistency）——有因果关系的操作顺序一致，无因果关系的可以乱序；最终一致性（Eventual Consistency）——系统最终收敛，中间可能读到旧值（Cassandra/DynamoDB 默认）。","2PC（两阶段提交）是跨节点分布式事务的经典协议：第一阶段（Prepare），协调者向所有参与者发 Prepare，参与者锁定资源并回复 Yes/No；第二阶段（Commit/Abort），所有 Yes 则 Commit，任一 No 则 Abort。问题：协调者宕机会导致参与者无限等待（持有锁），这是 2PC 的根本缺陷——阻塞协议。3PC 试图解决这个问题但引入了网络分区时的不一致风险，工程上很少用。","Saga 是微服务架构下替代 2PC 的分布式事务模式：把一个分布式事务拆成一系列本地事务，每个本地事务成功后发布事件触发下一个，如果某步失败则触发补偿事务（Compensating Transaction）来回滚之前的步骤。Saga 是最终一致性的，中间状态可能对外可见（部分更新已发生，回滚还没完成）。两种实现：编排式（Orchestrator，一个中心协调者管理流程）和协同式（Choreography，各服务监听事件自行触发下一步）。"],"img_key":"consistency","img_link":"https://en.wikipedia.org/wiki/Consistency_model","img_title":"Consistency Models"}],"res":[{"tp":"论文","tc":"b-paper","t":"In Search of an Understandable Consensus Algorithm (Raft)","d":"Raft 原始论文，可读性极高","u":"https://raft.github.io/raft.pdf","lv":"mid","s":"raft.github.io"},{"tp":"书籍","tc":"b-book","t":"Designing Data-Intensive Applications — Kleppmann","d":"分布式系统/一致性/复制最好的工程向书籍","u":"https://dataintensive.net/","lv":"mid","s":"dataintensive.net"}]}];
+function dl(d){return d==='entry'?'入门':d==='mid'?'中级':'高级'}
+function dc(d){return d==='entry'?'de':d==='mid'?'dm':'da'}
+function render(){
+  const cont=document.getElementById('cont'),nav=document.getElementById('nav');
+  let tot=0,curP='';
+  D.forEach(s=>{
+    tot+=s.res.length;
+    if(s.phase!==curP){
+      curP=s.phase;
+      const lbl=document.createElement('div');lbl.className='nlbl';lbl.textContent=s.phase;nav.appendChild(lbl);
+    }
+    const a=document.createElement('a');a.className='nl';a.dataset.sec=s.id;a.onclick=()=>goto(s.id);
+    a.innerHTML=`<span class="ndot" style="background:${s.color}"></span>${s.title.split('·')[0].trim()}<span class="nc">${s.res.length}</span>`;
+    nav.appendChild(a);
+    const div=document.createElement('div');div.className='sec';div.id=s.id;
+    div.dataset.search=[s.title,s.intro,...s.notes.map(n=>n.h+' '+n.pts.join(' ')),...s.res.map(r=>r.t+' '+r.d)].join(' ').toLowerCase();
+    const tid=`t-${s.id}`;
+    let notesHTML=`<div class="notes-block">`;
+    s.notes.forEach((n,ni)=>{
+      const aid=`a-${s.id}-${ni}`;
+      const _diag=n.img_key?document.getElementById('diag_'+n.img_key):null;
+      const _svg=_diag?_diag.innerHTML:'';
+      const _link=n.img_key&&n.img_link?`<a class="diag-link" href="${n.img_link}" target="_blank" rel="noopener">↗ ${n.img_title||'参考资料'}</a>`:'';
+      const _img=_svg?`<figure class="note-fig">${_svg}${_link}</figure>`:(_link?`<p>${_link}</p>`:'')
+      
+      notesHTML+=`<div class="acc" id="nh-${s.id}-${ni}"><div class="acc-hdr" onclick="toggleAcc('${aid}',this)"><span class="acc-arrow">▶</span><span class="acc-htxt">${n.h}</span></div><div class="acc-body" id="${aid}">${_img}<div class="pts-wrap">${n.pts.map(p=>`<div class="pt">${p}</div>`).join('')}</div></div></div>`;
+    });
+    notesHTML+='</div>';
+    let resHTML=`<div class="res-block"><div class="res-section-label">🔗 学习资源</div><div class="grid">`;
+    s.res.forEach(r=>{
+      resHTML+=`<div class="card"><div class="ctop"><span class="badge ${r.tc}">${r.tp}</span><div class="ctit"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a></div></div><div class="cdesc">${r.d}</div><div class="cmeta"><span class="csrc">${r.s}</span><span class="cdiff ${dc(r.lv)}">${dl(r.lv)}</span></div><a class="curl" href="${r.u}" target="_blank" rel="noopener">${r.u.replace(/https?:\/\//,'').split('/')[0]}</a></div>`;
+    });
+    resHTML+='</div></div></div>';
+    div.innerHTML=`<div class="sch"><span class="sdot" style="background:${s.color}"></span><span class="stit">${s.title}</span></div><div class="intro-txt">${s.intro}${renderIntroLines(s.intro_lines)}</div>${notesHTML}${resHTML}`;
+    cont.appendChild(div);
+  });
+  document.getElementById('stag').textContent=`${D.length} 个版块 · ${tot} 个资源`;
+  const items=[['b-paper','论文'],['b-blog','博客/文章'],['b-video','视频'],['b-docs','文档'],['b-book','书籍'],['b-course','课程'],['b-github','GitHub'],['b-tool','工具'],['b-visual','可视化']];
+  const lg=document.getElementById('leg');
+  items.forEach(([cls,lbl])=>{const s=document.createElement('span');s.className=`badge ${cls}`;s.style.cssText='font-size:11px;padding:3px 7px;';s.textContent=lbl;lg.appendChild(s);});
+}
+function switchTab(tid,which,btn){
+  document.querySelectorAll(`#${tid}-notes,#${tid}-res`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${tid}-${which}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleAcc(id,hdr){
+  const body=document.getElementById(id),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);hdr.classList.toggle('open',!isOpen);
+}
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();let m=0;
+  document.querySelectorAll('.sec').forEach(sec=>{
+    if(!q){sec.classList.remove('hidden-sec');m++;return;}
+    const hit=(sec.dataset.search||'').includes(q);sec.classList.toggle('hidden-sec',!hit);if(hit)m++;
+  });
+  document.getElementById('nr').style.display=m===0&&q?'block':'none';
+  document.getElementById('stag').textContent=q?`找到 ${m} 个版块`:`${D.length} 个版块 · ${D.reduce((a,s)=>a+s.res.length,0)} 个资源`;
+});
+const obs={observe:()=>{}};
+function detectSection(){
+  const secs=[...document.querySelectorAll('.sec[id]')];
+  if(!secs.length)return;
+  const threshold=100;
+  let current=secs[0];
+  for(const s of secs){
+    const top=s.getBoundingClientRect().top;
+    if(top<=threshold)current=s;
+    else break;
+  }
+  const id=current.id;
+  document.querySelectorAll('.nl[data-sec]').forEach(l=>l.classList.toggle('active',l.dataset.sec===id));
+  updateGuide(id);
+}
+window.addEventListener('scroll',detectSection,{passive:true});
+window.addEventListener('scroll',()=>document.getElementById('btt').classList.toggle('show',scrollY>400));
+render();
+buildToc();setTimeout(detectSection,100);
+function renderIntroLines(lines){if(!lines||!lines.length)return'';return'<div class="intro-lines">'+lines.map(function(l){return'<div class="intro-line">'+l+'</div>';}).join('')+'</div>';}
+function buildToc(){
+  const rail=document.getElementById('toc-rail');
+  if(rail&&!document.getElementById('resize-handle')){
+    rail.innerHTML='<div class="resize-handle" id="resize-handle"></div><div class="guide-content" id="guide-content"></div>';
+    initResize();
+  }
+  updateGuide(D[0].id);
+}
+function updateGuide(id){
+  const rail=document.getElementById('guide-content')||document.getElementById('toc-rail');
+  if(!rail)return;
+  const s=D.find(x=>x.id===id);
+  if(!s)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const items=s.intro_lines&&s.intro_lines.length?s.intro_lines
+    :s.notes?s.notes.map(n=>n.h):[];
+  if(!items.length){rail.innerHTML='';return;}
+  let h='<span class="guide-head">本节要点</span>';
+  items.forEach((line,ni)=>{
+    const key='kb_'+fk+'_'+id+'_'+ni;
+    const done=localStorage.getItem(key)==='1';
+    h+=`<div class="guide-item${done?' done':''}" id="gi-${id}-${ni}">`;
+    h+=`<div class="guide-check" onclick="toggleDone('${fk}','${id}',${ni})">✓</div>`;
+    h+=`<div class="guide-text" onclick="gotoEl('nh-${id}-${ni}')">${line}</div>`;
+    h+='</div>';
+  });
+  rail.innerHTML=h;
+}
+function toggleDone(fk,sid,ni){
+  const key='kb_'+fk+'_'+sid+'_'+ni;
+  const done=localStorage.getItem(key)==='1';
+  done?localStorage.removeItem(key):localStorage.setItem(key,'1');
+  const el=document.getElementById('gi-'+sid+'-'+ni);
+  if(el)el.classList.toggle('done',!done);
+}
+function gotoEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function initResize(){
+  const handle=document.getElementById('resize-handle');
+  if(!handle)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const stored=localStorage.getItem('toc-w-'+fk);
+  if(stored)setTocWidth(parseInt(stored));
+  let sx,sw;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    sx=e.clientX;
+    sw=document.getElementById('toc-rail').getBoundingClientRect().width;
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',endDrag);
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    handle.classList.add('dragging');
+  });
+  function onDrag(e){
+    setTocWidth(Math.max(160,Math.min(640,sw+(sx-e.clientX))));
+  }
+  function endDrag(){
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',endDrag);
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    handle.classList.remove('dragging');
+    localStorage.setItem('toc-w-'+fk,
+      Math.round(document.getElementById('toc-rail').getBoundingClientRect().width));
+  }
+}
+function setTocWidth(w){
+  const lay=document.querySelector('.lay');
+  if(!lay)return;
+  const cols=window.getComputedStyle(lay).gridTemplateColumns.split(' ');
+  lay.style.setProperty('grid-template-columns',cols[0]+' 1fr '+w+'px','important');
+}
+</script>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style>
+<a class="home-btn" href="index.html">← 主页</a>
+</body>
+</html>

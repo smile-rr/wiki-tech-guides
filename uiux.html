@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UI/UX 设计实战指南 · Figma · Vibe Design · 移动端</title>
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f8fafc;--s:#fff;--s2:#f1f5f9;--s3:#e8f0fe;--bd:#e2e8f0;--bd2:#cbd5e1;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bl:#1d4ed8;--blbg:#eff6ff;--blbd:#bfdbfe;--sw:220px}
+html{font-size:14px;line-height:1.6;color:var(--tx)}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+.hdr{position:sticky;top:0;z-index:100;background:var(--s);border-bottom:1px solid var(--bd);padding:8px 16px;display:flex;align-items:center;gap:12px}
+.htit{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.hsub{font-size:10px;color:var(--tx3);font-weight:400}
+.srch{flex:1;max-width:380px;position:relative}
+.srch input{width:100%;padding:5px 11px 5px 28px;border:1px solid var(--bd2);border-radius:7px;font-size:12px;background:var(--s2);color:var(--tx);outline:none}
+.srch input:focus{border-color:#93c5fd;background:#fff}
+.si{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx3)}
+.stag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blbg);color:var(--bl);border:1px solid var(--blbd);white-space:nowrap}
+.lay{display:flex;min-height:calc(100vh - 41px)}
+.sb{width:var(--sw);flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;background:var(--s);border-right:1px solid var(--bd);padding:8px 0}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.nlbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;padding:7px 12px 2px;margin-top:4px}
+.nl{display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:11px;color:var(--tx2);cursor:pointer;transition:background .1s}
+.nl:hover{background:var(--s2);color:var(--tx)}
+.nl.active{background:var(--blbg);color:var(--bl)}
+.ndot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nc{margin-left:auto;font-size:9px;padding:1px 4px;background:var(--s2);border-radius:8px;color:var(--tx3)}
+.main{flex:1;padding:16px 22px 60px;overflow-x:hidden}
+.sec{margin-bottom:28px;scroll-margin-top:50px}
+.sch{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--bd)}
+.sdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stit{font-size:14px;font-weight:600}
+.intro-txt{font-size:12px;color:var(--tx3);margin-bottom:10px;padding:8px 12px;border-radius:6px;border-left:3px solid #93c5fd;background:var(--blbg);line-height:1.6}
+.tabs{display:flex;gap:3px;margin-bottom:10px}
+.tab-btn{padding:5px 14px;font-size:12px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);color:var(--tx2);cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--s);color:var(--tx);border-color:var(--bl);font-weight:500}
+.tab-btn:hover:not(.active){background:var(--s)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.acc{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:8px;transition:box-shadow .15s}
+.acc:hover{box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.acc-hdr{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--s2);cursor:pointer;user-select:none;transition:background .15s}
+.acc-hdr:hover{background:#e8edf2}
+.acc-arrow{font-size:9px;color:var(--tx3);transition:transform .2s;flex-shrink:0}
+.acc-hdr.open .acc-arrow{transform:rotate(90deg)}
+.acc-htxt{font-size:12.5px;font-weight:500;color:var(--tx)}
+.acc-body{display:none}
+.acc-body.open{display:block}
+.pts-wrap{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.pt{font-size:12.5px;color:var(--tx2);line-height:1.75;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-left:3px solid #cbd5e1;border-radius:0 7px 7px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--bd2);box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.card.hidden{display:none}
+.ctop{display:flex;align-items:flex-start;gap:6px}
+.badge{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;flex-shrink:0;white-space:nowrap;margin-top:1px;border:1px solid transparent}
+.ctit{font-size:12px;font-weight:500;color:var(--tx);line-height:1.4}
+.ctit a{color:inherit;text-decoration:none}
+.ctit a:hover{color:var(--bl);text-decoration:underline}
+.cdesc{font-size:11px;color:var(--tx2);line-height:1.4}
+.cmeta{display:flex;align-items:center;gap:6px;margin-top:1px}
+.csrc{font-size:10px;color:var(--tx3)}
+.cdiff{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.de{background:#f0fdf4;color:#15803d}.dm{background:#fffbeb;color:#b45309}.da{background:#fef2f2;color:#b91c1c}
+.curl{font-size:10px;color:#64748b;word-break:break-all;text-decoration:none}
+.curl:hover{color:var(--bl)}
+.b-paper{background:#f8fafc;color:#334155;border-color:#cbd5e1}
+.b-blog{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.b-video{background:#dbeafe;color:#1e40af;border-color:#bfdbfe}
+.b-docs{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe}
+.b-github{background:#f0fdf4;color:#14532d;border-color:#bbf7d0}
+.b-course{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+.b-book{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.b-tool{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}
+.b-visual{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.sec.hidden-sec{display:none}
+.nr{display:none;text-align:center;padding:40px;color:var(--tx3);font-size:13px}
+.btt{position:fixed;bottom:20px;right:20px;width:32px;height:32px;background:var(--bl);color:#fff;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:13px}
+.btt.show{opacity:1}.btt:hover{background:#1e3a8a}
+.leg{display:flex;flex-wrap:wrap;gap:4px;padding:14px 0 0;border-top:1px solid var(--bd);margin-top:4px}
+.res-block{margin-top:14px}.res-section-label{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding-top:12px;border-top:1px solid var(--bd)}/* ── READABILITY OVERRIDES ── */
+.acc-body{display:block!important}
+.acc{border:none!important;border-radius:0!important;box-shadow:none!important;margin-bottom:0!important}
+.acc+.acc{border-top:1px solid var(--bd)!important}
+.acc:hover{box-shadow:none!important}
+.acc-hdr{background:transparent!important;padding:16px 0 5px!important;cursor:default!important;gap:0!important}
+.acc-hdr:hover,.acc-hdr.open{background:transparent!important}
+.acc-arrow{display:none!important}
+.acc-htxt{font-size:13.5px!important;font-weight:600!important;color:var(--tx)!important;letter-spacing:-.01em}
+.pts-wrap{padding:4px 0 22px!important;gap:16px!important}
+.pt{font-size:13.5px!important;line-height:1.85!important;color:var(--tx2)!important;padding:0!important;background:transparent!important;border:none!important;border-radius:0!important}
+.pt:hover{border-left-color:transparent!important}
+.intro-txt{font-size:13px!important;line-height:1.72!important}
+.intro-txt{font-style:normal!important;color:var(--tx)!important;background:transparent!important;padding:2px 0 2px 14px!important;border-radius:0!important}.intro-lines{margin-top:11px;display:flex;flex-direction:column;gap:6px}.intro-line{font-size:13px;line-height:1.65;color:var(--tx2)}.intro-line strong{color:var(--tx);font-weight:600}
+/* ── THREE-COLUMN LAYOUT ── */
+.content-area{flex:1;display:flex;align-items:flex-start;min-width:0;gap:0}
+.main{flex:1;max-width:720px;min-width:0}
+.toc-rail{width:190px;flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;padding:14px 0 20px 14px;border-left:1px solid var(--bd);background:var(--s)}
+.toc-rail::-webkit-scrollbar{width:2px}.toc-rail::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.toc-head{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd);padding-right:14px}
+.toc-sec{display:block;font-size:11px;color:var(--tx3);text-decoration:none;padding:3px 0;line-height:1.4;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px;transition:color .12s}
+.toc-sec:hover{color:var(--tx2)}
+.toc-sec.active{color:var(--bl)!important;font-weight:600}
+.toc-notes{flex-direction:column;display:none}
+.toc-notes.open{display:flex}
+.toc-note{display:block;font-size:10.5px;color:var(--tx3);text-decoration:none;padding:2px 14px 2px 10px;line-height:1.4;cursor:pointer;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.toc-note:hover{color:var(--tx2)}
+.toc-note.active{color:var(--bl);border-left-color:var(--bl)}
+[id^="nh-"]{scroll-margin-top:60px}
+@media(max-width:1200px){.toc-rail{display:none}}
+/* ── GUIDE RAIL REDESIGN ── */
+.content-area{gap:40px!important}
+.toc-rail{background:transparent!important;border-left:none!important;padding:18px 0 20px 0!important}
+.guide-head{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin-bottom:14px}
+.guide-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:none}
+.guide-check{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s}
+.guide-check:hover{border-color:var(--bl)}
+.guide-item.done .guide-check{background:var(--bl);border-color:var(--bl);color:#fff}
+.guide-text{font-size:11.5px;color:var(--tx3);line-height:1.6;cursor:pointer;flex:1;transition:color .12s}
+.guide-text:hover{color:var(--tx2)}
+.guide-text strong{color:var(--tx2);font-weight:600}
+.guide-item.done .guide-text{opacity:.4;text-decoration:line-through;text-decoration-color:var(--bd2)}
+.guide-item.done .guide-text strong{color:inherit}
+/* ── RESPONSIVE 3-COLUMN GRID (overrides all previous layout rules) ── */
+.lay{display:grid!important;align-items:start!important;gap:0!important;
+     grid-template-columns:clamp(180px,16%,240px) 1fr clamp(220px,22%,320px)!important}
+.content-area{display:contents!important;flex:unset!important;gap:unset!important}
+.main{flex:unset!important;max-width:none!important;min-width:0!important;padding-right:36px!important}
+.toc-rail{width:unset!important;min-width:unset!important;flex-shrink:unset!important;
+          padding-left:22px!important;border-left:1px solid var(--bd)!important;
+          background:transparent!important}
+@media(max-width:1200px){
+  .toc-rail{display:none!important}
+  .lay{grid-template-columns:clamp(180px,16%,240px) 1fr!important}
+}
+/* ── RESIZE HANDLE ── */
+.toc-rail{position:relative!important}
+.resize-handle{position:absolute;left:-1px;top:0;bottom:0;width:8px;cursor:col-resize;
+  z-index:20;background:transparent;border-left:2px solid transparent;transition:border-color .15s,background .15s}
+.resize-handle:hover,.resize-handle.dragging{border-left-color:var(--bl);background:rgba(99,102,241,.07)}
+.guide-content{width:100%}
+
+/* === STICKY GUIDE FIX === */
+.toc-rail{
+  position:sticky!important;
+  top:41px!important;
+  height:calc(100vh - 41px)!important;
+  overflow-y:auto!important;
+  align-self:start!important;
+}
+.lay{align-items:start!important}
+
+.note-fig{margin:12px 0 16px;border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden;background:var(--s)}
+.note-fig svg{width:100%;height:auto;display:block;max-height:300px}
+.diag-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--accent,#2563eb);text-decoration:none;opacity:.8}
+.diag-link:hover{opacity:1;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htit">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    AI · LLM · 多模态 完整学习笔记
+    <span class="hsub">· 硬件 / 训练 / 推理 / 架构 / 对齐 / Agent / RAG / 多模态 / 生产工程 / Evals</span>
+  </div>
+  <div class="srch"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="搜索设计概念、工具、资源..."></div>
+  <span class="stag" id="stag">加载中…</span>
+</div>
+<div class="lay">
+<nav class="sb" id="sb"><div id="nav"></div></nav>
+<div class="content-area"><main class="main"><div id="cont"></div><div id="nr" class="nr">未找到匹配内容</div><div class="leg" id="leg"></div></main><nav class="toc-rail" id="toc-rail"></nav></div>
+</div>
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- DIAGRAM TEMPLATES -->
+<div id="diag_ux_vs_ui" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">UX vs UI：UX 是骨架，UI 是皮肤</text>
+<rect x="10" y="24" width="230" height="130" rx="7" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#4c1d95">UX（用户体验）</text>
+<text class="sm" x="125" y="58" text-anchor="middle" fill="#6d28d9">解决用户问题</text>
+<rect x="22" y="66" width="206" height="16" rx="3" fill="#a78bfa"/><text class="sm" x="125" y="78" text-anchor="middle" fill="white">用户研究 / 访谈 / 问卷</text>
+<rect x="22" y="86" width="206" height="16" rx="3" fill="#8b5cf6"/><text class="sm" x="125" y="98" text-anchor="middle" fill="white">信息架构 / 用户流程</text>
+<rect x="22" y="106" width="206" height="16" rx="3" fill="#7c3aed"/><text class="sm" x="125" y="118" text-anchor="middle" fill="white">线框图 / 原型 / 测试</text>
+<text class="sm" x="125" y="144" text-anchor="middle" fill="#7c3aed">关注：为什么 / 如何用</text>
+<rect x="280" y="24" width="230" height="130" rx="7" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#831843">UI（界面设计）</text>
+<text class="sm" x="395" y="58" text-anchor="middle" fill="#be185d">让界面好看好用</text>
+<rect x="292" y="66" width="206" height="16" rx="3" fill="#f9a8d4"/><text class="sm" x="395" y="78" text-anchor="middle" fill="#831843">颜色 / 字体 / 图标</text>
+<rect x="292" y="86" width="206" height="16" rx="3" fill="#f472b6"/><text class="sm" x="395" y="98" text-anchor="middle" fill="white">组件 / 布局 / 间距</text>
+<rect x="292" y="106" width="206" height="16" rx="3" fill="#ec4899"/><text class="sm" x="395" y="118" text-anchor="middle" fill="white">动画 / 交互反馈</text>
+<text class="sm" x="395" y="144" text-anchor="middle" fill="#be185d">关注：看起来 / 点起来</text>
+</svg></div>
+<div id="diag_design_thinking" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">设计思维五步法：先理解问题，再解决问题</text>
+<rect x="10" y="28" width="88" height="70" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="54" y="50" text-anchor="middle" fill="#1e40af">共情</text>
+<text class="sm" x="54" y="64" text-anchor="middle" fill="#3b82f6">Empathize</text>
+<text class="sm" x="54" y="78" text-anchor="middle" fill="#6b7280">用户访谈</text>
+<rect x="112" y="28" width="88" height="70" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="156" y="50" text-anchor="middle" fill="#4c1d95">定义</text>
+<text class="sm" x="156" y="64" text-anchor="middle" fill="#6d28d9">Define</text>
+<text class="sm" x="156" y="78" text-anchor="middle" fill="#6b7280">HMW 问题</text>
+<rect x="214" y="28" width="88" height="70" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="258" y="50" text-anchor="middle" fill="#78350f">发散</text>
+<text class="sm" x="258" y="64" text-anchor="middle" fill="#92400e">Ideate</text>
+<text class="sm" x="258" y="78" text-anchor="middle" fill="#6b7280">头脑风暴</text>
+<rect x="316" y="28" width="88" height="70" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="360" y="50" text-anchor="middle" fill="#14532d">原型</text>
+<text class="sm" x="360" y="64" text-anchor="middle" fill="#15803d">Prototype</text>
+<text class="sm" x="360" y="78" text-anchor="middle" fill="#6b7280">快速低保真</text>
+<rect x="418" y="28" width="88" height="70" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="462" y="50" text-anchor="middle" fill="#831843">测试</text>
+<text class="sm" x="462" y="64" text-anchor="middle" fill="#be185d">Test</text>
+<text class="sm" x="462" y="78" text-anchor="middle" fill="#6b7280">用户验证</text>
+<defs><marker id="dta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="98" y1="63" x2="112" y2="63" stroke="#374151" stroke-width="1.5" marker-end="url(#dta)"/>
+<line x1="200" y1="63" x2="214" y2="63" stroke="#374151" stroke-width="1.5" marker-end="url(#dta)"/>
+<line x1="302" y1="63" x2="316" y2="63" stroke="#374151" stroke-width="1.5" marker-end="url(#dta)"/>
+<line x1="404" y1="63" x2="418" y2="63" stroke="#374151" stroke-width="1.5" marker-end="url(#dta)"/>
+<path d="M462 98 Q462 130 260 130 Q58 130 54 98" fill="none" stroke="#374151" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#dta)"/>
+<text class="sm" x="260" y="148" text-anchor="middle" fill="#374151">迭代循环：测试后回到任意阶段重做</text>
+</svg></div>
+<div id="diag_gestalt" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Gestalt 原则：视觉感知的底层规律</text>
+<rect x="10" y="24" width="110" height="100" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="65" y="42" text-anchor="middle" fill="#374151">接近性</text>
+<circle cx="40" cy="70" r="8" fill="#3b82f6"/><circle cx="60" cy="70" r="8" fill="#3b82f6"/>
+<circle cx="85" cy="70" r="8" fill="#dc2626"/><circle cx="105" cy="70" r="8" fill="#dc2626"/>
+<text class="sm" x="65" y="110" text-anchor="middle" fill="#6b7280">靠近的=一组</text>
+<rect x="135" y="24" width="110" height="100" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="190" y="42" text-anchor="middle" fill="#374151">相似性</text>
+<circle cx="155" cy="68" r="8" fill="#3b82f6"/><rect x="172" y="60" width="16" height="16" rx="3" fill="#3b82f6"/>
+<circle cx="205" cy="68" r="8" fill="#3b82f6"/><rect x="222" y="60" width="16" height="16" rx="3" fill="#3b82f6"/>
+<text class="sm" x="190" y="110" text-anchor="middle" fill="#6b7280">相似的=一类</text>
+<rect x="260" y="24" width="110" height="100" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="315" y="42" text-anchor="middle" fill="#374151">连续性</text>
+<path d="M275 80 Q295 55 315 80 Q335 105 355 80" fill="none" stroke="#7c3aed" stroke-width="2"/>
+<text class="sm" x="315" y="110" text-anchor="middle" fill="#6b7280">沿线的=连续</text>
+<rect x="385" y="24" width="120" height="100" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="445" y="42" text-anchor="middle" fill="#374151">封闭性</text>
+<path d="M405 85 A30 30 0 1 1 485 85" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="6,4"/>
+<text class="sm" x="445" y="110" text-anchor="middle" fill="#6b7280">缺口≈完整形状</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="140" text-anchor="middle">应用：卡片=封闭性|图标+标签靠近=接近性|导航栏相似图标=相似性</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="156" text-anchor="middle">共同命运：同时运动的元素被视为一组（如下拉菜单展开时）</text>
+</svg></div>
+<div id="diag_cognitive_load" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">认知负荷：帮用户少思考</text>
+<rect x="10" y="24" width="150" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="85" y="42" text-anchor="middle" fill="#831843">增加认知负荷</text>
+<text class="sm" x="85" y="58" text-anchor="middle" fill="#be185d">选项过多（选择悖论）</text>
+<text class="sm" x="85" y="72" text-anchor="middle" fill="#be185d">术语/缩写/行话</text>
+<text class="sm" x="85" y="86" text-anchor="middle" fill="#be185d">视觉元素过密</text>
+<text class="sm" x="85" y="100" text-anchor="middle" fill="#be185d">不一致的交互模式</text>
+<text class="sm" x="85" y="114" text-anchor="middle" fill="#be185d">缺少反馈</text>
+<rect x="185" y="24" width="150" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#14532d">降低认知负荷</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#15803d">渐进式披露</text>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#15803d">默认值 + 智能预填</text>
+<text class="sm" x="260" y="86" text-anchor="middle" fill="#15803d">留白让眼睛休息</text>
+<text class="sm" x="260" y="100" text-anchor="middle" fill="#15803d">一致的交互模式</text>
+<text class="sm" x="260" y="114" text-anchor="middle" fill="#15803d">即时反馈</text>
+<rect x="360" y="24" width="150" height="120" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="435" y="42" text-anchor="middle" fill="#78350f">Hick's Law</text>
+<text class="sm" x="435" y="58" text-anchor="middle" fill="#92400e">决策时间 ∝ log(选项数)</text>
+<text class="sm" x="435" y="72" text-anchor="middle" fill="#92400e">选项 2→4：+26%时间</text>
+<text class="sm" x="435" y="86" text-anchor="middle" fill="#92400e">选项 2→8：+100%时间</text>
+<text class="sm" x="435" y="104" text-anchor="middle" fill="#6b7280">导航最多7±2项</text>
+<text class="sm" x="435" y="118" text-anchor="middle" fill="#6b7280">Miller's Law</text>
+</svg></div>
+<div id="diag_color_system" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">颜色系统：语义化色阶，不只是好看</text>
+<rect x="10" y="28" width="490" height="30" rx="5"/>
+<rect x="10" y="28" width="45" height="30" rx="4" fill="#eff6ff"/>
+<rect x="56" y="28" width="45" height="30" fill="#dbeafe"/>
+<rect x="102" y="28" width="45" height="30" fill="#93c5fd"/>
+<rect x="148" y="28" width="45" height="30" fill="#3b82f6"/>
+<rect x="194" y="28" width="45" height="30" fill="#2563eb"/>
+<rect x="240" y="28" width="45" height="30" fill="#1d4ed8"/>
+<rect x="286" y="28" width="45" height="30" fill="#1e40af"/>
+<rect x="332" y="28" width="45" height="30" fill="#1e3a8a"/>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#374151">50→100→200→300→400→500（主色）→600→700→800  色阶系统</text>
+<rect x="10" y="86" width="115" height="60" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="67" y="104" text-anchor="middle" fill="#1e40af">主色 Primary</text>
+<text class="sm" x="67" y="120" text-anchor="middle" fill="#3b82f6">品牌色·CTA按钮</text>
+<text class="sm" x="67" y="134" text-anchor="middle" fill="#6b7280">Tailwind blue-600</text>
+<rect x="140" y="86" width="115" height="60" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="t" x="197" y="104" text-anchor="middle" fill="#334155">中性色 Neutral</text>
+<text class="sm" x="197" y="120" text-anchor="middle" fill="#64748b">文字·背景·边框</text>
+<text class="sm" x="197" y="134" text-anchor="middle" fill="#6b7280">slate/gray/zinc</text>
+<rect x="270" y="86" width="115" height="60" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="327" y="104" text-anchor="middle" fill="#14532d">语义色</text>
+<text class="sm" x="327" y="120" text-anchor="middle" fill="#15803d">Success/Warning</text>
+<text class="sm" x="327" y="134" text-anchor="middle" fill="#15803d">Error/Info</text>
+<rect x="400" y="86" width="110" height="60" rx="6" fill="#fef3c7" stroke="#f59e0b"/>
+<text class="t" x="455" y="104" text-anchor="middle" fill="#92400e">对比度要求</text>
+<text class="sm" x="455" y="120" text-anchor="middle" fill="#92400e">AA: 4.5:1（正文）</text>
+<text class="sm" x="455" y="134" text-anchor="middle" fill="#92400e">AAA: 7:1（无障碍）</text>
+</svg></div>
+<div id="diag_grid_8pt" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">8pt 网格系统：所有间距都是 8 的倍数</text>
+<rect x="20" y="28" width="220" height="120" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="sm" x="130" y="46" text-anchor="middle" fill="#94a3b8">8px</text>
+<line x1="20" y1="50" x2="240" y2="50" stroke="#dbeafe" stroke-width="1"/>
+<text class="sm" x="130" y="66" text-anchor="middle" fill="#94a3b8">16px</text>
+<line x1="20" y1="70" x2="240" y2="70" stroke="#dbeafe" stroke-width="1"/>
+<text class="sm" x="130" y="86" text-anchor="middle" fill="#94a3b8">24px</text>
+<line x1="20" y1="90" x2="240" y2="90" stroke="#dbeafe" stroke-width="1"/>
+<text class="sm" x="130" y="106" text-anchor="middle" fill="#94a3b8">32px</text>
+<line x1="20" y1="110" x2="240" y2="110" stroke="#dbeafe" stroke-width="1"/>
+<text class="sm" x="130" y="126" text-anchor="middle" fill="#94a3b8">40px</text>
+<line x1="20" y1="130" x2="240" y2="130" stroke="#dbeafe" stroke-width="1"/>
+<rect x="280" y="28" width="230" height="120" rx="7" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="395" y="46" text-anchor="middle" fill="#4c1d95">间距词汇表</text>
+<rect x="292" y="54" width="50" height="8" rx="2" fill="#c4b5fd"/><text class="sm" x="370" y="62" fill="#6d28d9">4px = 极小间距</text>
+<rect x="292" y="72" width="50" height="8" rx="2" fill="#a78bfa"/><text class="sm" x="370" y="80" fill="#6d28d9">8px = 基本间距</text>
+<rect x="292" y="90" width="50" height="8" rx="2" fill="#8b5cf6"/><text class="sm" x="370" y="98" fill="#6d28d9">16px = 组内间距</text>
+<rect x="292" y="108" width="50" height="8" rx="2" fill="#7c3aed"/><text class="sm" x="370" y="116" fill="#4c1d95">24-32px = 组间距</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="158" text-anchor="middle">好处：任意两个元素的间距都是一致的倍数关系，设计和开发沟通无歧义</text>
+</svg></div>
+<div id="diag_visual_hierarchy" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">视觉层次：用大小/颜色/对比度引导视线</text>
+<rect x="10" y="24" width="245" height="130" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+<text style="font:700 22px sans-serif;fill:#111" x="132" y="62" text-anchor="middle">大标题 H1</text>
+<text style="font:600 15px sans-serif;fill:#374151" x="132" y="84" text-anchor="middle">次级标题 H2</text>
+<text style="font:400 11px sans-serif;fill:#6b7280" x="132" y="102" text-anchor="middle">正文内容，字号小，颜色浅</text>
+<text style="font:400 10px sans-serif;fill:#9ca3af" x="132" y="118" text-anchor="middle">辅助信息，最弱的视觉权重</text>
+<rect x="184" y="128" width="60" height="22" rx="4" fill="#3b82f6"/>
+<text style="font:600 11px sans-serif;fill:white" x="214" y="143" text-anchor="middle">主 CTA</text>
+<rect x="275" y="24" width="235" height="130" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="392" y="42" text-anchor="middle" fill="#78350f">五种权重工具</text>
+<text class="sm" x="392" y="58" text-anchor="middle" fill="#92400e">① 大小：最直接的权重差异</text>
+<text class="sm" x="392" y="74" text-anchor="middle" fill="#92400e">② 颜色：深→浅（#111 → #9ca3af）</text>
+<text class="sm" x="392" y="90" text-anchor="middle" fill="#92400e">③ 粗细：700 Bold → 400 Regular</text>
+<text class="sm" x="392" y="106" text-anchor="middle" fill="#92400e">④ 位置：左上最先被看到</text>
+<text class="sm" x="392" y="122" text-anchor="middle" fill="#92400e">⑤ 留白：被留白包围=重要</text>
+</svg></div>
+<div id="diag_thumb_zone" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">拇指区域：底部最易触达，顶部最难</text>
+<rect x="140" y="24" width="100" height="175" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<rect x="148" y="30" width="84" height="163" rx="8" fill="#fff" stroke="#e2e8f0"/>
+<rect x="148" y="30" width="84" height="55" rx="8" fill="#fce7f3" opacity="0.7"/>
+<rect x="148" y="85" width="84" height="50" fill="#fef9c3" opacity="0.7"/>
+<rect x="148" y="135" width="84" height="58" rx="0 0 8 8" fill="#dcfce7" opacity="0.8"/>
+<text class="sm" x="190" y="60" text-anchor="middle" fill="#be185d">难（顶部）</text>
+<text class="sm" x="190" y="115" text-anchor="middle" fill="#92400e">一般</text>
+<text class="sm" x="190" y="170" text-anchor="middle" fill="#14532d">最易（底部）</text>
+<rect x="10" y="50" width="120" height="30" rx="5" fill="#fce7f3" stroke="#db2777"/>
+<text class="sm" x="70" y="69" text-anchor="middle" fill="#831843">搜索框/筛选</text>
+<rect x="10" y="100" width="120" height="30" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="sm" x="70" y="119" text-anchor="middle" fill="#78350f">列表内容区</text>
+<rect x="10" y="150" width="120" height="30" rx="5" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="70" y="169" text-anchor="middle" fill="#14532d">底部导航/主操作</text>
+<rect x="390" y="50" width="120" height="30" rx="5" fill="#fce7f3" stroke="#db2777"/>
+<text class="sm" x="450" y="69" text-anchor="middle" fill="#831843">← 避免放CTA</text>
+<rect x="390" y="100" width="120" height="30" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="sm" x="450" y="119" text-anchor="middle" fill="#78350f">← 内容展示可</text>
+<rect x="390" y="150" width="120" height="30" rx="5" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="450" y="169" text-anchor="middle" fill="#14532d">← 主要操作区</text>
+</svg></div>
+<div id="diag_mobile_nav" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">移动端导航模式选型</text>
+<rect x="10" y="24" width="115" height="120" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="67" y="42" text-anchor="middle" fill="#1e40af">底部 Tab Bar</text>
+<text class="sm" x="67" y="58" text-anchor="middle" fill="#3b82f6">最常用 · iOS标准</text>
+<text class="sm" x="67" y="72" text-anchor="middle" fill="#3b82f6">3-5 个顶级入口</text>
+<text class="sm" x="67" y="88" text-anchor="middle" fill="#6b7280">✓ 拇指易触达</text>
+<text class="sm" x="67" y="102" text-anchor="middle" fill="#6b7280">✓ 入口始终可见</text>
+<text class="sm" x="67" y="116" text-anchor="middle" fill="#6b7280">✗ 占屏幕空间</text>
+<rect x="140" y="24" width="115" height="120" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="197" y="42" text-anchor="middle" fill="#14532d">汉堡菜单</text>
+<text class="sm" x="197" y="58" text-anchor="middle" fill="#15803d">☰ 隐藏式侧边</text>
+<text class="sm" x="197" y="72" text-anchor="middle" fill="#15803d">导航项很多时</text>
+<text class="sm" x="197" y="88" text-anchor="middle" fill="#6b7280">✓ 节省屏幕空间</text>
+<text class="sm" x="197" y="102" text-anchor="middle" fill="#6b7280">✗ 发现性差</text>
+<text class="sm" x="197" y="116" text-anchor="middle" fill="#6b7280">✗ 顶部难触达</text>
+<rect x="270" y="24" width="115" height="120" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="327" y="42" text-anchor="middle" fill="#78350f">顶部 Tab</text>
+<text class="sm" x="327" y="58" text-anchor="middle" fill="#92400e">Android Material</text>
+<text class="sm" x="327" y="72" text-anchor="middle" fill="#92400e">可滑动多 Tab</text>
+<text class="sm" x="327" y="88" text-anchor="middle" fill="#6b7280">✓ 内容分类清晰</text>
+<text class="sm" x="327" y="102" text-anchor="middle" fill="#6b7280">✗ 拇指难触达</text>
+<text class="sm" x="327" y="116" text-anchor="middle" fill="#6b7280">适合：内容型App</text>
+<rect x="400" y="24" width="110" height="120" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="455" y="42" text-anchor="middle" fill="#4c1d95">手势导航</text>
+<text class="sm" x="455" y="58" text-anchor="middle" fill="#6d28d9">左滑返回</text>
+<text class="sm" x="455" y="72" text-anchor="middle" fill="#6d28d9">上滑展开</text>
+<text class="sm" x="455" y="88" text-anchor="middle" fill="#6b7280">✓ 沉浸感强</text>
+<text class="sm" x="455" y="102" text-anchor="middle" fill="#6b7280">✗ 不可发现</text>
+<text class="sm" x="455" y="116" text-anchor="middle" fill="#6b7280">需配合视觉提示</text>
+</svg></div>
+<div id="diag_auto_layout" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Auto Layout：内容驱动，自动适应变化</text>
+<rect x="10" y="24" width="225" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="122" y="42" text-anchor="middle" fill="#831843">无 Auto Layout</text>
+<rect x="22" y="52" width="200" height="30" rx="5" fill="#fda4af"/>
+<text class="sm" x="122" y="71" text-anchor="middle" fill="#831843">固定宽度 200px</text>
+<text class="sm" x="122" y="90" text-anchor="middle" fill="#be185d">文字变长 → 需手动拖拽</text>
+<text class="sm" x="122" y="108" text-anchor="middle" fill="#be185d">添加元素 → 需手动重排</text>
+<text class="sm" x="122" y="130" text-anchor="middle" fill="#6b7280">不可维护</text>
+<rect x="285" y="24" width="225" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="397" y="42" text-anchor="middle" fill="#14532d">有 Auto Layout</text>
+<rect x="297" y="52" width="95" height="28" rx="5" fill="#86efac"/>
+<text class="sm" x="344" y="70" text-anchor="middle" fill="#14532d">短文本</text>
+<rect x="397" y="52" width="100" height="28" rx="5" fill="#4ade80"/>
+<text class="sm" x="447" y="70" text-anchor="middle" fill="#14532d">很长的文本也OK</text>
+<text class="sm" x="397" y="96" text-anchor="middle" fill="#15803d">内容变化 → 自动伸缩</text>
+<text class="sm" x="397" y="112" text-anchor="middle" fill="#15803d">添加元素 → 自动流动</text>
+<text class="sm" x="397" y="128" text-anchor="middle" fill="#6b7280">相当于 CSS flexbox</text>
+</svg></div>
+<div id="diag_components" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Components + Variants：一改全改</text>
+<rect x="10" y="26" width="90" height="36" rx="6" fill="#3b82f6"/>
+<text class="t" x="55" y="44" text-anchor="middle" fill="white">Main Component</text>
+<text class="sm" x="55" y="58" text-anchor="middle" fill="#bfdbfe">母版·定义样式</text>
+<defs><marker id="ca" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="100" y1="38" x2="130" y2="38" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ca)"/>
+<line x1="100" y1="50" x2="130" y2="85" stroke="#374151" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#ca)"/>
+<line x1="100" y1="50" x2="130" y2="120" stroke="#374151" stroke-width="1.2" stroke-dasharray="4,2" marker-end="url(#ca)"/>
+<rect x="130" y="26" width="80" height="26" rx="5" fill="#60a5fa"/>
+<text class="sm" x="170" y="43" text-anchor="middle" fill="white">Instance 1</text>
+<rect x="130" y="78" width="80" height="26" rx="5" fill="#60a5fa"/>
+<text class="sm" x="170" y="95" text-anchor="middle" fill="white">Instance 2</text>
+<rect x="130" y="113" width="80" height="26" rx="5" fill="#60a5fa"/>
+<text class="sm" x="170" y="130" text-anchor="middle" fill="white">Instance 3</text>
+<text class="sm" x="170" y="155" text-anchor="middle" fill="#3b82f6">母版改→全部更新</text>
+<rect x="280" y="24" width="230" height="130" rx="7" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#4c1d95">Variants（变体）</text>
+<rect x="292" y="52" width="80" height="26" rx="5" fill="#7c3aed"/><text class="sm" x="332" y="69" text-anchor="middle" fill="white">Primary</text>
+<rect x="382" y="52" width="116" height="26" rx="5" fill="#f1f5f9" stroke="#7c3aed"/><text class="sm" x="440" y="69" text-anchor="middle" fill="#7c3aed">Secondary</text>
+<rect x="292" y="90" width="80" height="26" rx="5" fill="#7c3aed" opacity="0.4"/><text class="sm" x="332" y="107" text-anchor="middle" fill="white">Disabled</text>
+<rect x="382" y="90" width="116" height="26" rx="5" fill="#7c3aed"/><text class="sm" x="440" y="107" text-anchor="middle" fill="white">Loading...</text>
+<text class="sm" x="395" y="140" text-anchor="middle" fill="#6d28d9">同一组件的不同状态/尺寸/样式</text>
+</svg></div>
+<div id="diag_design_tokens" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Design Tokens：设计与代码的共同词汇</text>
+<rect x="10" y="28" width="155" height="120" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="87" y="46" text-anchor="middle" fill="#1e40af">Figma Variables</text>
+<text style="font:10px monospace;fill:#1e40af" x="22" y="64">color/primary = #2563eb</text>
+<text style="font:10px monospace;fill:#1e40af" x="22" y="80">spacing/base = 8</text>
+<text style="font:10px monospace;fill:#1e40af" x="22" y="96">radius/md = 8px</text>
+<text style="font:10px monospace;fill:#1e40af" x="22" y="112">font/size/lg = 18</text>
+<defs><marker id="ta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="165" y1="88" x2="195" y2="88" stroke="#374151" stroke-width="2" marker-end="url(#ta)"/>
+<rect x="195" y="28" width="135" height="120" rx="7" fill="#7c3aed"/>
+<text class="t" x="262" y="46" text-anchor="middle" fill="white">Token JSON</text>
+<text style="font:10px monospace;fill:#ddd6fe" x="205" y="64">{</text>
+<text style="font:10px monospace;fill:#ddd6fe" x="205" y="80"> "color": {</text>
+<text style="font:10px monospace;fill:#c4b5fd" x="205" y="96">  "primary": {</text>
+<text style="font:10px monospace;fill:#c4b5fd" x="205" y="112">   "value": "#2563eb"</text>
+<text style="font:10px monospace;fill:#ddd6fe" x="205" y="128">}</text>
+<line x1="330" y1="88" x2="360" y2="88" stroke="#374151" stroke-width="2" marker-end="url(#ta)"/>
+<rect x="360" y="28" width="150" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="435" y="46" text-anchor="middle" fill="#14532d">CSS / JS / iOS</text>
+<text style="font:10px monospace;fill:#14532d" x="372" y="64">--color-primary:</text>
+<text style="font:10px monospace;fill:#14532d" x="372" y="80"> #2563eb;</text>
+<text style="font:10px monospace;fill:#15803d" x="372" y="96">const primary =</text>
+<text style="font:10px monospace;fill:#15803d" x="372" y="112"> "#2563eb"</text>
+<text class="sm" x="435" y="140" text-anchor="middle" fill="#15803d">多端同步</text>
+</svg></div>
+<div id="diag_atomic_design" style="display:none"><svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Atomic Design：从原子到页面的组件层级</text>
+<rect x="10" y="24" width="82" height="110" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="51" y="42" text-anchor="middle" fill="#4c1d95">Atoms</text>
+<circle cx="30" cy="65" r="8" fill="#7c3aed"/><text class="sm" x="50" y="68" fill="#6d28d9">按钮</text>
+<rect x="22" y="80" width="48" height="12" rx="3" fill="#a78bfa"/><text class="sm" x="46" y="100" fill="#6d28d9">输入框</text>
+<text class="sm" x="51" y="118" text-anchor="middle" fill="#6b7280">最小单元</text>
+<defs><marker id="aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="92" y1="78" x2="110" y2="78" stroke="#374151" stroke-width="1.5" marker-end="url(#aa)"/>
+<rect x="110" y="24" width="88" height="110" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="154" y="42" text-anchor="middle" fill="#1e40af">Molecules</text>
+<rect x="118" y="52" width="70" height="30" rx="4" fill="#bfdbfe"/>
+<text class="sm" x="153" y="71" text-anchor="middle" fill="#1e40af">搜索框组合</text>
+<text class="sm" x="153" y="118" text-anchor="middle" fill="#6b7280">原子的组合</text>
+<line x1="198" y1="78" x2="216" y2="78" stroke="#374151" stroke-width="1.5" marker-end="url(#aa)"/>
+<rect x="216" y="24" width="88" height="110" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#14532d">Organisms</text>
+<rect x="224" y="52" width="70" height="50" rx="4" fill="#bbf7d0"/>
+<text class="sm" x="259" y="82" text-anchor="middle" fill="#14532d">导航栏</text>
+<text class="sm" x="260" y="118" text-anchor="middle" fill="#6b7280">功能模块</text>
+<line x1="304" y1="78" x2="322" y2="78" stroke="#374151" stroke-width="1.5" marker-end="url(#aa)"/>
+<rect x="322" y="24" width="88" height="110" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="366" y="42" text-anchor="middle" fill="#78350f">Templates</text>
+<rect x="330" y="52" width="70" height="50" rx="4" fill="#fde68a"/>
+<text class="sm" x="365" y="82" text-anchor="middle" fill="#78350f">页面布局</text>
+<text class="sm" x="366" y="118" text-anchor="middle" fill="#6b7280">线框结构</text>
+<line x1="410" y1="78" x2="428" y2="78" stroke="#374151" stroke-width="1.5" marker-end="url(#aa)"/>
+<rect x="428" y="24" width="82" height="110" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="469" y="42" text-anchor="middle" fill="#831843">Pages</text>
+<rect x="436" y="52" width="66" height="50" rx="4" fill="#fda4af"/>
+<text class="sm" x="469" y="82" text-anchor="middle" fill="#831843">真实页面</text>
+<text class="sm" x="469" y="118" text-anchor="middle" fill="#6b7280">填入真内容</text>
+</svg></div>
+<!-- END DIAGRAM TEMPLATES -->
+<script>
+const D=[{"id":"fundamentals","phase":"基础认知","title":"UI/UX 基础认知 · 设计思维 · 心理学原理","color":"#7c3aed","bg":"#F5F3FF","intro":"UI 是界面外观，UX 是使用体验——这两个概念经常被混淆，但区分清楚是做好设计的前提。更重要的是理解用户心理：Gestalt 原则和认知负荷理论解释了为什么有些设计让人感觉「对」，有些让人感觉「乱」。","intro_lines":["▸ <strong>UX vs UI 的本质区别</strong> — UI 是视觉和交互元素，UX 是使用前/中/后的完整体验，两者如何协作","▸ <strong>设计思维流程</strong> — 发现→定义→发散→收敛→验证，每个阶段的目标和工具","▸ <strong>Gestalt 原则</strong> — 接近/相似/连续/封闭/图地关系，为什么这些原则决定了「感觉对不对」","▸ <strong>认知负荷</strong> — Miller's Law（7±2）、Hick's Law（选项越多决策越慢）在 UI 设计里的实际应用","▸ <strong>用户心智模型</strong> — 为什么用户「想不到」某个功能，如何设计符合预期的交互"],"notes":[{"h":"UX vs UI：两个角色，一个目标","pts":["UI（User Interface）设计关注的是屏幕上能看到和点到的东西：按钮、图标、颜色、字体、间距、布局。好的 UI 让界面美观、一致、清晰。UX（User Experience）设计关注的是更广的范围：用户为什么打开这个 App、在使用过程中遇到了什么障碍、完成任务后感受如何。好的 UX 让整个体验流畅、有价值、令人满意。一个界面可以视觉很美（好 UI）但用起来很挫败（差 UX）——比如很多金融 App，设计精美但流程复杂，用户找不到核心功能。","对于用 AI coding 工具构建产品的开发者来说，UI 是你能直接交付给 AI 的东西（Figma 设计稿、组件规格），UX 是你需要先想清楚的东西（用户流程、信息架构、核心任务路径）。AI 能生成代码和界面，但无法替代你对「用户真正需要什么」的判断。一个好的工作流是：先在纸上或白板上理清 UX（流程图/用户故事），再用 Figma 具体化成 UI，最后交给 AI coding 工具实现。","衡量 UX 质量的框架：Peter Morville 的用户体验蜂巢——有用性（满足用户需求）、可用性（容易使用）、可发现性（用户能找到内容）、可信赖性（用户相信产品）、可访问性（对所有人可用）、合意性（用户喜欢用）、价值性（产品值得做）。在设计任何功能前，先问：这个功能是「有用」的，还是只是「有趣」的？"],"img_key":"ux_vs_ui","img_link":"UX vs UI Design","img_title":"https://en.wikipedia.org/wiki/User_experience_design"},{"h":"设计思维：解决正确的问题","pts":["「设计思维」（Design Thinking）是斯坦福 d.school 推广的五步框架，解决的是「如何确保我们在解决真实问题」的方法论。五步：① Empathize（共情）——观察和访谈真实用户，理解他们的痛点，不是假设；② Define（定义）——把观察到的信息提炼成清晰的问题陈述，「用户需要一种方式……以便……」；③ Ideate（发散）——不加批判地产生尽可能多的解决方案；④ Prototype（原型）——快速构建低保真原型，测试假设；⑤ Test（测试）——用真实用户测试原型，回到起点迭代。","对于独立开发者，完整的设计思维流程可以压缩执行：Empathize 阶段变成「认真观察 3-5 个目标用户如何完成这个任务」（不需要大规模调研），Define 阶段变成「写一句话的问题陈述」，Ideate 变成「画 5 个不同的页面布局草图」，Prototype 变成「用 Figma 或 Bolt 快速生成一个可点击原型」，Test 变成「请一个不了解你产品的人用 5 分钟完成核心任务，观察他们卡在哪里」。","最常见的设计错误：跳过 Empathize 和 Define 直接进入 Prototype。结果是做出了一个精美的解决方案，但解决的是你想象中的问题，不是用户真实的问题。用 AI coding 工具特别容易陷入这个陷阱——生成代码太快，还没想清楚流程就已经在打磨界面了。"],"img_key":"design_thinking","img_link":"Design Thinking","img_title":"https://en.wikipedia.org/wiki/Design_thinking"},{"h":"Gestalt 原则：视觉感知的底层逻辑","pts":["Gestalt 心理学的核心洞察是「整体大于部分之和」——人眼看到的不是独立的像素，而是有意义的整体形式。六个核心原则对 UI 设计直接有用：① 接近性（Proximity）：位置相近的元素被认为是一组（同一个表单的标签和输入框要挨近，和下一个字段之间要有足够间距）；② 相似性（Similarity）：外观相似的元素被认为有相同功能（所有可点击的链接用同一颜色，所有主要按钮用同一样式）；③ 连续性（Continuity）：视线倾向于沿平滑路径移动（水平/垂直对齐的元素比随意摆放的更容易阅读）；④ 封闭性（Closure）：大脑会补全不完整的形状（骨架屏 Skeleton Loading 利用了这个原则）。","图地关系（Figure-Ground）是最基本但最常被忽视的 Gestalt 原则：用户的注意力总是聚焦在「前景」（Figure），其他一切都变成「背景」（Ground）。好的 UI 设计要明确哪个是当前页面的主角——主要 CTA 按钮应该是视觉上最突出的元素，其他一切都退到背景。当一个页面上有太多「前景」（多个高对比度的 CTA、多个不同颜色的卡片、多个粗体标题）时，用户的注意力会分散，什么都强调等于什么都没强调。","实际运用的三个检查方法：① 模糊测试（Squint Test）——眯眼看设计稿，能立刻看清的内容就是视觉层级最高的；② 5 秒测试——给一个没见过你设计的人看 5 秒，然后问他页面是做什么的、主要行动是什么；③ 灰度测试——把设计稿转成灰度，如果层级和结构仍然清晰，说明设计不依赖颜色来传达信息，可访问性更好。"],"img_key":"gestalt","img_link":"Gestalt Psychology","img_title":"https://en.wikipedia.org/wiki/Gestalt_psychology"},{"h":"认知负荷：帮用户少思考","pts":["认知负荷（Cognitive Load）是指用户在完成一个任务时需要消耗的脑力资源。认知负荷越高，出错率越高，放弃率越高。三种类型：内在负荷（任务本身的复杂度，设计无法改变）、外在负荷（设计引入的不必要复杂度，设计应该最小化）、相关负荷（帮助用户理解和记忆的有效信息，设计应该优化）。","Miller's Law：人的工作记忆一次能保持 7±2 个信息块。实际应用：导航栏不要超过 5 个一级菜单（超过就用 More 收纳）；表单字段分步骤而不是一次全展示；一个页面聚焦一个主要决策，不要让用户同时做多个不相关的选择。Hick's Law：决策时间随选项数量的对数增长。实际应用：结账流程的支付方式只展示最常用的 3-4 种（其他用「更多选项」收起）；首页的导航精简到核心任务，而不是把所有功能都平铺出来。","减少认知负荷的六个具体方法：① 渐进式呈现（Progressive Disclosure）——只在需要时展示信息，不把所有内容堆到一个屏幕；② 识别而非回忆（Recognition over Recall）——用图标+文字标签而不是只有图标（让用户「认出」而不是「想起来」）；③ 默认值（Good Defaults）——预填常用选项，用户只需要修改不符合的；④ 即时反馈——操作后立刻给反馈（Loading 状态、成功提示、错误信息）；⑤ 防错而非容错——设计让错误很难发生，而不是出错后再纠正；⑥ 一致性——相同功能永远用相同的视觉语言和交互模式。"],"img_key":"cognitive_load","img_link":"Cognitive Load","img_title":"https://en.wikipedia.org/wiki/Cognitive_load"}],"res":[{"tp":"书籍","tc":"b-book","t":"Don't Make Me Think — Steve Krug","d":"最易读的 UX 入门书，一天读完，核心思想终身受用","u":"https://www.amazon.com/Dont-Make-Think-Revisited-Usability/dp/0321965515","lv":"entry","s":"amazon.com"},{"tp":"书籍","tc":"b-book","t":"The Design of Everyday Things — Don Norman","d":"设计心理学经典，可供性/反馈/约束/映射的理论基础","u":"https://www.amazon.com/Design-Everyday-Things-Revised-Expanded/dp/0465050654","lv":"entry","s":"amazon.com"},{"tp":"网站","tc":"b-docs","t":"Laws of UX","d":"18 个 UX 心理学原则，每个都有案例图示，设计决策的理论依据","u":"https://lawsofux.com/","lv":"entry","s":"lawsofux.com"},{"tp":"网站","tc":"b-docs","t":"Nielsen Norman Group Articles","d":"全球最权威的 UX 研究机构，大量免费的实证研究和设计原则","u":"https://www.nngroup.com/articles/","lv":"mid","s":"nngroup.com"}]},{"id":"visual","phase":"视觉设计","title":"视觉设计基础 · 排版 · 颜色 · 间距系统","color":"#dc2626","bg":"#FEF2F2","intro":"视觉设计不是「让它看起来好看」，而是用视觉手段建立清晰的信息层级、引导用户注意力、传递品牌信任感。这是工程师最容易忽视但影响最大的设计层面。","intro_lines":["▸ <strong>排版系统</strong> — 字体层级、行高、字重的判断逻辑，为什么好的排版让阅读「不费力」","▸ <strong>颜色系统</strong> — 主色/辅色/中性色/语义色的架构，对比度 WCAG 标准的实际要求","▸ <strong>8pt 网格系统</strong> — 间距统一的数学基础，为什么 4/8/16/24/32/48 是神奇的数字","▸ <strong>视觉层次与重量</strong> — 如何控制用户的视线路径，什么时候该加重，什么时候该减轻"],"notes":[{"h":"排版系统：让文字清晰可读","pts":["字体层级是排版系统的核心：一个成熟的产品通常定义 5-6 个文字样式（Display/H1/H2/Body/Caption/Label），每个层级有固定的字号、字重、行高和字间距，不随意混用。在 Figma 里用 Text Styles 定义这些层级，可以保证整个产品的文字一致性，也让 AI coding 工具更容易识别意图。","行高（Line Height）是最常被忽视的排版参数。一般规律：正文行高应该是字号的 1.5-1.65 倍（16px 字体，行高 24-26px）；标题行高可以更紧凑（1.1-1.3 倍）；太大的行高（>1.8 倍）让文字失去整体感，太小的行高（<1.2 倍）让段落难以阅读。对比度要求：中文正文在白底上推荐至少 16px 字体，小于 14px 在移动端几乎无法舒适阅读。","字重（Font Weight）的层级使用：Thin/Light 适合大标题的装饰性用法；Regular（400）是正文默认；Medium（500）用于小标签或次级标题；SemiBold（600）是 UI 里最万能的强调字重（比 Bold 更精致）；Bold（700）用于重要标题；Black/ExtraBold（800-900）只在特殊展示场景使用。对于工程师来说，选一个有 5 种以上字重的字体系统（如 SF Pro/Roboto/Noto Sans），避免用字体填充排版问题。"],"img_key":"typography","img_link":"Typography","img_title":"https://en.wikipedia.org/wiki/Typography"},{"h":"颜色系统：不只是好看","pts":["现代 UI 颜色系统的架构：主色（Brand Color，1-2 个，用于主要 CTA 和品牌标识）、辅色/强调色（Accent，用于高亮和次级强调）、中性色（Neutral，灰色系，用于背景/边框/文字，通常需要 10-12 个深浅级别）、语义色（Semantic：Success 绿/Warning 黄/Error 红/Info 蓝，含义固定，不能混用）。这套体系用 Figma Variables 定义后，深色模式切换只需改变变量值，所有组件自动更新。","对比度是无障碍设计（Accessibility）的硬性要求。WCAG 2.1 标准：AA 级别（大多数产品应该达到的最低要求）要求正文文字对比度 ≥ 4.5:1，大文字（≥18px 或粗体≥14px）对比度 ≥ 3:1；AAA 级别要求正文 ≥ 7:1。实际操作：在 Figma 里安装 Contrast 或 A11y Accessibility Checker 插件，设计时实时检查，不要凭「感觉够亮」判断。特别注意：灰色文字在白色背景上很容易不达标（#999 在#fff 上只有 2.85:1，远低于 AA 要求）。","颜色的功能性用法优先于装饰性用法：颜色应该首先用来传达信息（这是错误状态 → 用红色，这是成功 → 用绿色，这是可以点击的 → 用主色），其次才是美化。避免「设计陷阱」：不要用颜色作为唯一的信息载体（部分用户是色盲），总是配合图标或文字标签。颜色的数量原则：一个屏幕上活跃的颜色不超过 3 种（不算黑白灰），超过就会显得「乱」。"],"img_key":"color_system","img_link":"Color Theory","img_title":"https://en.wikipedia.org/wiki/Color_theory"},{"h":"8pt 网格系统：间距的统一语言","pts":["8pt 网格系统是 Google Material Design 推广的间距规范：所有间距和尺寸都是 8 的倍数（4/8/16/24/32/48/64px）。原因是 8 能被 2 整除（方便 1.5x/2x 屏幕适配），同时 8pt 在视觉上是人眼能感知到「不同」的最小间距单位（4pt 在移动端太微妙，12pt 是奇数不好计算）。在 Figma 里设置 8pt 的 Grid 和 Spacing Scale，可以让所有间距决策有据可查，而不是凭感觉随意填数字。","内边距（Padding）和外边距（Margin/Gap）的通用规律：组件内部的内容与边框的间距通常是 12-16px（小组件）或 16-24px（大组件）；组件之间的间距（卡片之间、列表项之间）通常是 8-16px；页面区块之间的间距通常是 32-64px；移动端页面左右的边距通常是 16-20px（iPhone 标准是 16pt，需要考虑安全区域）。记住这些数字，在设计时从这些选项里选，而不是随意输入「15px」或「22px」这样的奇数。","白空间（White Space/Negative Space）是排版的重要组成部分，不是「空着没用」。足够的白空间让内容「呼吸」，减少视觉压力，引导注意力到重要元素。常见错误：把所有内容都「堆满」屏幕，每个元素都紧贴在一起，结果信息密度虽然高，但用户什么都看不进去。检验方法：如果移除一个元素页面会「松」很多，那这个元素可能需要更多白空间；如果移除后几乎没有变化，那这个元素可能本来就不需要。"],"img_key":"grid_8pt","img_link":"Grid System","img_title":"https://en.wikipedia.org/wiki/Grid_(graphic_design)"},{"h":"视觉层次：控制用户的视线","pts":["视觉层次是指用视觉手段（大小/颜色/对比度/位置/间距）让某些内容比其他内容更显眼，引导用户的注意力按照你预期的顺序移动。通常的优先级：① 最重要的内容（核心 CTA、标题、关键数据）要在视觉上最突出；② 次要内容（描述、辅助信息）要在视觉上退后；③ 系统信息（导航、底部 TabBar）是「基础设施」，要存在但不抢焦点。","F 型和 Z 型扫描模式：研究显示，用户阅读网页时通常先水平扫描顶部，然后垂直扫描左侧，形成 F 型扫描路径。对于移动端，因为内容通常是单列的，更接近 Z 型（眼睛在行尾跳到下一行开头）。实际应用：把最重要的内容放在 F 型路径的热区（顶部水平条和左侧垂直条），不要把核心信息埋在右下角。","对比度的层次控制：除了颜色，还有几种建立视觉层次的方法——大小对比（32px 的标题 vs 14px 的注释）、字重对比（SemiBold 标题 vs Regular 正文）、颜色对比（深色主文字 vs 浅灰副文字）、实虚对比（实心主按钮 vs 描边次级按钮）。一个设计稿里如果所有文字都是同样的颜色和大小，视觉层次就会完全消失，用户不知道该先看哪里。"],"img_key":"visual_hierarchy","img_link":"Visual Hierarchy","img_title":"https://en.wikipedia.org/wiki/Visual_hierarchy"}],"res":[{"tp":"网站","tc":"b-docs","t":"Refactoring UI — Adam Wathan & Steve Schoger","d":"从代码到设计的实战指南，专门为开发者写的，有大量 before/after","u":"https://www.refactoringui.com/","lv":"entry","s":"refactoringui.com"},{"tp":"网站","tc":"b-docs","t":"Untitled UI — 免费 UI Kit","d":"世界最大的 Figma UI Kit，颜色/排版/组件系统完整，直接参考","u":"https://www.untitledui.com/free-ui-kit","lv":"entry","s":"untitledui.com"},{"tp":"工具","tc":"b-tool","t":"Contrast — Figma 插件","d":"设计时实时检查 WCAG 对比度，避免无障碍问题","u":"https://www.figma.com/community/plugin/748533339900865323/contrast","lv":"entry","s":"figma.com"},{"tp":"文档","tc":"b-docs","t":"Material Design Color System","d":"Google 颜色系统完整规范，Token 架构和暗色模式处理","u":"https://m3.material.io/styles/color/system/overview","lv":"mid","s":"material.io"}]},{"id":"mobile","phase":"移动端设计","title":"移动端设计核心 · iOS vs Android · 拇指区域","color":"#0891b2","bg":"#ECFEFF","intro":"移动端设计和 Web 设计是两个不同的物种。屏幕小、手指粗、网络不稳定、使用场景碎片化——这四个约束决定了移动端设计的所有规则。先理解约束，再谈风格。","intro_lines":["▸ <strong>移动端 vs Web 的本质差异</strong> — 不是缩小版的网页，是完全不同的信息架构和交互模式","▸ <strong>iOS vs Android 设计规范</strong> — Human Interface Guidelines vs Material Design 3 的真实差异","▸ <strong>拇指区域</strong> — 为什么主操作必须在屏幕下半部分，热区分布图的实际应用","▸ <strong>移动端导航模式</strong> — TabBar/NavigationBar/Bottom Sheet/Modal 的使用场景","▸ <strong>触控目标与手势</strong> — 最小点击区域、手势冲突、平台特有手势的设计考量"],"notes":[{"h":"移动端 vs Web：从根本上不同","pts":["移动端设计不是「把网页缩小」，而是从零开始的不同设计语言。主要差异：① 信息密度——手机屏幕一次只能显示有限内容，必须选择最重要的信息，其他通过导航访问；② 交互方式——鼠标是精确点击，手指是模糊触摸，可点击元素必须足够大；③ 使用场景——移动端用户通常是「碎片化使用」，单次使用时间短、专注度低、容易被打断，流程要尽可能短和明确；④ 网络环境——3G/4G 弱网很常见，需要离线优先设计、骨架屏、乐观更新；⑤ 输入成本——手机键盘输入比桌面键盘慢 3-5 倍，要最大程度减少用户需要输入的文字。","移动优先（Mobile First）设计原则：先设计移动端版本，再扩展到桌面端。好处是强制你优先考虑核心功能（手机屏幕容不下「所有功能」）。反过来从桌面端「缩小」到移动端通常会失败，因为你会试图把桌面端的所有内容都塞进手机屏幕。在实践中：先在 Figma 里设计 375pt 宽度的 iPhone 版本，把核心任务流打通，再考虑 iPad 和 Web 版的扩展。","单手操作是移动端设计的隐性约束：研究显示，约 67% 的移动端用户在使用 App 时是单手持机的（另一只手提东西、抱孩子、拉地铁扶手）。这意味着主要的交互区域应该在拇指能舒适触达的范围内，通常是屏幕的下半部分。底部导航栏（Bottom TabBar）比顶部导航栏（Top Navigation）更符合单手操作习惯，这也是为什么 iOS 从 iOS 7 开始就推荐底部 TabBar 而不是侧边 Drawer。"]},{"h":"iOS vs Android：两套规范的真实差异","pts":["Apple Human Interface Guidelines（HIG）核心理念是「清晰、敬畏和深度」：界面应该让内容成为主角，系统 UI 退到幕后；使用层叠和透明度（Translucency）营造深度感；动效应该有物理世界的感觉（回弹、摩擦）。关键 iOS 特有 UI 组件：Navigation Bar（顶部，含返回按钮+标题+右侧操作）、Tab Bar（底部，5 个以内的主导航）、Action Sheet（从底部滑出的操作菜单）、SF Symbols（苹果系统图标库，统一风格）、Large Title（iOS 11+ 的大标题折叠效果）。","Google Material Design 3（Material You）核心理念是「动态色彩和个性化」：颜色可以根据用户壁纸动态适应；强调「表面」（Surfaces）和「高程」（Elevation）的概念；FAB（Floating Action Button）是 Android 特有的主要操作入口。关键 Android 特有：Bottom App Bar（底部操作栏）、Navigation Drawer（侧边抽屉，适合多层级导航）、Snackbar（底部短暂提示，比 iOS 的 Toast 有更多操作性）、系统返回手势（从屏幕左右两侧边缘向中间滑）。","设计「跨平台 App」时的取舍：如果只有一套设计，建议以 iOS HIG 为基础（iOS 用户对设计质量更敏感，Android 对 iOS 风格接受度更高，反之则不然）；关键差异必须处理：Android 没有左上角的返回按钮（依赖系统手势），所以关闭/返回的操作必须在界面里有明确入口；iOS 的弹窗按钮排列是「取消在左/确认在右」，Android 是「取消在左/确认在右」（反了！）——这个细节如果做错会让特定平台用户感觉不舒服。"]},{"h":"拇指区域与触控目标","pts":["拇指热区（Thumb Zone）是 Scott Hurff 在 2015 年提出的概念，基于 Steven Hoober 对真实用户如何握持手机的研究。在标准单手握持下：屏幕上方 1/3 是「艰难区」（拇指需要大幅伸展才能到达）；屏幕中间 1/3 是「舒适区」；屏幕下方 1/3 是「自然区」（拇指的自然落点）。实际应用：最重要的主操作（Submit/继续/购买）放在屏幕下半部分；删除/危险操作放在上方（增加操作难度 = 减少误操作）；底部 Tab Bar 是最易触达的导航方式。","触控目标尺寸的平台规范：Apple HIG 推荐最小 44×44 pt（约 66px @2x）；Google Material Design 推荐最小 48×48 dp；MIT 触摸屏研究建议最小 9.6mm（约 40pt @标准 iOS DPI）。实际操作：即使图标视觉上是 24px，也要给它一个 44×44px 的点击响应区域（可以是透明的 padding）；列表项的点击区域应该覆盖整行而不只是文字；相邻可点击元素之间至少要有 8pt 的间距（防止误点）。","移动端常用手势的冲突处理：iOS 从屏幕左边缘向右滑是「返回」手势（系统级），你的 App 里如果有横向滑动的卡片或抽屉，必须测试这两个手势的优先级。Android 从左右两侧边缘向中间滑是「返回」手势，如果你的 App 有侧边 Drawer，需要明确优先级（通常侧边 Drawer 在非 root 页面时手势返回优先于 Drawer）。下拉刷新（Pull-to-refresh）已经是通用约定，但要确保触发阈值合适（太灵敏会意外触发，太迟钝会让用户觉得没反应）。"],"img_key":"thumb_zone","img_link":"Mobile UX","img_title":"https://www.nngroup.com/articles/mobile-touchscreen-design/"},{"h":"移动端导航模式","pts":["Bottom Tab Bar（底部标签栏）：iOS 和 Android 最常用的主导航，最多 5 个标签（超过 5 个要用 More），每个标签对应 App 的一个主要功能区域。适合：功能扁平的 App（Instagram/微信/支付宝）。图标+文字标签的组合比纯图标更易识别（尤其对于不熟悉 App 的新用户）。当前激活的标签用高亮颜色区分。","Navigation Stack（导航堆栈）：页面 A → 点击进入页面 B → 点击进入页面 C，形成层级，通过返回逐层退回。适合：有层级关系的内容（列表→详情→子详情）。在 Figma 原型里用 Push 过渡动画模拟这个效果。关键设计要点：层级不要超过 3 层（过深会让用户迷失），每一层的标题要清晰表明「我在哪里」，提供面包屑或明显的返回路径。","Bottom Sheet 和 Modal：Bottom Sheet（从底部滑出的面板）用于临时的操作或信息展示，不打断当前上下文（用户仍然能看到背后的页面）；Modal（全屏弹出的页面）用于需要用户完整关注的独立任务。选择标准：如果操作是「在当前内容的基础上做一个补充」用 Bottom Sheet；如果操作是「需要用户完整完成一个独立流程」用 Modal。错误用法：把一个很复杂的多步骤表单放在 Bottom Sheet 里（应该用全屏 Modal 或独立页面）。"],"img_key":"mobile_nav","img_link":"Mobile Navigation","img_title":"https://en.wikipedia.org/wiki/Navigation_bar"}],"res":[{"tp":"文档","tc":"b-docs","t":"Apple Human Interface Guidelines","d":"iOS/macOS 设计规范权威文档，组件用法/导航模式/交互规范","u":"https://developer.apple.com/design/human-interface-guidelines/","lv":"entry","s":"apple.com"},{"tp":"文档","tc":"b-docs","t":"Material Design 3 Guidelines","d":"Android/跨平台设计规范，颜色系统/组件/Motion 完整","u":"https://m3.material.io/","lv":"entry","s":"material.io"},{"tp":"网站","tc":"b-docs","t":"Mobbin — 真实 App 截图库","d":"数万张真实 iOS/Android App 截图，按屏幕类型分类，最好的设计参考","u":"https://mobbin.com/","lv":"entry","s":"mobbin.com"},{"tp":"书籍","tc":"b-book","t":"Making It Right: Product Management — Rian van der Merwe","d":"产品设计决策框架，移动端产品设计与用户体验","u":"https://www.amazon.com/Making-Right-Product-Management-Lean/dp/0990632601","lv":"mid","s":"amazon.com"}]},{"id":"figma_core","phase":"Figma 工具","title":"Figma 核心工具 · Auto Layout · 组件系统","color":"#059669","bg":"#ECFDF5","intro":"Figma 是目前设计行业的事实标准工具。掌握 Auto Layout 和 Components 是门槛，没有这两个技能就做不出真正可复用、可维护的设计稿，AI coding 工具也读不懂你的意图。","intro_lines":["▸ <strong>Frame vs Group</strong> — 这个区别决定了你的设计稿是否可以响应式","▸ <strong>Auto Layout</strong> — 响应式组件的基础，模拟 CSS Flexbox 的设计工具","▸ <strong>Components + Variants</strong> — 建立可复用 UI 单元，一改全改","▸ <strong>Constraints</strong> — 元素如何随 Frame 大小变化，Pin 的正确用法","▸ <strong>样式系统</strong> — Color/Text/Effect Styles 的组织方式"],"notes":[{"h":"Frame vs Group：最基础也最关键的区别","pts":["Frame（框架）是 Figma 里最重要的容器概念，相当于 HTML 的 `<div>` 或 CSS 的块级元素。Frame 有固定的宽高、可以设置 Clip Content（裁切溢出内容）、可以使用 Auto Layout、可以设置 Constraints。Group（组）只是视觉上把多个元素归为一组，没有自己的宽高约束，缩放时是整体比例缩放。一个判断法则：如果这个容器需要响应尺寸变化（按钮宽度随文字变化、卡片高度随内容变化），用 Frame + Auto Layout；如果只是临时打组方便移动，用 Group。","Frame 的嵌套是 Figma 设计的基本结构：页面 Frame（代表手机屏幕）→ 区块 Frame（代表页面的逻辑区域，如 Header/Content/Footer）→ 组件 Frame（如 Button/Card/Input）→ 元素（Text/Icon/Image）。这个嵌套结构直接对应 React/SwiftUI 里的组件树结构，AI coding 工具能更准确地理解你的设计意图。不要把所有元素都平铺在页面 Frame 里而不分层——这会让设计稿既难维护，又让 AI 难以理解结构。","Clip Content 是 Frame 的一个重要属性：开启后，超出 Frame 边界的内容会被裁切（类似 CSS overflow: hidden）。这在设计圆角卡片里的图片、卡片上的 Badge 等超出边界的元素时非常有用。使用场景：任何需要「圆角裁切」的图片容器、需要隐藏溢出内容的 Scroll Container、设计「超出边界」的交互效果（比如通知 Badge 的一半在卡片外）。"]},{"h":"Auto Layout：响应式设计的核心","pts":["Auto Layout 是 Figma 里模拟 CSS Flexbox 的功能：给 Frame 开启 Auto Layout 后，里面的元素会按照你设定的方向（水平/垂直）和间距自动排列，当内容变化时 Frame 会自动调整大小。这是做「真正可用」设计稿的必备技能——如果你的按钮不是 Auto Layout 的，换个文字长度就会撑破布局，AI coding 工具也无法准确映射到代码。","Auto Layout 的关键属性：Direction（水平/垂直排列）、Gap（元素之间的间距）、Padding（Frame 内容与边缘的距离，分上下左右）、Alignment（子元素的对齐方式）、Resizing（Fixed 固定宽度 / Hug 收缩包裹内容 / Fill 撑满父容器）。最常用的设计模式：按钮用水平 Auto Layout + 水平 Padding（文字变长时按钮自动变宽）；卡片用垂直 Auto Layout + 内边距（内容增多时卡片自动变高）；导航栏用水平 Auto Layout + 两端对齐（左右元素自动到边，中间内容居中）。","Auto Layout 5.0（Figma 2024 更新）新增 Wrap 功能：当水平方向的内容超出容器宽度时，可以自动换行（类似 CSS flex-wrap: wrap）。这让标签云（Tag Cloud）、多选筛选器、响应式网格等布局直接在 Figma 里实现，不需要手动摆放每个元素。另一个重要更新：Min/Max Width 属性，让元素可以设定最小和最大宽度约束，完整模拟了 CSS 的 min-width/max-width。"],"img_key":"auto_layout","img_link":"Figma Auto Layout","img_title":"https://help.figma.com/hc/en-us/articles/5731482952599"},{"h":"Components + Variants：可复用的 UI 单元","pts":["Component（组件）是 Figma 里的可复用 UI 单元。创建一个 Component（⌥⌘K 或右键 Create Component），之后插入的都是 Instance（实例），修改 Master Component 会同步更新所有 Instance。这是保证设计一致性的核心机制——修改主按钮的颜色，所有页面上的按钮都自动更新，不需要手动一个个改。对于 AI coding 工具来说，清晰的 Component 结构等同于明确的组件树，更容易生成对应的 React/SwiftUI 组件。","Variants（变体）是一个 Component 的多种状态集合：一个 Button 组件可能有 Primary/Secondary/Danger 三种类型，Normal/Hover/Pressed/Disabled 四种状态，Small/Medium/Large 三种尺寸——组合起来是 36 个变体，但在 Figma 里只需要一个 Component Set 管理。创建 Variants 的步骤：选中多个外观相似的组件 → 右键「Combine as variants」→ 在 Properties 面板里命名每个属性和值（如 Type=Primary、State=Default、Size=Medium）。在 Figma Dev Mode 里，Variants 的属性名可以直接对应 React Props。","Interactive Components（交互式组件）是 Figma 2023+ 的功能：给 Component 的不同 State 之间添加交互（点击 Default 状态 → 切换到 Pressed 状态 → 释放回 Default），这样在原型预览时组件本身就有交互反馈，而不需要在原型流程里单独处理每个状态切换。这让原型更接近真实 App 的交互感，也帮助 AI coding 工具理解各状态的视觉差异。"],"img_key":"components","img_link":"Component-based Design","img_title":"https://en.wikipedia.org/wiki/Component-based_software_engineering"},{"h":"样式系统与实用插件","pts":["Figma 的样式系统（Styles）用于统一管理颜色、文字、阴影等设计属性。Color Style：定义品牌色和语义色（Primary/Secondary/Error/Warning/Success/Neutral），这些颜色在整个设计文件里复用，修改一个颜色变量会更新所有使用它的元素。Text Style：定义字体层级（H1/H2/Body/Caption 等），保证整个产品的排版一致。和 Variables 的区别：Styles 是静态的命名颜色/文字（旧方式），Variables 是可以切换主题的动态变量（新方式，适合深色模式和多主题）。","实用插件加速工作流：Unsplash（直接在设计稿里填充真实照片）、Content Reel（批量填充真实文字内容：人名、地址、时间等，避免满屏 Lorem Ipsum 导致布局判断失误）、Iconify（数十万个图标，一个插件搜索所有主流图标库）、Stark（无障碍检查，对比度/色盲模拟/焦点顺序）、Autoflow（自动生成用户流程图的连接箭头）。这些插件让设计稿更接近真实内容，也让 AI coding 工具的映射更准确。"]}],"res":[{"tp":"视频","tc":"b-video","t":"Figma for Beginners（官方 4 集系列）","d":"Figma 官方入门课程，不到 1 小时，Frame/组件/原型基础","u":"https://www.youtube.com/playlist?list=PLXDU_eVOJTx7QHLShNqIXL1Cgbxj7HlN4","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Auto Layout in Figma — Mizko","d":"Auto Layout 最清晰的教程视频，从入门到高级用法","u":"https://www.youtube.com/watch?v=TyaGpGDFczw","lv":"entry","s":"youtube.com"},{"tp":"课程","tc":"b-course","t":"Figma Mastery — DesignWithArash","d":"系统性 Figma 课程，Components/Variants/Variables 完整覆盖","u":"https://designwitharash.com/","lv":"mid","s":"designwitharash.com"},{"tp":"视频","tc":"b-video","t":"Figma Variables 深度教程 — Juxtopposed","d":"Design Tokens/暗色模式/多主题，Variables 最好的实战教程","u":"https://www.youtube.com/@juxtopposed","lv":"mid","s":"youtube.com"}]},{"id":"figma_advanced","phase":"Figma 进阶","title":"Figma 最新特性 · Variables · Make · MCP · Dev Mode","color":"#d97706","bg":"#FEF3C7","intro":"2023-2025 年 Figma 发布了几个改变设计工作流的重大功能。Variables 让多主题设计成为可能，Figma Make 让 AI 直接生成 UI，MCP Server 让 AI coding 工具可以读写 Figma 文件。这些新功能直接关系到你和 AI 工具协作的效率。","intro_lines":["▸ <strong>Variables</strong> — Design Token 的实现，暗色模式一键切换，多品牌主题管理","▸ <strong>Figma Make</strong> — 文字 Prompt 直接生成 UI 草稿，快速探索多个设计方向","▸ <strong>Figma MCP Server</strong> — AI agent 直接读写 Figma 文件，和 Claude Code/Cursor 集成","▸ <strong>Dev Mode</strong> — 设计稿到代码的最后一公里，AI coding 工具需要的规格在这里","▸ <strong>Interactive Prototyping</strong> — Smart Animate 和高保真交互，减少开发歧义"],"notes":[{"h":"Variables：Design Token 的 Figma 实现","pts":["Variables（变量）是 Figma 2023 年推出的最重要功能，解决了「设计 Token」在 Figma 里长期无法原生实现的问题。一个 Variable 是一个命名的设计值（颜色/数字/字符串/布尔值），可以在多个 Collection（集合）里定义不同的值，通过切换 Collection 来改变整个文件的外观（比如：Light Mode Collection 里 Background = #FFFFFF，Dark Mode Collection 里 Background = #1C1C1E，一键切换主题，所有使用了这个变量的元素都自动更新）。","Variables 的层级架构：Primitive Variables（原始变量，如 Blue-500 = #3B82F6）→ Semantic Variables（语义变量，如 Brand-Primary = {Blue-500}，Error = {Red-500}）→ Component Variables（组件变量，如 Button-Background = {Brand-Primary}）。这个三层架构让修改品牌色只需要改一个 Primitive 值，所有语义颜色和组件颜色会自动级联更新。和 shadcn/ui / Tailwind CSS Variables 的映射非常直接，AI coding 工具可以精确映射到代码变量。","Variables 的实际应用场景：① 暗色模式（最常用）——在两个 Mode 里定义相同的语义变量，切换 Mode 预览暗色效果；② 品牌主题（B2B SaaS 常见需求）——为不同客户创建不同颜色主题，设计时验证兼容性；③ 响应式断点——用数字变量定义不同断点下的间距和字号；④ 原型状态控制——用布尔变量控制元素的显示/隐藏，不需要做多个页面版本。Figma 2025 年还把 Variables 扩展到了字符串（用于多语言预览）和布尔值（控制组件状态）。"]},{"h":"Figma Make 与 AI 生成 UI","pts":["Figma Make 是 Figma 2024 年推出的 AI 设计生成功能：在 Figma 里输入文字描述（「Create a mobile banking login screen with biometric authentication」），AI 生成对应的 UI 草稿，直接放在画布上。和 Figma 的关键整合点是：Figma Make 会使用你已有的组件库和 Design Token——不是凭空生成，而是基于你的设计系统生成，保证品牌一致性。2025 年更新集成了 Gemini Pro，支持更丰富的 AI 生成能力（图像编辑、图标生成、布局变体）。","Figma Make 在工作流里的正确位置：不是用来生成最终设计，而是用来「快速出发」——当你对一个新页面的布局思路还不清晰时，用 Prompt 生成 3-5 个不同方向的草稿，用 5 分钟找到方向感，再花时间细化最好的那个。这比在空白画布前「想方案」快得多。实际经验：Figma Make 生成的 UI 通常在布局思路上有参考价值，但具体组件/颜色/间距通常需要修正，把它当「草稿起点」而不是「交付产品」。","Figma Make Connectors（2025 最新）：可以把 Figma 与 Notion、Jira/Atlassian、GitHub、Asana、Linear、Monday.com 连接，在原型里直接显示真实的 PRD 内容、Ticket 描述、真实文案。实际价值：设计评审时不再是「Lorem Ipsum + 假数据」，利益相关方看到的是真实的产品文案和数据，减少「哦这不是我想的」的返工。对于工程师：原型里的 Jira Ticket 描述直接告诉 AI coding 工具功能的具体需求，减少设计到代码的歧义。"]},{"h":"Figma MCP Server：AI 直接操作设计文件","pts":["Figma 2025 年发布的 MCP（Model Context Protocol）Server 是设计工具与 AI 工具集成的重大突破：通过 MCP 协议，Claude/Cursor 等 AI coding 工具可以直接读取 Figma 文件的完整结构（组件名称/尺寸/颜色变量/文字样式/层级关系），甚至可以直接在 Figma 文件里创建和修改设计元素。这意味着 AI 不再是「看截图猜设计」，而是读取精确的设计规格。","Figma MCP 的实际工作流：① 在 Claude Code 或 Cursor 里连接 Figma MCP；② 把 Figma 文件链接发给 AI；③ AI 读取文件结构，知道所有组件的准确名称、尺寸和变量；④ 生成代码时直接使用正确的 Token 名和组件名（Button-Primary 而不是「蓝色按钮」）；⑤ 可以请求 AI 根据修改需求直接更新 Figma 文件。这个工作流大幅减少了「设计稿和代码对不上」的问题。","给 AI coding 工具的 Figma 文件应该如何准备：① 所有颜色使用 Variables（不要手动输入色值）；② 所有组件有清晰的命名（Button/Primary/Large 而不是 Rectangle 1234）；③ 层级结构清晰（不要所有元素都在同一层）；④ 使用 Text Styles（不要手动输入字号和字重）；⑤ 在 Dev Mode 里标注特殊的交互状态和动效说明。一份结构清晰、命名规范的 Figma 文件，AI 生成的代码质量会显著高于一份随意摆放的设计稿。"]},{"h":"Dev Mode 与原型设计","pts":["Dev Mode 是 Figma 2023 年推出的开发者视图，按 Shift+D 切换。在 Dev Mode 里：开发者可以看到精确的 CSS/Swift/Kotlin 代码建议、测量任意两个元素的间距、查看 Variables 和 Styles 的名称（而不只是颜色值）、标记已完成的组件（Completed 标记）。对于使用 AI coding 工具的工程师：先在 Dev Mode 里确认设计规格（尺寸/颜色/变量名），再把这些规格作为上下文提供给 AI，生成的代码会更准确。","高保真原型中的 Smart Animate：Figma 的 Smart Animate 可以自动计算两个 Frame 之间的差异，生成流畅的过渡动画（如列表项展开/折叠、Tab 切换的滑动、浮层的淡入淡出）。在实际工作中，Smart Animate 用于向开发者（或 AI coding 工具）展示「这里应该有动效，动效的方向和感觉是这样的」，减少沟通成本。不需要在原型里实现完美的动效，清楚表达「这是一个 Ease-out 的上滑」就够了。"]}],"res":[{"tp":"课程","tc":"b-course","t":"moonlearning.io — Figma + AI 工作流","d":"目前最好的 Figma+AI 设计课程，Variables/MCP/Figma Make 全覆盖","u":"https://www.moonlearning.io/","lv":"mid","s":"moonlearning.io"},{"tp":"文档","tc":"b-docs","t":"Figma Variables 官方文档","d":"Design Token/暗色模式/多主题的完整实现指南","u":"https://help.figma.com/hc/en-us/articles/15339657135383","lv":"mid","s":"figma.com"},{"tp":"视频","tc":"b-video","t":"Figma MCP Server 官方介绍","d":"AI agent 直接写入 Figma 文件，工作流演示","u":"https://www.youtube.com/watch?v=CkV8G1JxMlE","lv":"mid","s":"youtube.com"},{"tp":"报告","tc":"b-blog","t":"Figma 2025 AI Report","d":"85% 的设计师认为学习 AI 是未来成功的关键，78% 认为 AI 提升效率","u":"https://www.figma.com/reports/ai-2025/","lv":"entry","s":"figma.com"}]},{"id":"design_system","phase":"设计系统","title":"设计系统 · Tokens · 组件库 · AI coding 输入规格","color":"#0f766e","bg":"#F0FDFA","intro":"设计系统是你和 AI coding 工具之间共同的语言。一个有清晰 Token、命名规范的设计系统，让 AI 能够精确理解你的设计意图并生成高质量代码；一个混乱的设计稿，AI 只能猜测。","intro_lines":["▸ <strong>Design Tokens</strong> — 颜色/间距/圆角/字体作为命名变量，不是硬编码的数值","▸ <strong>Atomic Design</strong> — 原子→分子→有机体→模板→页面的组件层级","▸ <strong>开源 UI Kit</strong> — Untitled UI / shadcn/ui / Material 3 的对比和使用方式","▸ <strong>给 AI coding 工具的设计规格</strong> — 什么信息是 AI 最需要的，如何有效传达"],"notes":[{"h":"Design Tokens：设计与代码的共同词汇","pts":["Design Tokens 的概念来自 Salesforce 的 Lightning Design System：把设计决策（颜色、间距、圆角、字体、阴影）从视觉值（#3B82F6）抽象为有语义的命名变量（color-brand-primary），这些命名变量在设计工具（Figma Variables）和代码库（CSS Variables / Tailwind / Style Dictionary）里共享同一套名称。好处：设计师修改了 color-brand-primary 的值，开发者只需要更新对应的 Token 值，所有使用这个 Token 的组件自动更新，不需要「找所有用了这个蓝色的地方」。","Token 的层级架构（参考 Nathan Curtis 的设计）：第一层 Primitive/Raw（原始值，Blue-500=#3B82F6，Spacing-4=4px）→ 第二层 Semantic（语义，color-interactive-primary={Blue-500}，spacing-component-padding={Spacing-4}）→ 第三层 Component（组件，button-background={color-interactive-primary}）。这样改品牌色只需修改一个 Primitive，修改所有按钮的 padding 只需修改一个 Semantic Token，改某个组件的特定属性修改 Component Token。","把 Figma Variables 导出为 Token 文件：Tokens Studio for Figma 插件可以把 Figma Variables 导出为 JSON 格式的 Token 文件，这个文件可以直接被 Style Dictionary（Token 处理工具）转换成 CSS Variables / Tailwind Theme / Swift Color Assets / Android Resource。这是真正的「设计系统单一数据源」：在 Figma 里修改一个颜色，自动同步到代码里所有平台的颜色定义，无需手动维护多套颜色文件。"],"img_key":"design_tokens","img_link":"Design Tokens","img_title":"https://www.designtokens.org/"},{"h":"Atomic Design：组件层级的设计哲学","pts":["Brad Frost 提出的 Atomic Design 把 UI 组件分为五个层级：① Atoms（原子）——不可再分的基本元素，如按钮/输入框/图标/标签/颜色样式/字体样式；② Molecules（分子）——由多个原子组成的简单组件，如搜索框（输入框+按钮）/表单字段（标签+输入框+错误信息）；③ Organisms（有机体）——由分子和原子组成的复杂 UI 区块，如导航栏/卡片列表/表单区块；④ Templates（模板）——页面的线框结构，定义内容区域的布局但不包含真实内容；⑤ Pages（页面）——模板+真实内容，最终交付的设计稿。","在 Figma 里实践 Atomic Design：建议创建一个专门的设计系统 Figma 文件（与业务设计稿分开），里面按层级组织所有 Component：一个 Page 放 Atoms，一个 Page 放 Molecules，一个 Page 放 Organisms。业务设计稿 File 通过 Figma 的 Library 功能引用设计系统 File 里的组件，这样多人协作时修改组件不会影响其他人正在修改的业务稿。","给 AI coding 工具的组件命名规范：推荐使用「Component/Variant/State」的命名结构（如 Button/Primary/Default、Button/Secondary/Hover、Input/Text/Error）。这个命名直接映射到 React Props（type=primary/secondary、state=default/hover/error），Claude Code 或 Cursor 看到这个结构可以直接生成对应的 TypeScript interface 和 CSS-in-JS 代码。避免用「Rectangle」「Frame 1」这样的 Figma 默认名称——AI 遇到这些名称只能猜测含义。"],"img_key":"atomic_design","img_link":"Atomic Design","img_title":"https://atomicdesign.bradfrost.com/"},{"h":"开源 UI Kit 的对比与使用","pts":["Untitled UI（untitledui.com）：目前最受欢迎的 Figma UI Kit，免费版包含 180+ 组件和完整的颜色/字体系统，专业版包含 10000+ 组件变体和完整的 Design Token 体系。特点是干净的现代风格，非常适合 SaaS 和企业应用。直接把 Untitled UI 作为你项目的设计起点，比从零搭建设计系统快 10 倍，而且和 Tailwind CSS 的样式哲学高度匹配。","shadcn/ui（shadcn.com/ui）：基于 Radix UI 原语和 Tailwind CSS 的 React 组件库，这是目前 AI coding 工具（Lovable/v0/Cursor）最熟悉的前端组件库。重要特点：shadcn/ui 不是 npm 包，而是把组件代码直接复制到你的项目里，完全可以自定义。与设计工作流的关系：用 Figma 设计时参考 shadcn/ui 的组件结构和 Token 命名，交给 AI coding 工具时明确说「使用 shadcn/ui」，生成的代码质量显著提升。","Material Design 3（material.io）：Google 的设计系统，包含官方 Figma 组件库和完整的颜色/排版/组件规范。特别适合 Android App 设计和 Material You 的动态颜色系统。Apple 的 Human Interface Guidelines 没有官方 Figma 组件库，但社区有很多高质量的 iOS UI Kit（如 iOS 17 UI Kit by Gaspard）。对于跨平台 App：先用 Untitled UI 做通用版本，再针对各平台做适配而不是从头设计。"]},{"h":"给 AI coding 工具的有效设计规格","pts":["AI coding 工具（Claude Code/Cursor/Lovable）最需要的设计信息：① 布局结构（哪些元素是一行/哪些是一列，是 Grid 还是 Flex）；② 间距规格（精确的 padding/margin/gap 数值，最好是 8pt 网格的倍数）；③ 颜色 Token 名（color-brand-primary 而不是 #3B82F6）；④ 组件状态（Default/Hover/Active/Disabled 各是什么样）；⑤ 响应式规则（在不同断点下的布局变化）；⑥ 交互行为（点击后发生什么，过渡动效是什么感觉）。","写「设计 Prompt」的最佳实践（给 v0/Lovable/Claude Code）：不要只说「给我做一个登录页」（太模糊），而是：「用 shadcn/ui 组件做一个移动端登录页，包含：顶部 Logo（80×80px，居中）、Email 输入框（带 Label 和 placeholder）、Password 输入框（带显示/隐藏密码按钮）、Remember Me 复选框、Primary 登录按钮（width: 100%）、底部「还没有账号？注册」链接（color-text-secondary）。背景色 color-bg-primary，组件间距 16px，最大宽度 375px，圆角 8px。」越具体的规格，AI 生成的结果越接近你的期望。","Figma 到代码的几种路径对比：① Figma Dev Mode → 手动告诉 AI（最通用）；② Figma MCP Server → Claude Code 直接读取（最精准，2025 年最新）；③ Figma → Locofy.ai 插件 → 自动转 React 代码（最快但质量参差不齐）；④ Figma → v0 截图上传 → 生成 React 组件（快但丢失 Token 信息）；⑤ 截图 → Cursor Vision → 直接实现（最粗糙，只看外观不看结构）。推荐顺序：如果你的设计系统规范完善，用 MCP；如果还在早期探索阶段，用截图 + 详细文字描述给 v0 或 Claude Code。"]}],"res":[{"tp":"网站","tc":"b-docs","t":"Untitled UI — 世界最大 Figma UI Kit","d":"免费版 180+ 组件，完整 Token 系统，直接作为项目起点","u":"https://www.untitledui.com/","lv":"entry","s":"untitledui.com"},{"tp":"文档","tc":"b-docs","t":"shadcn/ui 官方文档","d":"AI coding 工具最熟悉的 React 组件库，Tailwind+Radix UI","u":"https://ui.shadcn.com/","lv":"entry","s":"shadcn.com"},{"tp":"工具","tc":"b-tool","t":"Tokens Studio for Figma","d":"Figma Variables 导出为 JSON Token，与代码库同步","u":"https://tokens.studio/","lv":"mid","s":"tokens.studio"},{"tp":"博客","tc":"b-blog","t":"Atomic Design by Brad Frost（免费在线书）","d":"Atomic Design 方法论原著，组件层级设计的理论基础","u":"https://atomicdesign.bradfrost.com/","lv":"mid","s":"atomicdesign.bradfrost.com"}]},{"id":"vibe_design","phase":"AI 设计工作流","title":"Vibe Design 2025 · v0 · Lovable · Bolt · Figma Make","color":"#7c3aed","bg":"#EDE9FE","intro":"「Vibe Design」是 2025 年从 Vibe Coding 延伸出来的设计范式：不从线框图开始，而是从意图描述开始，AI 生成设计方向，人来筛选和精修。这个范式正在重写设计到代码的全流程。","intro_lines":["▸ <strong>Vibe Design 的理念</strong> — 为什么这个范式正在取代传统「先画图再写代码」的工作流","▸ <strong>四个主流工具对比</strong> — v0/Lovable/Bolt/Google Stitch 的定位、优势和局限","▸ <strong>Figma → AI coding 完整工作流</strong> — 从设计稿到生产代码的端到端最优路径","▸ <strong>移动端 App 的特殊考量</strong> — 哪个工具支持 React Native，移动端 Vibe Design 的限制","▸ <strong>AI 设计的边界</strong> — 85% 效率提升的背后，哪 15% 仍然需要人的判断"],"notes":[{"h":"Vibe Design：从意图开始而非从空白画布开始","pts":["「Vibe Coding」这个概念由 Andrej Karpathy（OpenAI 联合创始人，前 Tesla AI 主管）在 2025 年 2 月提出：「完全顺着感觉，拥抱指数增长，忘记代码的存在」——用自然语言描述你想要的，让 AI 生成代码，看到效果不对就描述修改，不需要看每一行代码。这个概念迅速扩展到设计领域，形成了「Vibe Design」：不从空白 Figma 画布开始，而是用 Prompt 描述你想要的界面感觉，让 AI 生成多个方向，你从中选择和精修。","传统工作流（慢）：需求分析 → Figma 线框图 → 设计稿评审 → 开发实现 → 联调修改，整个周期 2-4 周。Vibe Design 工作流（快）：用 Prompt 在 Figma Make / v0 / Lovable 里生成 3-5 个方向（20 分钟）→ 选定方向后在 Figma 里精修（1-2 天）→ 通过 MCP 或规格文档交给 AI coding 工具实现（1-3 天）→ 人工审查和迭代（1 天）。对于独立开发者或小团队，Vibe Design 工作流把设计到产品的时间从数周压缩到数天。","Figma 2025 AI 报告的关键数据：85% 的设计师和开发者认为学习与 AI 协作将对未来成功至关重要；78% 认为 AI 工具提升了工作效率；33% 已经用 AI 生成设计资产（图像/文案）；22% 用 AI 创建界面初稿；21% 用 AI 探索不同布局方向。但少于一半认为 AI 让他们「工作得更好」——效率提升了，品味判断和用户洞察仍然是人的核心竞争力。"]},{"h":"四个主流工具的定位对比","pts":["v0（Vercel，v0.app）：最适合前端工程师的 UI 生成工具。输入描述 → 生成生产质量的 React + Tailwind + shadcn/ui 组件，代码质量最高，可以直接复制进项目。最新支持：从 Figma 文件导入设计（连接 Figma 账户）、自定义设计系统（上传你的 shadcn/ui 主题）、GitHub 集成（生成代码直接提交到仓库）。局限：只生成 Web 前端组件，不支持移动端，复杂的全栈功能有限。最适合场景：你已经知道要做什么组件，需要快速生成高质量的代码起点。","Lovable（lovable.dev）：最适合非技术用户和设计师的全栈 App 构建工具。从 Prompt 或 Figma 截图出发，生成有后端（Supabase）的完整可运行 Web App，视觉质量最高，操作界面最友好。2025 年增长最快的 AI 工具之一，8 个月达到 1 亿美元 ARR，估值 66 亿美元。局限：锁定在 React + Supabase 技术栈，移动端只支持 PWA 不支持原生 App，复杂定制化功能有上限。最适合场景：快速验证产品创意，做出可以给用户测试的 MVP。","Bolt.new（bolt.new）：速度最快的全栈原型工具，最大的特点是支持 React Native + Expo（唯一支持移动端的主流 vibe coding 工具）。浏览器里直接写代码、预览、部署，不需要本地环境。可以上传 Figma 截图，Bolt 会尽量还原视觉效果。局限：生成的代码质量比 v0 稍粗糙，复杂应用容易遇到 Token 用量问题。最适合场景：你需要一个移动端 App 原型，或者需要最快速地把 Figma 截图变成可点击的原型。","Google Stitch（stitch.withgoogle.com）：2026 年初正式发布，定位是最纯粹的「Vibe Design」探索工具，免费，支持语音输入和无限画布。特点是从模糊的「感觉」出发（「给我一个感觉现代、有些工业感的金融仪表盘」），生成多个视觉方向供选择，强调探索而非精确输出。局限：生成的设计不能直接用于生产，更像是「设计灵感生成器」。最适合场景：项目初期对视觉方向还不确定，需要快速看多个风格方向。"]},{"h":"Figma → AI coding 完整工作流","pts":["端到端最优工作流（2025 年推荐）：① 用 Google Stitch 或 Figma Make 生成 3 个视觉方向草稿（20 分钟）；② 在 Figma 里基于最好的方向建立完整设计稿，使用 Variables 定义 Token（1-2 天）；③ 在 Figma Dev Mode 里导出组件规格（变量名/尺寸/间距）；④ 配置 Figma MCP Server，让 Claude Code 直接读取文件结构；⑤ 用 Claude Code + 详细规格 Prompt 生成 React 组件；⑥ v0 用于复杂 UI 组件的单独生成；⑦ 人工审查 + 迭代。","移动端 App 工作流（基于 React Native）：① Figma 里用 iPhone 15 Pro 框架（393×852pt）设计，严格遵循 iOS HIG；② 用 Bolt.new 上传 Figma 截图 + 描述，生成 React Native + Expo 代码；③ 在 Claude Code 里基于生成的代码精修，处理 Figma Make 无法处理的原生功能（推送通知/相机/权限）；④ 用 Expo Go 在真机上测试（无需 Xcode/Android Studio）。关键提示：给 Bolt/Claude Code 的 Prompt 里明确说「使用 Expo SDK / React Native Paper / NativeWing」，避免 AI 混用 Web 和 Mobile 的 API。","常见的 AI coding 工具读不懂的设计信息：① 过渡动效（不在截图里）→ 用文字描述「用 Ease-out 的 300ms 从底部滑入」；② 交互状态（截图通常只是 Default 状态）→ 提供所有状态的截图或详细描述；③ 平台特有行为（iOS 橡皮筋滚动/haptic feedback）→ 明确告诉 AI「遵循 iOS HIG，添加触感反馈」；④ 复杂的响应式规则 → 提供两到三个断点的截图（320px/375px/430px）；⑤ 数据状态（Empty State/Loading State/Error State）→ 单独设计并提供这些状态的截图。"]},{"h":"AI 设计的边界：效率提升的代价","pts":["AI 真正能做好的设计任务：生成视觉草稿和布局变体、填充 Placeholder 内容（假文字/假图片）、生成标准组件的代码、检查颜色对比度和间距一致性、翻译设计规格到代码注释、生成 Microcopy（按钮文案/错误信息/空状态文案）。AI 做不好的设计任务：发现真实用户痛点（需要用户研究）、判断一个交互是否「符合平台感觉」（需要使用经验积累）、在多个视觉方向中选择「最合适这个品牌」的方向（需要品味和商业判断）、设计复杂的多步骤用户流程（需要理解业务逻辑）。","「AI 让我们工作更快，但让我们工作得更好了吗？」——Figma 2025 AI 报告提出的核心问题，也是行业正在讨论的真实争议。Fabricio Teixeira 在《State of UX 2025》里指出，设计控制权正在从设计师转移到算法和业务目标，很多公司不再雇用设计师而是用 AI 工具加上「任何人都能设计」的假设来替代。这对于有设计意识的工程师是机会：能用 AI 工具快速出稿、同时对「什么是好设计」有判断力，是目前独立开发者最有竞争力的组合。"]}],"res":[{"tp":"工具","tc":"b-tool","t":"v0 by Vercel","d":"最高质量的 React UI 生成，shadcn/ui + Tailwind，支持 Figma 导入","u":"https://v0.dev/","lv":"entry","s":"v0.dev"},{"tp":"工具","tc":"b-tool","t":"Lovable","d":"全栈 App 构建，设计感最好，非技术用户友好，Supabase 集成","u":"https://lovable.dev/","lv":"entry","s":"lovable.dev"},{"tp":"工具","tc":"b-tool","t":"Bolt.new","d":"唯一支持 React Native 移动端的 Vibe coding 工具","u":"https://bolt.new/","lv":"entry","s":"bolt.new"},{"tp":"工具","tc":"b-tool","t":"Google Stitch","d":"免费，最纯粹的 Vibe Design 探索工具，语音画布，多方向生成","u":"https://stitch.withgoogle.com/","lv":"entry","s":"google.com"},{"tp":"博客","tc":"b-blog","t":"State of UX 2025 — trends.uxdesign.cc","d":"设计行业年度深度报告，AI 对设计职业的真实影响分析","u":"https://trends.uxdesign.cc/","lv":"mid","s":"trends.uxdesign.cc"}]},{"id":"app_prototype","phase":"实战","title":"App 原型实战 · 金融类 App · 交付 Checklist","color":"#1e40af","bg":"#EFF6FF","intro":"从零到可交付原型的完整流程，以金融/投资类 App 为案例。这类 App 信息密度高、操作风险大、用户对信任感要求高——是最能检验设计能力的场景类型。","intro_lines":["▸ <strong>完整设计流程</strong> — 用户流程图 → Wireframe → Hi-Fi 的阶段目标和工具","▸ <strong>金融类 App 设计原则</strong> — 信息层级/信任建立/数字展示/操作风险控制","▸ <strong>常见 App 屏幕结构</strong> — Onboarding/Dashboard/Detail/Settings 的 Figma 实现","▸ <strong>交付前 Checklist</strong> — 交给 AI coding 工具前必须检查的 12 件事","▸ <strong>学习资源路径</strong> — 视频/课程/灵感来源的具体推荐和学习顺序"],"notes":[{"h":"从零到 Hi-Fi 的完整流程","pts":["第一步——用户流程图（15-30 分钟，纸和笔或 FigJam）：在进入 Figma 之前，先在纸上或白板上画出核心用户路径（用户想完成什么任务 → 每一步要做什么 → 成功/失败路径是什么）。例如：股票买入流程 → 搜索股票 → 查看详情 → 点击买入 → 填写数量和价格 → 确认 → 成功/失败。这一步看起来「不必要」，但省略后你会发现设计做到一半发现流程有漏洞，或者 AI coding 工具做出来的流程不完整。","第二步——低保真线框（Wireframe，0.5-1天，Figma 灰度）：用 Figma 的矩形、文字和简单图标，不加颜色，只做布局结构。目标是确定：每个屏幕上有哪些信息、信息的优先级层次、导航路径是否完整。这一步不要做细节，矩形代表图片、线条代表文字就够了。线框完成后请 2-3 个人做 5 分钟的可用性测试（只看流程，不看设计）。","第三步——高保真设计稿（Hi-Fi，2-5天）：在线框验证没有重大流程问题后，加上颜色、真实内容、图标、组件状态。这一步要决定设计系统（从 Untitled UI 开始还是从头建），并用 Variables 定义颜色 Token。每个屏幕要设计完整（Default/Empty/Loading/Error 四个状态）。不要在线框没确定前就进入 Hi-Fi——反复改线框比反复改 Hi-Fi 快很多。"]},{"h":"金融类 App 的设计原则","pts":["信息层级：金融数据的展示有特定优先级——最重要的是「我现在有多少钱/持仓盈亏」（核心数字，放在视觉层级最高的位置，字号最大），其次是「我需要做什么操作」（主要 CTA），再次是「详细数据」（次要信息区域），最后是「辅助信息」（图表/趋势/历史）。很多金融 App 的设计错误是把所有数据都以相同的视觉权重展示，用户反而找不到核心信息。","数字的展示规则：正数（盈利）用绿色，负数（亏损）用红色——这是金融领域的通用约定，不要为了「设计感」改变它；大数字要加千分符（1,234,567）或用「万」「亿」单位换算；百分比变化要和绝对值变化一起展示（+5.2% / +12.34元）；涨跌箭头（▲▼）是比颜色更可访问的状态标记（对色盲用户友好）。","信任感的视觉建立：金融 App 的用户对安全感要求极高，设计必须传递专业和可靠。具体手段：使用干净的白/浅灰背景（不是花哨的渐变）；字体选择无衬线、清晰可读的字体（SF Pro/HarmonyOS Sans/Noto Sans）；减少装饰性元素；操作按钮使用标准的「蓝色/绿色」而不是「时髦的」渐变色；「确认」类高风险操作要有明显的二次确认步骤（不能只点一下就执行转账/买入）。","操作风险控制：金融 App 里高风险操作（转账/买入/卖出）必须有防误操作设计：① 操作前的确认摘要（「你即将买入 100 股 X 公司，总价约 Y 元」）；② 明显的「取消」按钮（不能比「确认」小）；③ 危险操作使用红色而不是绿色；④ 不可逆操作的等待缓冲（「5 秒后自动确认」或反过来「点击立即执行」而不是自动执行）；⑤ 键盘输入数量时使用数字键盘而不是全键盘。"]},{"h":"交付前完整 Checklist","pts":["视觉完整性检查（6 项）：① 所有颜色使用 Variables，没有手动输入的色值；② 所有文字使用 Text Styles，没有孤立的字体设置；③ 所有间距符合 8pt 网格，没有奇数间距（13px/22px）；④ 对比度全部通过 WCAG AA 标准（用 Contrast 插件检查）；⑤ 所有图片/图标都有 Alt Text 标注；⑥ 颜色不是唯一的信息载体（状态信息有图标或文字补充）。","交互完整性检查（6 项）：① 所有屏幕都有 4 个状态（Default/Loading/Empty/Error）；② 所有可点击元素都有 Hover/Pressed 状态设计；③ 表单有完整的校验状态（错误提示/成功反馈）；④ 导航路径完整，没有「死路」（进入后找不到返回的页面）；⑤ 原型里的主要用户流程可以点通（能从首页走到核心功能完成）；⑥ 有过渡动效说明（类型/方向/时长）。"]},{"h":"学习资源推荐路径","pts":["入门阶段（0-2 周）：① 看 Figma 官方 YouTube「Figma for Beginners」系列（4 集，1 小时，了解基本操作）→ ② 买 Refactoring UI 这本书（专为开发者写，有大量 before/after 示例）→ ③ 订阅 Mobbin（每天花 10 分钟看真实 App 截图，积累设计直觉）。","进阶阶段（2-8 周）：① moonlearning.io 的 Figma+AI 工作流课程（最好的实战课程，专注 Figma Make/Variables/MCP 与 AI 工具的结合）→ ② 在 Figma 里从零做一个完整的 App 设计稿（不要做教程练习，做你真实想做的产品）→ ③ 用 v0 和 Lovable 各做一个简单页面，感受 Vibe Design 工作流。","持续学习资源：视频创作者 → Mizko/Juxtopposed/DesignWithArash（YouTube，Figma 技巧）；Figma 官方「Config」年度大会（YouTube，每年 6 月，展示最新功能）；设计灵感 → Dribbble（UI 灵感）/ Mobbin（App 截图）/ Awwwards（Web 灵感）；设计趋势 → trends.uxdesign.cc（年度 UX 趋势报告，免费）/ Nielsen Norman Group（UX 研究，免费文章）。"]}],"res":[{"tp":"书籍","tc":"b-book","t":"Refactoring UI — Adam Wathan","d":"专为开发者写的 UI 设计书，有 250+ before/after 案例","u":"https://www.refactoringui.com/","lv":"entry","s":"refactoringui.com"},{"tp":"视频","tc":"b-video","t":"Designing a Mobile App from Scratch — Mizko","d":"完整的移动端 App 设计流程，Figma 实战，有字幕","u":"https://www.youtube.com/@Mizko","lv":"entry","s":"youtube.com"},{"tp":"课程","tc":"b-course","t":"moonlearning.io — 完整课程","d":"Figma 从入门到 AI 工作流，最推荐的付费课程","u":"https://www.moonlearning.io/","lv":"mid","s":"moonlearning.io"},{"tp":"网站","tc":"b-docs","t":"Mobbin — App 设计参考","d":"数万张真实 iOS/Android App 截图，按功能模块分类检索","u":"https://mobbin.com/","lv":"entry","s":"mobbin.com"},{"tp":"网站","tc":"b-docs","t":"Dribbble — 设计灵感","d":"专业设计师作品展示，UI 风格参考，每天 10 分钟","u":"https://dribbble.com/","lv":"entry","s":"dribbble.com"}]}];
+function dl(d){return d==='entry'?'入门':d==='mid'?'中级':'高级'}
+function dc(d){return d==='entry'?'de':d==='mid'?'dm':'da'}
+function render(){
+  const cont=document.getElementById('cont'),nav=document.getElementById('nav');
+  let tot=0,curP='';
+  D.forEach(s=>{
+    tot+=s.res.length;
+    if(s.phase!==curP){
+      curP=s.phase;
+      const lbl=document.createElement('div');lbl.className='nlbl';lbl.textContent=s.phase;nav.appendChild(lbl);
+    }
+    const a=document.createElement('a');a.className='nl';a.dataset.sec=s.id;a.onclick=()=>goto(s.id);
+    a.innerHTML=`<span class="ndot" style="background:${s.color}"></span>${s.title.split('·')[0].trim()}<span class="nc">${s.res.length}</span>`;
+    nav.appendChild(a);
+    const div=document.createElement('div');div.className='sec';div.id=s.id;
+    div.dataset.search=[s.title,s.intro,...s.notes.map(n=>n.h+' '+n.pts.join(' ')),...s.res.map(r=>r.t+' '+r.d)].join(' ').toLowerCase();
+    const tid=`t-${s.id}`;
+    let notesHTML=`<div class="notes-block">`;
+    s.notes.forEach((n,ni)=>{
+      const _diag=n.img_key?document.getElementById('diag_'+n.img_key):null;
+      const _svg=_diag?_diag.innerHTML:'';
+      const _link=n.img_key&&n.img_link?`<a class="diag-link" href="${n.img_link}" target="_blank" rel="noopener">↗ ${n.img_title||'参考资料'}</a>`:'';
+      const _img=_svg?`<figure class="note-fig">${_svg}${_link}</figure>`:(_link?`<p>${_link}</p>`:'')
+      
+      const aid=`a-${s.id}-${ni}`;
+      notesHTML+=`<div class="acc" id="nh-${s.id}-${ni}"><div class="acc-hdr" onclick="toggleAcc('${aid}',this)"><span class="acc-arrow">▶</span><span class="acc-htxt">${n.h}</span></div><div class="acc-body" id="${aid}">${_img}<div class="pts-wrap">${n.pts.map(p=>`<div class="pt">${p}</div>`).join('')}</div></div></div>`;
+    });
+    notesHTML+='</div>';
+    let resHTML=`<div class="res-block"><div class="res-section-label">🔗 学习资源</div><div class="grid">`;
+    s.res.forEach(r=>{
+      resHTML+=`<div class="card"><div class="ctop"><span class="badge ${r.tc}">${r.tp}</span><div class="ctit"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a></div></div><div class="cdesc">${r.d}</div><div class="cmeta"><span class="csrc">${r.s}</span><span class="cdiff ${dc(r.lv)}">${dl(r.lv)}</span></div><a class="curl" href="${r.u}" target="_blank" rel="noopener">${r.u.replace(/https?:\/\//,'').split('/')[0]}</a></div>`;
+    });
+    resHTML+='</div></div></div>';
+    div.innerHTML=`<div class="sch"><span class="sdot" style="background:${s.color}"></span><span class="stit">${s.title}</span></div><div class="intro-txt">${s.intro}${renderIntroLines(s.intro_lines)}</div>${notesHTML}${resHTML}`;
+    cont.appendChild(div);
+  });
+  document.getElementById('stag').textContent=`${D.length} 个版块 · ${tot} 个资源`;
+  const items=[['b-paper','论文'],['b-blog','博客/文章'],['b-video','视频'],['b-docs','文档'],['b-book','书籍'],['b-course','课程'],['b-github','GitHub'],['b-tool','工具'],['b-visual','可视化']];
+  const lg=document.getElementById('leg');
+  items.forEach(([cls,lbl])=>{const s=document.createElement('span');s.className=`badge ${cls}`;s.style.cssText='font-size:11px;padding:3px 7px;';s.textContent=lbl;lg.appendChild(s);});
+}
+function switchTab(tid,which,btn){
+  document.querySelectorAll(`#${tid}-notes,#${tid}-res`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${tid}-${which}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleAcc(id,hdr){
+  const body=document.getElementById(id),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);hdr.classList.toggle('open',!isOpen);
+}
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();let m=0;
+  document.querySelectorAll('.sec').forEach(sec=>{
+    if(!q){sec.classList.remove('hidden-sec');m++;return;}
+    const hit=(sec.dataset.search||'').includes(q);sec.classList.toggle('hidden-sec',!hit);if(hit)m++;
+  });
+  document.getElementById('nr').style.display=m===0&&q?'block':'none';
+  document.getElementById('stag').textContent=q?`找到 ${m} 个版块`:`${D.length} 个版块 · ${D.reduce((a,s)=>a+s.res.length,0)} 个资源`;
+});
+const obs={observe:()=>{}};
+function detectSection(){
+  const secs=[...document.querySelectorAll('.sec[id]')];
+  if(!secs.length)return;
+  const threshold=100;
+  let current=secs[0];
+  for(const s of secs){
+    const top=s.getBoundingClientRect().top;
+    if(top<=threshold)current=s;
+    else break;
+  }
+  const id=current.id;
+  document.querySelectorAll('.nl[data-sec]').forEach(l=>l.classList.toggle('active',l.dataset.sec===id));
+  updateGuide(id);
+}
+window.addEventListener('scroll',detectSection,{passive:true});
+window.addEventListener('scroll',()=>document.getElementById('btt').classList.toggle('show',scrollY>400));
+render();
+buildToc();setTimeout(detectSection,100);
+function renderIntroLines(lines){if(!lines||!lines.length)return'';return'<div class="intro-lines">'+lines.map(function(l){return'<div class="intro-line">'+l+'</div>';}).join('')+'</div>';}
+function buildToc(){
+  const rail=document.getElementById('toc-rail');
+  if(rail&&!document.getElementById('resize-handle')){
+    rail.innerHTML='<div class="resize-handle" id="resize-handle"></div><div class="guide-content" id="guide-content"></div>';
+    initResize();
+  }
+  updateGuide(D[0].id);
+}
+function updateGuide(id){
+  const rail=document.getElementById('guide-content')||document.getElementById('toc-rail');
+  if(!rail)return;
+  const s=D.find(x=>x.id===id);
+  if(!s)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const items=s.intro_lines&&s.intro_lines.length?s.intro_lines
+    :s.notes?s.notes.map(n=>n.h):[];
+  if(!items.length){rail.innerHTML='';return;}
+  let h='<span class="guide-head">本节要点</span>';
+  items.forEach((line,ni)=>{
+    const key='kb_'+fk+'_'+id+'_'+ni;
+    const done=localStorage.getItem(key)==='1';
+    h+=`<div class="guide-item${done?' done':''}" id="gi-${id}-${ni}">`;
+    h+=`<div class="guide-check" onclick="toggleDone('${fk}','${id}',${ni})">✓</div>`;
+    h+=`<div class="guide-text" onclick="gotoEl('nh-${id}-${ni}')">${line}</div>`;
+    h+='</div>';
+  });
+  rail.innerHTML=h;
+}
+function toggleDone(fk,sid,ni){
+  const key='kb_'+fk+'_'+sid+'_'+ni;
+  const done=localStorage.getItem(key)==='1';
+  done?localStorage.removeItem(key):localStorage.setItem(key,'1');
+  const el=document.getElementById('gi-'+sid+'-'+ni);
+  if(el)el.classList.toggle('done',!done);
+}
+function gotoEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function initResize(){
+  const handle=document.getElementById('resize-handle');
+  if(!handle)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const stored=localStorage.getItem('toc-w-'+fk);
+  if(stored)setTocWidth(parseInt(stored));
+  let sx,sw;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    sx=e.clientX;
+    sw=document.getElementById('toc-rail').getBoundingClientRect().width;
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',endDrag);
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    handle.classList.add('dragging');
+  });
+  function onDrag(e){
+    setTocWidth(Math.max(160,Math.min(640,sw+(sx-e.clientX))));
+  }
+  function endDrag(){
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',endDrag);
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    handle.classList.remove('dragging');
+    localStorage.setItem('toc-w-'+fk,
+      Math.round(document.getElementById('toc-rail').getBoundingClientRect().width));
+  }
+}
+function setTocWidth(w){
+  const lay=document.querySelector('.lay');
+  if(!lay)return;
+  const cols=window.getComputedStyle(lay).gridTemplateColumns.split(' ');
+  lay.style.setProperty('grid-template-columns',cols[0]+' 1fr '+w+'px','important');
+}
+</script>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style>
+<a class="home-btn" href="index.html">← 主页</a>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI/ML 基础体系 · 数学直觉与选型框架</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f8fafc;--s:#fff;--s2:#f1f5f9;--bd:#e2e8f0;--bd2:#cbd5e1;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bl:#1d4ed8;--blbg:#eff6ff;--blbd:#bfdbfe;--sw:220px;--serif:'Georgia',serif;--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+html{font-size:14px;line-height:1.6;color:var(--tx)}
+body{background:var(--bg);font-family:var(--sans)}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(248,250,252,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;align-items:center;gap:14px}
+.htit{font-size:13.5px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.hsub{font-size:10.5px;color:var(--tx3);font-weight:400}
+.srch{flex:1;max-width:360px;margin-left:auto;position:relative}
+.srch input{width:100%;padding:6px 12px 6px 29px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;background:var(--s);color:var(--tx);outline:none;transition:all .15s}
+.srch input:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.15)}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx3)}
+.stag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blbg);color:var(--bl);border:1px solid var(--blbd);white-space:nowrap;flex-shrink:0}
+.lay{display:flex;min-height:calc(100vh - 43px)}
+.sb{width:var(--sw);flex-shrink:0;position:sticky;top:43px;height:calc(100vh - 43px);overflow-y:auto;background:var(--s);border-right:1px solid var(--bd);padding:10px 0}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.nlbl{font-size:9.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;padding:8px 14px 3px;margin-top:5px}
+.nl{display:flex;align-items:center;gap:7px;padding:5px 14px;font-size:11.5px;color:var(--tx2);cursor:pointer;transition:all .12s;border-left:2px solid transparent}
+.nl:hover{background:var(--s2);color:var(--tx)}
+.nl.active{background:var(--blbg);color:var(--bl);border-left-color:var(--bl);font-weight:500}
+.ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0;opacity:.7}
+.nl.active .ndot{opacity:1}
+.main{flex:1;padding:20px 26px 80px;overflow-x:hidden}
+.sec{margin-bottom:32px;scroll-margin-top:52px}
+.sec.hidden-sec{display:none}
+.sch{display:flex;align-items:center;gap:9px;margin-bottom:8px;padding-bottom:8px;border-bottom:2px solid var(--bd)}
+.sdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stit{font-size:15px;font-weight:600;font-family:var(--serif)}
+.intro-txt{font-size:12px;color:var(--tx3);margin-bottom:12px;padding:8px 12px;border-radius:7px;border-left:3px solid #93c5fd;background:var(--blbg);line-height:1.65;font-style:italic}
+.tabs{display:flex;gap:2px;margin-bottom:11px;border-bottom:1px solid var(--bd);padding-bottom:0}
+.tab-btn{padding:6px 15px;font-size:12px;font-weight:500;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--tx3);cursor:pointer;transition:all .15s;margin-bottom:-1px;border-radius:4px 4px 0 0}
+.tab-btn:hover{color:var(--tx2);background:var(--s2)}
+.tab-btn.active{color:var(--bl);border-bottom-color:var(--bl);background:var(--blbg)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+.acc{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:8px}
+.acc:hover{box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.acc-hdr{display:flex;align-items:flex-start;gap:9px;padding:11px 15px;background:var(--s2);cursor:pointer;user-select:none;transition:background .12s}
+.acc-hdr:hover{background:#e8edf2}
+.acc-hdr.open{background:#eff4ff}
+.acc-arrow{font-size:9px;color:var(--tx3);transition:transform .2s;flex-shrink:0;margin-top:3px}
+.acc-hdr.open .acc-arrow{transform:rotate(90deg);color:var(--bl)}
+.acc-htxt{font-size:13px;font-weight:500;color:var(--tx);line-height:1.4}
+.acc-body{display:none}.acc-body.open{display:block}
+.pts-wrap{padding:12px 15px 14px;display:flex;flex-direction:column;gap:9px}
+.pt{font-size:12.5px;color:var(--tx2);line-height:1.78;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-left:3px solid #cbd5e1;border-radius:0 7px 7px 0}
+.pt:hover{border-left-color:#93c5fd}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:9px}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:9px;padding:11px 13px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--bd2);box-shadow:0 2px 7px rgba(0,0,0,.05)}
+.ctop{display:flex;align-items:flex-start;gap:7px}
+.badge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;flex-shrink:0;white-space:nowrap;margin-top:1px;border:1px solid transparent}
+.ctit{font-size:12px;font-weight:500;color:var(--tx);line-height:1.4}
+.ctit a{color:inherit;text-decoration:none}
+.ctit a:hover{color:var(--bl);text-decoration:underline}
+.cdesc{font-size:11px;color:var(--tx2);line-height:1.45}
+.cmeta{display:flex;align-items:center;gap:6px;margin-top:1px}
+.csrc{font-size:10px;color:var(--tx3)}
+.cdiff{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.de{background:#f0fdf4;color:#15803d}.dm{background:#fffbeb;color:#b45309}.da{background:#fef2f2;color:#b91c1c}
+.curl{font-size:10px;color:#64748b;word-break:break-all;text-decoration:none}
+.curl:hover{color:var(--bl)}
+.b-paper{background:#f8fafc;color:#334155;border-color:#cbd5e1}
+.b-blog{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.b-video{background:#dbeafe;color:#1e40af;border-color:#bfdbfe}
+.b-docs{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe}
+.b-book{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.b-course{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+.b-tool{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}
+.b-visual{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.nr{display:none;text-align:center;padding:50px;color:var(--tx3);font-style:italic;font-size:13px}
+.btt{position:fixed;bottom:22px;right:22px;width:34px;height:34px;background:var(--tx);color:#fff;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .2s;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.btt.show{opacity:1}.btt:hover{background:#333;transform:translateY(-1px)}
+.res-block{margin-top:14px}.res-section-label{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding-top:12px;border-top:1px solid var(--bd)}/* ── READABILITY OVERRIDES ── */
+.acc-body{display:block!important}
+.acc{border:none!important;border-radius:0!important;box-shadow:none!important;margin-bottom:0!important}
+.acc+.acc{border-top:1px solid var(--bd)!important}
+.acc:hover{box-shadow:none!important}
+.acc-hdr{background:transparent!important;padding:16px 0 5px!important;cursor:default!important;gap:0!important}
+.acc-hdr:hover,.acc-hdr.open{background:transparent!important}
+.acc-arrow{display:none!important}
+.acc-htxt{font-size:13.5px!important;font-weight:600!important;color:var(--tx)!important;letter-spacing:-.01em}
+.pts-wrap{padding:4px 0 22px!important;gap:16px!important}
+.pt{font-size:13.5px!important;line-height:1.85!important;color:var(--tx2)!important;padding:0!important;background:transparent!important;border:none!important;border-radius:0!important}
+.pt:hover{border-left-color:transparent!important}
+.intro-txt{font-size:13px!important;line-height:1.72!important}
+.intro-txt{font-style:normal!important;color:var(--tx)!important;background:transparent!important;padding:2px 0 2px 14px!important;border-radius:0!important}.intro-lines{margin-top:11px;display:flex;flex-direction:column;gap:6px}.intro-line{font-size:13px;line-height:1.65;color:var(--tx2)}.intro-line strong{color:var(--tx);font-weight:600}
+/* ── THREE-COLUMN LAYOUT ── */
+.content-area{flex:1;display:flex;align-items:flex-start;min-width:0;gap:0}
+.main{flex:1;max-width:720px;min-width:0}
+.toc-rail{width:190px;flex-shrink:0;position:sticky;top:43px;height:calc(100vh - 43px);overflow-y:auto;padding:14px 0 20px 14px;border-left:1px solid var(--bd);background:var(--s)}
+.toc-rail::-webkit-scrollbar{width:2px}.toc-rail::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.toc-head{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd);padding-right:14px}
+.toc-sec{display:block;font-size:11px;color:var(--tx3);text-decoration:none;padding:3px 0;line-height:1.4;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px;transition:color .12s}
+.toc-sec:hover{color:var(--tx2)}
+.toc-sec.active{color:var(--bl)!important;font-weight:600}
+.toc-notes{flex-direction:column;display:none}
+.toc-notes.open{display:flex}
+.toc-note{display:block;font-size:10.5px;color:var(--tx3);text-decoration:none;padding:2px 14px 2px 10px;line-height:1.4;cursor:pointer;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.toc-note:hover{color:var(--tx2)}
+.toc-note.active{color:var(--bl);border-left-color:var(--bl)}
+[id^="nh-"]{scroll-margin-top:60px}
+@media(max-width:1200px){.toc-rail{display:none}}
+/* ── GUIDE RAIL REDESIGN ── */
+.content-area{gap:40px!important}
+.toc-rail{background:transparent!important;border-left:none!important;padding:18px 0 20px 0!important}
+.guide-head{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin-bottom:14px}
+.guide-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:none}
+.guide-check{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s}
+.guide-check:hover{border-color:var(--bl)}
+.guide-item.done .guide-check{background:var(--bl);border-color:var(--bl);color:#fff}
+.guide-text{font-size:11.5px;color:var(--tx3);line-height:1.6;cursor:pointer;flex:1;transition:color .12s}
+.guide-text:hover{color:var(--tx2)}
+.guide-text strong{color:var(--tx2);font-weight:600}
+.guide-item.done .guide-text{opacity:.4;text-decoration:line-through;text-decoration-color:var(--bd2)}
+.guide-item.done .guide-text strong{color:inherit}
+/* ── RESPONSIVE 3-COLUMN GRID (overrides all previous layout rules) ── */
+.lay{display:grid!important;align-items:start!important;gap:0!important;
+     grid-template-columns:clamp(180px,16%,240px) 1fr clamp(220px,22%,320px)!important}
+.content-area{display:contents!important;flex:unset!important;gap:unset!important}
+.main{flex:unset!important;max-width:none!important;min-width:0!important;padding-right:36px!important}
+.toc-rail{width:unset!important;min-width:unset!important;flex-shrink:unset!important;
+          padding-left:22px!important;border-left:1px solid var(--bd)!important;
+          background:transparent!important}
+@media(max-width:1200px){
+  .toc-rail{display:none!important}
+  .lay{grid-template-columns:clamp(180px,16%,240px) 1fr!important}
+}
+/* ── RESIZE HANDLE ── */
+.toc-rail{position:relative!important}
+.resize-handle{position:absolute;left:-1px;top:0;bottom:0;width:8px;cursor:col-resize;
+  z-index:20;background:transparent;border-left:2px solid transparent;transition:border-color .15s,background .15s}
+.resize-handle:hover,.resize-handle.dragging{border-left-color:var(--bl);background:rgba(99,102,241,.07)}
+.guide-content{width:100%}
+/* === STICKY GUIDE FIX === */
+.toc-rail{
+  position:sticky!important;
+  top:43px!important;
+  height:calc(100vh - 43px)!important;
+  overflow-y:auto!important;
+  align-self:start!important;
+}
+.lay{align-items:start!important}
+
+.note-fig{margin:12px 0 16px;border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden;background:var(--s)}
+.note-fig svg{width:100%;height:auto;display:block;max-height:300px}
+.diag-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--accent,#2563eb);text-decoration:none;opacity:.8}
+.diag-link:hover{opacity:1;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htit">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    AI/ML 基础体系
+    <span class="hsub">· 数学直觉 · 传统ML · 深度学习演进 · 选型框架 · 前沿方向</span>
+  </div>
+  <div class="srch"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="搜索概念、算法、场景..."></div>
+  <span class="stag" id="stag">加载中…</span>
+</div>
+<div class="lay">
+<nav class="sb" id="sb"><div id="nav"></div></nav>
+<div class="content-area"><main class="main"><div id="cont"></div><div id="nr" class="nr">未找到相关内容</div></main><nav class="toc-rail" id="toc-rail"></nav></div>
+</div>
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- DIAGRAM TEMPLATES -->
+<div id="diag_linear_algebra" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="16" text-anchor="middle" fill="#111">矩阵乘法：向量经过线性变换</text>
+<rect x="10" y="30" width="140" height="60" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="80" y="50" text-anchor="middle" fill="#1e40af">输入向量 x</text>
+<text style="font:11px monospace;fill:#1e40af" x="80" y="70" text-anchor="middle">[x₁, x₂, ..., xₙ]</text>
+<rect x="190" y="30" width="140" height="60" rx="6" fill="#7c3aed"/>
+<text class="t" x="260" y="50" text-anchor="middle" fill="white">权重矩阵 W</text>
+<text style="font:11px monospace;fill:#ede9fe" x="260" y="70" text-anchor="middle">shape: [m × n]</text>
+<rect x="370" y="30" width="140" height="60" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="440" y="50" text-anchor="middle" fill="#14532d">输出向量 y</text>
+<text style="font:11px monospace;fill:#15803d" x="440" y="70" text-anchor="middle">y = Wx  [m维]</text>
+<defs><marker id="la" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="150" y1="60" x2="190" y2="60" stroke="#374151" stroke-width="2" marker-end="url(#la)"/>
+<line x1="330" y1="60" x2="370" y2="60" stroke="#374151" stroke-width="2" marker-end="url(#la)"/>
+<rect x="60" y="110" width="400" height="60" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="260" y="130" text-anchor="middle" fill="#78350f">特征值与特征向量：Av = λv</text>
+<text class="sm" x="260" y="148" text-anchor="middle" fill="#92400e">特征向量方向不变，特征值λ是伸缩比例 | PCA降维核心：找方差最大的方向（最大特征值对应特征向量）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="172" text-anchor="middle">神经网络本质：多层线性变换 + 非线性激活函数 | 注意力机制 = Q·Kᵀ 就是矩阵乘法</text>
+</svg></div>
+<div id="diag_gradient_descent" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 12px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="16" text-anchor="middle" fill="#111">梯度下降：沿损失曲面最陡下坡方向移动</text>
+<path d="M30 160 Q130 20 260 80 Q360 130 490 40" fill="none" stroke="#94a3b8" stroke-width="2"/>
+<path d="M30 170 Q130 30 260 90 Q360 140 490 50" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,3"/>
+<path d="M30 175 Q130 35 260 95 Q360 145 490 55" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,3"/>
+<text class="sm" x="35" y="155" fill="#94a3b8">Loss</text>
+<text class="sm" x="490" y="35" fill="#94a3b8">surface</text>
+<circle cx="420" cy="70" r="7" fill="#dc2626"/>
+<text class="sm" x="430" y="66" fill="#dc2626">起点</text>
+<defs><marker id="gd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="420" y1="70" x2="390" y2="82" stroke="#2563eb" stroke-width="2" marker-end="url(#gd)"/>
+<line x1="390" y1="82" x2="360" y2="95" stroke="#2563eb" stroke-width="2" marker-end="url(#gd)"/>
+<line x1="360" y1="95" x2="330" y2="105" stroke="#2563eb" stroke-width="2" marker-end="url(#gd)"/>
+<line x1="330" y1="105" x2="300" y2="100" stroke="#2563eb" stroke-width="2" marker-end="url(#gd)"/>
+<circle cx="290" cy="95" r="7" fill="#16a34a"/>
+<text class="sm" x="300" y="110" fill="#16a34a">全局最小值</text>
+<rect x="30" y="108" width="180" height="70" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="120" y="126" text-anchor="middle" fill="#4c1d95">参数更新规则</text>
+<text style="font:12px monospace;fill:#6d28d9" x="120" y="145" text-anchor="middle">θ = θ - η·∇L(θ)</text>
+<text class="sm" x="120" y="162" text-anchor="middle" fill="#7c3aed">η：学习率（步长）</text>
+<text class="sm" x="120" y="176" text-anchor="middle" fill="#7c3aed">∇L：梯度（下坡方向）</text>
+<rect x="310" y="108" width="200" height="70" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="410" y="126" text-anchor="middle" fill="#831843">局部最小值问题</text>
+<text class="sm" x="410" y="145" text-anchor="middle" fill="#be185d">SGD：随机批次引入噪声</text>
+<text class="sm" x="410" y="159" text-anchor="middle" fill="#be185d">有助于逃离局部最小</text>
+<text class="sm" x="410" y="173" text-anchor="middle" fill="#be185d">Adam：自适应学习率</text>
+</svg></div>
+<div id="diag_ml_paradigms" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<rect x="10" y="10" width="155" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="87" y="30" text-anchor="middle" fill="#1e40af">监督学习</text>
+<text class="sm" x="87" y="46" text-anchor="middle" fill="#3b82f6">有标签数据 (x, y)</text>
+<text class="sm" x="87" y="62" text-anchor="middle" fill="#3b82f6">学习映射 f: x→y</text>
+<rect x="22" y="74" width="131" height="18" rx="3" fill="#bfdbfe"/><text class="sm" x="87" y="87" text-anchor="middle" fill="#1e40af">分类·回归·序列标注</text>
+<rect x="22" y="96" width="131" height="18" rx="3" fill="#93c5fd"/><text class="sm" x="87" y="109" text-anchor="middle" fill="#1e40af">线性/树/SVM/NN</text>
+<text class="sm" x="87" y="130" text-anchor="middle" fill="#3b82f6">代表：GPT预训练</text>
+<rect x="183" y="10" width="155" height="130" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="260" y="30" text-anchor="middle" fill="#14532d">无监督学习</text>
+<text class="sm" x="260" y="46" text-anchor="middle" fill="#15803d">无标签，发现结构</text>
+<text class="sm" x="260" y="62" text-anchor="middle" fill="#15803d">找模式/聚类/降维</text>
+<rect x="195" y="74" width="131" height="18" rx="3" fill="#bbf7d0"/><text class="sm" x="260" y="87" text-anchor="middle" fill="#14532d">聚类·降维·生成</text>
+<rect x="195" y="96" width="131" height="18" rx="3" fill="#86efac"/><text class="sm" x="260" y="109" text-anchor="middle" fill="#14532d">K-means·PCA·VAE</text>
+<text class="sm" x="260" y="130" text-anchor="middle" fill="#15803d">代表：Word2Vec</text>
+<rect x="356" y="10" width="155" height="130" rx="7" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+<text class="t" x="433" y="30" text-anchor="middle" fill="#78350f">强化学习</text>
+<text class="sm" x="433" y="46" text-anchor="middle" fill="#92400e">智能体与环境交互</text>
+<text class="sm" x="433" y="62" text-anchor="middle" fill="#92400e">最大化累积奖励</text>
+<rect x="368" y="74" width="131" height="18" rx="3" fill="#fde68a"/><text class="sm" x="433" y="87" text-anchor="middle" fill="#78350f">策略·值函数·回报</text>
+<rect x="368" y="96" width="131" height="18" rx="3" fill="#fcd34d"/><text class="sm" x="433" y="109" text-anchor="middle" fill="#78350f">Q-learning·PPO·GRPO</text>
+<text class="sm" x="433" y="130" text-anchor="middle" fill="#92400e">代表：RLHF对齐LLM</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="168" text-anchor="middle">自监督学习 = 无监督框架 + 监督信号（从数据本身构造标签），如 BERT masked token、GPT next token prediction</text>
+</svg></div>
+<div id="diag_decision_tree" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">决策树：每个节点用特征分裂，叶节点是预测值</text>
+<rect x="210" y="22" width="100" height="30" rx="6" fill="#7c3aed"/>
+<text class="sm" x="260" y="42" text-anchor="middle" fill="white">年龄 ≥ 30?</text>
+<defs><marker id="ta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="230" y1="52" x2="155" y2="80" stroke="#374151" stroke-width="1.5" marker-end="url(#ta)"/>
+<text class="sm" x="175" y="72" fill="#374151">是</text>
+<line x1="290" y1="52" x2="365" y2="80" stroke="#374151" stroke-width="1.5" marker-end="url(#ta)"/>
+<text class="sm" x="335" y="72" fill="#374151">否</text>
+<rect x="105" y="80" width="100" height="28" rx="5" fill="#2563eb"/>
+<text class="sm" x="155" y="98" text-anchor="middle" fill="white">收入 ≥ 50k?</text>
+<rect x="315" y="80" width="100" height="28" rx="5" fill="#0891b2"/>
+<text class="sm" x="365" y="98" text-anchor="middle" fill="white">是否有工作?</text>
+<line x1="130" y1="108" x2="85" y2="136" stroke="#374151" stroke-width="1.2" marker-end="url(#ta)"/>
+<text class="sm" x="93" y="128" fill="#374151">是</text>
+<line x1="180" y1="108" x2="225" y2="136" stroke="#374151" stroke-width="1.2" marker-end="url(#ta)"/>
+<text class="sm" x="208" y="128" fill="#374151">否</text>
+<line x1="340" y1="108" x2="295" y2="136" stroke="#374151" stroke-width="1.2" marker-end="url(#ta)"/>
+<text class="sm" x="295" y="128" fill="#374151">是</text>
+<line x1="390" y1="108" x2="435" y2="136" stroke="#374151" stroke-width="1.2" marker-end="url(#ta)"/>
+<text class="sm" x="415" y="128" fill="#374151">否</text>
+<rect x="55" y="136" width="60" height="26" rx="5" fill="#16a34a"/><text class="sm" x="85" y="153" text-anchor="middle" fill="white">批准✓</text>
+<rect x="195" y="136" width="60" height="26" rx="5" fill="#dc2626"/><text class="sm" x="225" y="153" text-anchor="middle" fill="white">拒绝✗</text>
+<rect x="265" y="136" width="60" height="26" rx="5" fill="#16a34a"/><text class="sm" x="295" y="153" text-anchor="middle" fill="white">批准✓</text>
+<rect x="405" y="136" width="60" height="26" rx="5" fill="#dc2626"/><text class="sm" x="435" y="153" text-anchor="middle" fill="white">拒绝✗</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="180" text-anchor="middle">随机森林：多棵决策树投票，降低过拟合 | XGBoost/LightGBM：梯度提升，每棵树修正上一棵的误差</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="195" text-anchor="middle">为什么表格数据还用树模型：特征独立性假设更适合，对异常值鲁棒，无需归一化</text>
+</svg></div>
+<div id="diag_mlp" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">多层感知机 MLP：输入→隐藏层→输出，每层全连接</text>
+<text class="sm" x="55" y="32" text-anchor="middle" fill="#374151">输入层</text>
+<circle cx="55" cy="55" r="14" fill="#dbeafe" stroke="#3b82f6"/><text style="font:10px sans-serif;fill:#1e40af" x="55" y="59" text-anchor="middle">x₁</text>
+<circle cx="55" cy="90" r="14" fill="#dbeafe" stroke="#3b82f6"/><text style="font:10px sans-serif;fill:#1e40af" x="55" y="94" text-anchor="middle">x₂</text>
+<circle cx="55" cy="125" r="14" fill="#dbeafe" stroke="#3b82f6"/><text style="font:10px sans-serif;fill:#1e40af" x="55" y="129" text-anchor="middle">x₃</text>
+<text class="sm" x="200" y="32" text-anchor="middle" fill="#374151">隐藏层1</text>
+<circle cx="200" cy="48" r="14" fill="#7c3aed"/><text style="font:10px sans-serif;fill:white" x="200" y="52" text-anchor="middle">h</text>
+<circle cx="200" cy="80" r="14" fill="#7c3aed"/><text style="font:10px sans-serif;fill:white" x="200" y="84" text-anchor="middle">h</text>
+<circle cx="200" cy="112" r="14" fill="#7c3aed"/><text style="font:10px sans-serif;fill:white" x="200" y="116" text-anchor="middle">h</text>
+<circle cx="200" cy="144" r="14" fill="#7c3aed"/><text style="font:10px sans-serif;fill:white" x="200" y="148" text-anchor="middle">h</text>
+<text class="sm" x="340" y="32" text-anchor="middle" fill="#374151">隐藏层2</text>
+<circle cx="340" cy="60" r="14" fill="#0891b2"/><text style="font:10px sans-serif;fill:white" x="340" y="64" text-anchor="middle">h</text>
+<circle cx="340" cy="96" r="14" fill="#0891b2"/><text style="font:10px sans-serif;fill:white" x="340" y="100" text-anchor="middle">h</text>
+<circle cx="340" cy="132" r="14" fill="#0891b2"/><text style="font:10px sans-serif;fill:white" x="340" y="136" text-anchor="middle">h</text>
+<text class="sm" x="460" y="32" text-anchor="middle" fill="#374151">输出层</text>
+<circle cx="460" cy="80" r="14" fill="#dcfce7" stroke="#16a34a"/><text style="font:10px sans-serif;fill:#14532d" x="460" y="84" text-anchor="middle">y₁</text>
+<circle cx="460" cy="112" r="14" fill="#dcfce7" stroke="#16a34a"/><text style="font:10px sans-serif;fill:#14532d" x="460" y="116" text-anchor="middle">y₂</text>
+<g stroke="#94a3b8" stroke-width="0.7" opacity="0.5">
+<line x1="69" y1="55" x2="186" y2="48"/><line x1="69" y1="55" x2="186" y2="80"/>
+<line x1="69" y1="55" x2="186" y2="112"/><line x1="69" y1="55" x2="186" y2="144"/>
+<line x1="69" y1="90" x2="186" y2="48"/><line x1="69" y1="90" x2="186" y2="80"/>
+<line x1="69" y1="90" x2="186" y2="112"/><line x1="69" y1="90" x2="186" y2="144"/>
+<line x1="69" y1="125" x2="186" y2="48"/><line x1="69" y1="125" x2="186" y2="80"/>
+<line x1="69" y1="125" x2="186" y2="112"/><line x1="69" y1="125" x2="186" y2="144"/>
+<line x1="214" y1="48" x2="326" y2="60"/><line x1="214" y1="48" x2="326" y2="96"/><line x1="214" y1="48" x2="326" y2="132"/>
+<line x1="214" y1="80" x2="326" y2="60"/><line x1="214" y1="80" x2="326" y2="96"/><line x1="214" y1="80" x2="326" y2="132"/>
+<line x1="214" y1="112" x2="326" y2="60"/><line x1="214" y1="112" x2="326" y2="96"/><line x1="214" y1="112" x2="326" y2="132"/>
+<line x1="214" y1="144" x2="326" y2="60"/><line x1="214" y1="144" x2="326" y2="96"/><line x1="214" y1="144" x2="326" y2="132"/>
+<line x1="354" y1="60" x2="446" y2="80"/><line x1="354" y1="60" x2="446" y2="112"/>
+<line x1="354" y1="96" x2="446" y2="80"/><line x1="354" y1="96" x2="446" y2="112"/>
+<line x1="354" y1="132" x2="446" y2="80"/><line x1="354" y1="132" x2="446" y2="112"/>
+</g>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="172" text-anchor="middle">每个节点：y = σ(Wx + b)，σ是激活函数（ReLU/GELU），反向传播计算每个参数的梯度</text>
+</svg></div>
+<div id="diag_transformer" style="display:none"><svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Transformer：注意力机制让每个 token 关注所有其他 token</text>
+<rect x="20" y="25" width="225" height="175" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text class="t" x="132" y="43" text-anchor="middle" fill="#4c1d95">Encoder Block（BERT风格）</text>
+<rect x="35" y="52" width="195" height="28" rx="5" fill="#7c3aed"/>
+<text class="sm" x="132" y="70" text-anchor="middle" fill="white">Multi-Head Self-Attention</text>
+<rect x="55" y="88" width="155" height="22" rx="4" fill="#a78bfa"/>
+<text class="sm" x="132" y="103" text-anchor="middle" fill="white">Add &amp; Layer Norm</text>
+<rect x="35" y="118" width="195" height="28" rx="5" fill="#6d28d9"/>
+<text class="sm" x="132" y="136" text-anchor="middle" fill="white">Feed-Forward Network</text>
+<rect x="55" y="154" width="155" height="22" rx="4" fill="#a78bfa"/>
+<text class="sm" x="132" y="169" text-anchor="middle" fill="white">Add &amp; Layer Norm</text>
+<rect x="275" y="25" width="225" height="175" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+<text class="t" x="387" y="43" text-anchor="middle" fill="#064e3b">Attention：Q·Kᵀ/√d · V</text>
+<rect x="310" y="52" width="55" height="28" rx="5" fill="#059669"/>
+<text class="sm" x="337" y="70" text-anchor="middle" fill="white">Query</text>
+<rect x="375" y="52" width="55" height="28" rx="5" fill="#16a34a"/>
+<text class="sm" x="402" y="70" text-anchor="middle" fill="white">Key</text>
+<rect x="440" y="52" width="50" height="28" rx="5" fill="#4ade80" stroke="#16a34a"/>
+<text class="sm" x="465" y="70" text-anchor="middle" fill="#14532d">Value</text>
+<rect x="310" y="96" width="180" height="26" rx="5" fill="#bbf7d0" stroke="#16a34a"/>
+<text class="sm" x="400" y="113" text-anchor="middle" fill="#14532d">Attention Scores = Q·Kᵀ/√d</text>
+<rect x="310" y="130" width="180" height="26" rx="5" fill="#86efac" stroke="#059669"/>
+<text class="sm" x="400" y="147" text-anchor="middle" fill="#14532d">Softmax → Weights</text>
+<rect x="310" y="164" width="180" height="26" rx="5" fill="#34d399"/>
+<text class="sm" x="400" y="181" text-anchor="middle" fill="white">Output = Weights × V</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="210" text-anchor="middle">Multi-Head：多个注意力头并行，各关注不同特征（语法/语义/指代）| 位置编码 RoPE：相对位置</text>
+</svg></div>
+<div id="diag_optimizers" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">优化器演进：每代解决上代的核心问题</text>
+<rect x="10" y="24" width="110" height="90" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="65" y="42" text-anchor="middle" fill="#831843">SGD</text>
+<text class="sm" x="65" y="58" text-anchor="middle" fill="#be185d">小批量梯度</text>
+<text class="sm" x="65" y="72" text-anchor="middle" fill="#be185d">固定学习率</text>
+<text class="sm" x="65" y="86" text-anchor="middle" fill="#be185d">学习率敏感</text>
+<text class="sm" x="65" y="100" text-anchor="middle" fill="#be185d">收敛慢</text>
+<rect x="135" y="24" width="110" height="90" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="190" y="42" text-anchor="middle" fill="#78350f">Momentum</text>
+<text class="sm" x="190" y="58" text-anchor="middle" fill="#92400e">积累梯度方向</text>
+<text class="sm" x="190" y="72" text-anchor="middle" fill="#92400e">加速收敛</text>
+<text class="sm" x="190" y="86" text-anchor="middle" fill="#92400e">β≈0.9</text>
+<text class="sm" x="190" y="100" text-anchor="middle" fill="#92400e">还需调学习率</text>
+<rect x="260" y="24" width="110" height="90" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="315" y="42" text-anchor="middle" fill="#1e40af">Adam</text>
+<text class="sm" x="315" y="58" text-anchor="middle" fill="#3b82f6">自适应学习率</text>
+<text class="sm" x="315" y="72" text-anchor="middle" fill="#3b82f6">一阶+二阶矩</text>
+<text class="sm" x="315" y="86" text-anchor="middle" fill="#3b82f6">大多数任务</text>
+<text class="sm" x="315" y="100" text-anchor="middle" fill="#3b82f6">默认选择</text>
+<rect x="385" y="24" width="120" height="90" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="445" y="42" text-anchor="middle" fill="#14532d">AdamW</text>
+<text class="sm" x="445" y="58" text-anchor="middle" fill="#15803d">Adam + L2正则</text>
+<text class="sm" x="445" y="72" text-anchor="middle" fill="#15803d">权重衰减解耦</text>
+<text class="sm" x="445" y="86" text-anchor="middle" fill="#15803d">LLM训练标准</text>
+<text class="sm" x="445" y="100" text-anchor="middle" fill="#15803d">GPT/BERT默认</text>
+<defs><marker id="oa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="120" y1="70" x2="135" y2="70" stroke="#374151" stroke-width="1.5" marker-end="url(#oa)"/>
+<line x1="245" y1="70" x2="260" y2="70" stroke="#374151" stroke-width="1.5" marker-end="url(#oa)"/>
+<line x1="370" y1="70" x2="385" y2="70" stroke="#374151" stroke-width="1.5" marker-end="url(#oa)"/>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="135" text-anchor="middle">Learning Rate Schedule：Warmup（从小到大）→ Cosine Decay（缓慢降低），LLM 训练标准配置</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="152" text-anchor="middle">Gradient Clipping（梯度裁剪）：防止梯度爆炸，max_norm=1.0 是 Transformer 训练的标准超参数</text>
+</svg></div>
+<div id="diag_model_selection" style="display:none"><svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">模型选型决策树：LLM vs 小模型 vs 传统 ML</text>
+<rect x="195" y="24" width="130" height="30" rx="6" fill="#7c3aed"/>
+<text class="sm" x="260" y="43" text-anchor="middle" fill="white">需要语言理解/生成?</text>
+<defs><marker id="ma" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="210" y1="54" x2="130" y2="80" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="155" y="73" fill="#374151">是</text>
+<line x1="310" y1="54" x2="390" y2="80" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="355" y="73" fill="#374151">否</text>
+<rect x="70" y="80" width="120" height="28" rx="5" fill="#2563eb"/>
+<text class="sm" x="130" y="97" text-anchor="middle" fill="white">数据量 &lt; 1万条?</text>
+<rect x="330" y="80" width="120" height="28" rx="5" fill="#0891b2"/>
+<text class="sm" x="390" y="97" text-anchor="middle" fill="white">表格/结构化数据?</text>
+<line x1="90" y1="108" x2="55" y2="134" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="60" y="128" fill="#374151">是</text>
+<line x1="170" y1="108" x2="210" y2="134" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="195" y="128" fill="#374151">否</text>
+<line x1="350" y1="108" x2="310" y2="134" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="312" y="128" fill="#374151">是</text>
+<line x1="430" y1="108" x2="465" y2="134" stroke="#374151" stroke-width="1.2" marker-end="url(#ma)"/>
+<text class="sm" x="450" y="128" fill="#374151">否</text>
+<rect x="10" y="134" width="90" height="36" rx="5" fill="#16a34a"/>
+<text class="sm" x="55" y="150" text-anchor="middle" fill="white">API LLM</text>
+<text class="sm" x="55" y="164" text-anchor="middle" fill="white">GPT/Claude</text>
+<rect x="170" y="134" width="90" height="36" rx="5" fill="#7c3aed"/>
+<text class="sm" x="215" y="150" text-anchor="middle" fill="white">微调小LLM</text>
+<text class="sm" x="215" y="164" text-anchor="middle" fill="white">Qwen/Llama</text>
+<rect x="270" y="134" width="90" height="36" rx="5" fill="#d97706"/>
+<text class="sm" x="315" y="150" text-anchor="middle" fill="white">XGBoost</text>
+<text class="sm" x="315" y="164" text-anchor="middle" fill="white">LightGBM</text>
+<rect x="430" y="134" width="80" height="36" rx="5" fill="#dc2626"/>
+<text class="sm" x="470" y="150" text-anchor="middle" fill="white">深度学习</text>
+<text class="sm" x="470" y="164" text-anchor="middle" fill="white">CNN/LSTM</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="192" text-anchor="middle">首选 LLM API → 数据充足后考虑微调 → 表格数据几乎总是树模型更好</text>
+</svg></div>
+<div id="diag_rag_vs_ft" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">RAG vs 微调 vs Prompt Engineering 选型</text>
+<rect x="10" y="24" width="155" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="87" y="42" text-anchor="middle" fill="#1e40af">Prompt Engineering</text>
+<text class="sm" x="87" y="58" text-anchor="middle" fill="#3b82f6">系统提示词设计</text>
+<text class="sm" x="87" y="74" text-anchor="middle" fill="#3b82f6">Few-shot 示例</text>
+<rect x="22" y="84" width="131" height="16" rx="3" fill="#16a34a" opacity=".8"/><text class="sm" x="87" y="96" text-anchor="middle" fill="white">✓ 零成本·快速迭代</text>
+<rect x="22" y="104" width="131" height="16" rx="3" fill="#dc2626" opacity=".8"/><text class="sm" x="87" y="116" text-anchor="middle" fill="white">✗ 知识受限于训练</text>
+<text class="sm" x="87" y="140" text-anchor="middle" fill="#3b82f6">适合：任务格式定制</text>
+<rect x="183" y="24" width="155" height="130" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#14532d">RAG</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#15803d">检索+增强生成</text>
+<text class="sm" x="260" y="74" text-anchor="middle" fill="#15803d">外部知识库动态注入</text>
+<rect x="195" y="84" width="131" height="16" rx="3" fill="#16a34a" opacity=".8"/><text class="sm" x="260" y="96" text-anchor="middle" fill="white">✓ 知识实时更新</text>
+<rect x="195" y="104" width="131" height="16" rx="3" fill="#dc2626" opacity=".8"/><text class="sm" x="260" y="116" text-anchor="middle" fill="white">✗ 依赖检索质量</text>
+<text class="sm" x="260" y="140" text-anchor="middle" fill="#14532d">适合：知识密集型QA</text>
+<rect x="356" y="24" width="155" height="130" rx="7" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+<text class="t" x="433" y="42" text-anchor="middle" fill="#78350f">Fine-tuning 微调</text>
+<text class="sm" x="433" y="58" text-anchor="middle" fill="#92400e">LoRA/QLoRA训练</text>
+<text class="sm" x="433" y="74" text-anchor="middle" fill="#92400e">调整模型权重</text>
+<rect x="368" y="84" width="131" height="16" rx="3" fill="#16a34a" opacity=".8"/><text class="sm" x="433" y="96" text-anchor="middle" fill="white">✓ 领域能力内化</text>
+<rect x="368" y="104" width="131" height="16" rx="3" fill="#dc2626" opacity=".8"/><text class="sm" x="433" y="116" text-anchor="middle" fill="white">✗ 成本高·需数据</text>
+<text class="sm" x="433" y="140" text-anchor="middle" fill="#78350f">适合：固定格式/风格</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="170" text-anchor="middle">决策顺序：先 Prompt → 不够再 RAG → 仍不够再微调 | 三者可以组合使用</text>
+</svg></div>
+<!-- END DIAGRAM TEMPLATES -->
+<script>
+const D=[{"id":"math_intuition","phase":"数学基础","title":"数学直觉 · 线性代数 · 概率 · 优化","color":"#1e40af","bg":"#EFF6FF","intro":"这里不做数学推导，而是建立「这个数学概念对应哪个工程实践」的映射。掌握这四块，读任何 ML 论文都能理解数学符号在表达什么。","notes":[{"h":"线性代数：向量空间与矩阵乘法","pts":["向量空间是理解 Embedding 的数学基础。把「猫」表示成一个 512 维向量，意味着把它放在一个 512 维的空间里，语义相似的词在这个空间里距离近。这个直觉就是 Word2Vec、BERT embedding、CLIP 的视觉-文本对齐的共同基础——「意义」被编码为向量空间里的位置关系。","矩阵乘法是 GPU 加速的核心操作。神经网络的前向传播本质上是一系列矩阵乘法（线性变换）加非线性激活。GPU 的 Tensor Core 专门加速 GEMM（General Matrix Multiplication），LLM 训练/推理 90% 以上的计算都是矩阵乘法。理解矩阵乘法的计算复杂度（两个 n×n 矩阵相乘是 O(n³) 次乘加）就能理解为什么 Transformer 的 Attention 是 O(n²) 的——它是序列长度 n 的每对 token 之间做内积，即 n 个 q 向量和 n 个 k 向量的全对内积。","SVD（奇异值分解）是 LoRA 的数学基础。SVD 把任意矩阵分解为 U·Σ·V^T 的乘积，其中 Σ 是奇异值对角矩阵。LoRA 的核心假设是「微调时权重矩阵的变化 ΔW 是低秩的」——可以用两个小矩阵 A（d×r）和 B（r×d）的乘积近似，其中 r 远小于 d。这等价于说 ΔW 的 SVD 分解中，大部分奇异值接近零，只有 r 个主要方向有显著变化。","注意力机制是矩阵乘法的优雅应用。Self-Attention 计算三步：Q·K^T 得到注意力分数矩阵（序列中每对 token 的相关性），Softmax 归一化，结果与 V 相乘得到加权聚合。整个过程是两次大矩阵乘法，计算复杂度是 O(n²·d)——这是 FlashAttention 要优化的目标，它的策略是让这两次矩阵乘法尽量在 SRAM 里完成，减少对 HBM 的读写。"],"img_key":"linear_algebra","img_link":"Linear Algebra","img_title":"https://en.wikipedia.org/wiki/Linear_algebra"},{"h":"概率论：不确定性的语言","pts":["最大似然估计（Maximum Likelihood Estimation）是语言模型训练的目标。训练 GPT 的目标是「给定前面的 token，最大化下一个 token 是正确 token 的概率」，即最大化 P(w_t | w_1,...,w_{t-1}) 对所有训练样本的乘积（取 log 变成求和，即最小化 cross-entropy loss）。这就是为什么语言模型的训练损失叫 cross-entropy：它是真实分布和预测分布之间的交叉熵，最小化它等价于最大化似然。","KL 散度（Kullback-Leibler Divergence）衡量两个概率分布之间的「差距」，在 RLHF 里扮演核心角色。RLHF 训练的总奖励是 R = Reward_score - β·KL(π_new || π_ref)，KL 项惩罚新策略偏离原始 SFT 模型太远。没有这个惩罚，PPO 会让模型退化成「能骗过 Reward Model 但输出质量极差」的状态。KL 散度不对称：KL(P||Q) ≠ KL(Q||P)，这个非对称性在变分推断（VAE）里有重要含义。","贝叶斯思维是理解不确定性的框架。贝叶斯定理 P(θ|D) ∝ P(D|θ)·P(θ) 把「观察到数据后对参数的信念」（后验）分解为「参数下数据的可能性」（似然）乘以「对参数的先验信念」（先验）。在深度学习里，正则化（L2/L1）可以理解为高斯/拉普拉斯先验；Dropout 可以理解为贝叶斯近似推断；不确定性量化（Uncertainty Quantification）是生产 AI 系统可靠性的重要方向。","信息熵是 cross-entropy loss 的来源。熵 H(P) = -Σ P(x)·log P(x) 衡量分布 P 的不确定性——均匀分布熵最大（完全不确定），确定性分布熵为零。Cross-entropy H(P,Q) = -Σ P(x)·log Q(x) 衡量用分布 Q 来编码真实分布 P 时的平均编码长度。训练神经网络最小化 cross-entropy 等价于最大化模型预测分布 Q 和真实标签分布 P 之间的对数似然，是分类任务的标准训练目标。"]},{"h":"优化：为什么梯度下降有效","pts":["梯度（Gradient）是函数在某点增长最快的方向，其大小反映增长速度。梯度下降沿梯度的反方向更新参数，每步让损失函数降低一点。直觉是：在损失函数的「山丘」上，梯度下降沿最陡峭的下坡方向走。学习率（Learning Rate）控制每步走多远——太大会越过谷底来回震荡，太小收敛太慢。","反向传播（Backpropagation）让梯度下降在深层网络上可行。关键洞察是链式法则（Chain Rule）：复合函数的导数等于各层导数的乘积。这意味着可以从输出层出发，逐层向后计算每个参数的梯度，时间复杂度和前向传播相同（O(n)），而不是对每个参数单独估计梯度（O(n²)）。PyTorch 的 autograd 系统自动实现了这个过程。","Adam 优化器（Adaptive Moment Estimation）是 LLM 训练的标配。SGD 对所有参数用同样的学习率，Adam 为每个参数维护一阶矩（梯度的均值）和二阶矩（梯度平方的均值），自适应调整每个参数的有效学习率——梯度稳定的参数学习率大，梯度波动大的参数学习率小。AdamW 在 Adam 基础上加了权重衰减（Weight Decay）修正，是现代 LLM 训练的事实标准优化器。","局部极小值在深度学习里没那么可怕——这是一个重要的反直觉结论。传统优化担心梯度下降陷入局部极小值，但高维损失面的研究发现：高维空间里的鞍点（一些维度上升，一些维度下降）远比局部极小值常见；大多数局部极小值的函数值和全局最小值接近（几乎等质量）；随机梯度下降（SGD）引入的噪声反而有助于跳出不好的鞍点。这解释了为什么深层神经网络可以被有效训练。"],"img_key":"gradient_descent","img_link":"Gradient Descent","img_title":"https://en.wikipedia.org/wiki/Gradient_descent"},{"h":"信息论：压缩与表示","pts":["Perplexity（困惑度）是语言模型评估的核心指标，本质是模型对测试集的平均预测不确定性。低 Perplexity 意味着模型对下一个词的预测更有把握——GPT-4 的 Perplexity 比 GPT-3 低，说明它更好地学到了语言的统计规律。Perplexity = 2^H，其中 H 是 cross-entropy，所以 Perplexity 越低，cross-entropy loss 越低，模型越好。","互信息（Mutual Information）衡量两个随机变量之间的依赖程度，是很多自监督学习方法的理论基础。对比学习（Contrastive Learning，如 CLIP）的目标可以理解为最大化正样本对之间的互信息，同时最小化负样本对之间的互信息。InfoNCE loss 是对这个目标的实用近似，是 CLIP/SimCLR 等对比学习方法的训练损失。","最小描述长度（MDL，Minimum Description Length）是理解模型选择的信息论视角：好的模型是能用最短描述长度来表达数据规律的模型。Occam's Razor（奥卡姆剃刀）在信息论里的对应就是 MDL——复杂模型能更精确地拟合数据，但需要更长的描述来表达模型本身；简单模型的描述短，但拟合不够精确。正则化（L1/L2）可以理解为对模型复杂度的 MDL 惩罚。"]}],"res":[{"tp":"课程","tc":"b-course","t":"3Blue1Brown: Essence of Linear Algebra（可视化）","d":"最好的线性代数直觉课程，纯可视化，无需数学背景","u":"https://www.3blue1brown.com/topics/linear-algebra","lv":"entry"},{"tp":"课程","tc":"b-course","t":"3Blue1Brown: Neural Networks（反向传播可视化）","d":"神经网络和梯度下降的可视化解释，深度学习直觉入门","u":"https://www.3blue1brown.com/topics/neural-networks","lv":"entry"},{"tp":"书籍","tc":"b-book","t":"Mathematics for Machine Learning（免费 PDF）","d":"线性代数/概率/优化三合一，专门为 ML 读者写的","u":"https://mml-book.github.io/","lv":"mid"},{"tp":"课程","tc":"b-course","t":"Stanford CS229: Machine Learning（Andrew Ng）","d":"ML 经典课程，数学推导清晰，含概率/优化/正则化","u":"https://cs229.stanford.edu/","lv":"mid"}],"intro_lines":["▸ <strong>线性代数</strong> — 向量空间是 Embedding 的基础，矩阵乘法为什么是 GPU 的核心操作，SVD 与 LoRA 的关系","▸ <strong>概率论</strong> — 最大似然估计是语言模型训练目标，KL 散度在 RLHF 里的角色，贝叶斯视角下的正则化","▸ <strong>优化</strong> — 梯度下降的山坡直觉，链式法则让反向传播可行，Adam 为什么比 SGD 更稳定","▸ <strong>信息论</strong> — Cross-entropy loss 的来源，Perplexity 的含义，互信息与对比学习的关系"]},{"id":"ml_foundations","phase":"机器学习基础","title":"传统机器学习 · 经典算法 · 特征工程","color":"#7c3aed","bg":"#F5F3FF","intro":"传统机器学习在今天仍然是很多问题的最优解。理解它的适用边界比记住算法本身更重要——表格数据、小样本、可解释性这三个场景是关键。","notes":[{"h":"监督/无监督/强化学习的本质区分","pts":["机器学习的三个范式对应三种不同的学习信号：监督学习（Supervised Learning）每个训练样本都有正确的标签，模型学习输入到标签的映射，是最常见的 ML 任务形式（分类/回归）；无监督学习（Unsupervised Learning）没有标签，模型从数据本身的结构中学习（聚类/降维/生成），代表性算法是 K-Means 和 PCA；强化学习（RL）通过与环境交互获得稀疏奖励信号，适合序列决策任务。","自监督学习（Self-Supervised Learning）是第四种范式，是预训练大模型的基础：从数据本身构造监督信号（预测被掩码的词/预测图像下半部分/预测序列的下一步），不需要人工标注。GPT 的 next-token prediction 和 BERT 的 masked language model 都是自监督学习。自监督学习解决了「大规模标注数据获取成本太高」的问题，是现代大模型的根本训练范式。","半监督学习（Semi-Supervised Learning）在标注数据少、未标注数据多的情况下使用：用少量标注数据训练初始模型，再用模型对未标注数据的预测（伪标签）扩充训练集，迭代提升。这在医疗影像（专家标注成本极高）和工业缺陷检测（缺陷样本稀少）领域非常实用。"],"img_key":"ml_paradigms","img_link":"Machine Learning","img_title":"https://en.wikipedia.org/wiki/Machine_learning"},{"h":"树模型：为什么在表格数据上仍然很强","pts":["决策树（Decision Tree）的核心是递归地找到「最好的特征分割点」：在每个节点，用信息增益（Information Gain）或基尼不纯度（Gini Impurity）衡量哪个特征的哪个阈值能最有效地分离不同类别的样本。直觉上就是「先按最重要的特征分，在每个子集里再按次重要的特征分」，形成树状结构。","随机森林（Random Forest）通过 Bagging（Bootstrap Aggregating）把多棵决策树的预测取平均/投票，显著降低了单棵树的高方差问题。每棵树在随机采样的数据子集上训练，且每次分裂只考虑随机选择的特征子集——这两个随机化使得树之间的相关性降低，集成后泛化性大幅提升。","XGBoost/LightGBM 是 Boosting 方法的集大成者：不是并行训练多棵树，而是序列地训练，每棵新树专门拟合前面所有树的残差（预测误差）。XGBoost 加入了正则化（控制树的复杂度）和二阶导数优化（比传统梯度提升收敛更快）。在 Kaggle 竞赛和工业界表格数据任务上，XGBoost/LightGBM 长期是最强的非深度学习方法，尤其在特征工程充分的情况下。","表格数据上深度学习难以超越 XGBoost 的根本原因：表格数据通常特征稀疏（每行只有少数特征是相关的）、样本量有限（数十万到百万级，而非十亿级）、特征工程包含领域知识（年龄×收入的交叉特征有业务含义，模型难以自动发现）。树模型对这些特点有天然适应性，而神经网络的优势（从原始数据自动提取特征）在这类场景里发挥不出来。"],"img_key":"decision_tree","img_link":"Decision Tree","img_title":"https://en.wikipedia.org/wiki/Decision_tree"},{"h":"SVM 与核方法","pts":["支持向量机（SVM）的核心思想是「最大间隔」（Maximum Margin）：找一个超平面将两类样本分开，并且两类样本到超平面的距离之和（间隔，Margin）最大化。最大化间隔使得分类边界对噪声和新样本更鲁棒。只有离边界最近的几个训练样本（支持向量，Support Vectors）真正决定了分类边界，其他样本即使移除也不影响结果。","核技巧（Kernel Trick）使 SVM 能处理线性不可分的数据：把数据映射到更高维度的特征空间，在高维空间里线性可分——但不需要显式计算高维映射，只需要计算核函数 K(x,y) = φ(x)·φ(y)（即原始空间中两点的内积经过某种变换）。常用核函数：RBF（径向基函数）将数据隐式映射到无限维，多项式核捕捉非线性特征交互。","SVM 在深度学习时代的定位：在特征质量好（已经有好的特征工程或预训练 embedding）+ 样本量中等（数万到数十万）+ 需要理论保证的场景仍然有竞争力。生物信息学（基因表达分类）、文本分类（TF-IDF 特征 + linear SVM）是 SVM 仍然常用的场景。理解 SVM 的最大间隔思想也有助于理解 Contrastive Learning（对比学习）和 Metric Learning（度量学习）。"]},{"h":"特征工程：数据时代的核心技能","pts":["特征工程（Feature Engineering）是把原始数据转化为模型能有效学习的特征表示的过程。在深度学习之前，特征工程是 ML 工程师最核心的技能，也是竞赛和工业实践中性能提升最大的来源。即使在深度学习时代，特征工程在表格数据、小样本、可解释性要求高的场景里仍然是关键。","常见特征工程技术：特征缩放（StandardScaler 零均值单位方差，MinMaxScaler 归一到 [0,1]，树模型不需要但线性模型和神经网络需要）；类别编码（One-Hot 适合低基数特征，Target Encoding 适合高基数特征但有 data leakage 风险）；特征交叉（两个特征的乘积或组合，捕捉非线性交互，在广告 CTR 预估里极其重要）；时间特征（从时间戳提取年/月/日/星期/季节等周期性特征）。","特征选择减少维度诅咒：相关系数过滤（去掉与目标相关性极低的特征）、基于树模型的特征重要性（XGBoost 内置 feature_importances_）、Lasso 正则化（L1 正则化使部分特征系数变零，自动做特征选择）。更重要的是：理解「为什么这个特征对这个任务有用」——领域知识驱动的特征设计往往比自动特征选择效果更好。"]}],"res":[{"tp":"书籍","tc":"b-book","t":"Hands-On ML with Scikit-Learn, Keras & TensorFlow（O'Reilly）","d":"Aurélien Géron 著，从传统 ML 到深度学习的完整实践，有代码","u":"https://www.oreilly.com/library/view/hands-on-machine-learning/9781492032632/","lv":"entry"},{"tp":"博客","tc":"b-blog","t":"Why does XGBoost win every ML competition?","d":"XGBoost 在表格数据上为什么强，技术直觉分析","u":"https://towardsdatascience.com/https-medium-com-vishalmorde-xgboost-algorithm-long-she-may-rein-edd9f99be63d","lv":"entry"},{"tp":"课程","tc":"b-course","t":"fast.ai: Practical Deep Learning for Coders","d":"自上而下教学，先用后理解，最好的 ML 实践入门","u":"https://course.fast.ai/","lv":"entry"},{"tp":"工具","tc":"b-tool","t":"scikit-learn 官方文档","d":"传统 ML 完整工具库，SVM/RandomForest/特征工程全覆盖","u":"https://scikit-learn.org/stable/","lv":"entry"}],"intro_lines":["▸ <strong>学习范式</strong> — 监督/无监督/强化/自监督的本质区别，自监督如何支撑了大模型预训练","▸ <strong>树模型</strong> — 决策树→随机森林→XGBoost 的演进逻辑，为什么表格数据上深度学习很难超越 XGBoost","▸ <strong>SVM 与核方法</strong> — 最大间隔的几何直觉，核技巧的本质，当前仍然适用的场景","▸ <strong>特征工程</strong> — 数据量小时特征工程比模型架构更重要，常见技术，特征选择方法"]},{"id":"dl_evolution","phase":"深度学习演进","title":"深度学习核心 · CNN · RNN · Transformer 演进","color":"#dc2626","bg":"#FEF2F2","intro":"深度学习的演进有清晰的内在逻辑：每一个架构创新都是对前一个具体失败的修复。理解这条演进线，比单独记住每个架构更有价值。","notes":[{"h":"神经网络基础：从感知机到多层网络","pts":["感知机（Perceptron）是最简单的神经网络：单个神经元对输入加权求和，通过激活函数输出。Minsky 和 Papert 在 1969 年证明了感知机无法解决 XOR 问题（线性不可分），导致了第一次 AI 寒冬。多层感知机（MLP）通过增加隐藏层克服了这个限制——任意连续函数都可以被足够宽的 MLP 近似（通用近似定理），但当时不知道如何训练多层网络。","反向传播算法（1986）解锁了深度网络的训练。Rumelhart、Hinton 和 Williams 的论文展示了如何用链式法则高效计算每层参数的梯度，使得多层网络可以端到端训练。这是深度学习的关键基础，但当时计算资源和数据量的限制使得深层网络仍然无法大规模使用，第二次 AI 寒冬随之到来。","激活函数的演进直接影响了深层网络的可训练性：Sigmoid（S 型曲线，输出 0-1，早期标准）存在梯度消失问题（深层网络 backward 时梯度指数级缩小到接近零）；ReLU（max(0,x)，修正线性单元，2010 年代）极大缓解了梯度消失，使深层网络训练成为可能，成为 CNN 时代的标配；GELU（Gaussian Error Linear Unit，平滑版 ReLU）被 BERT/GPT 采用，成为 Transformer 时代的标准。","Batch Normalization（2015）是训练深层网络的另一个关键技术：在每层的激活值上做归一化（使均值为 0、方差为 1），减少内部协变量偏移（Internal Covariate Shift），允许使用更大的学习率，大幅加速训练。Layer Normalization 是 Batch Norm 的变体，在序列模型（Transformer）里更常用——对同一样本的所有特征做归一化，而不是跨样本归一化。"],"img_key":"mlp","img_link":"Multilayer Perceptron","img_title":"https://en.wikipedia.org/wiki/Multilayer_perceptron"},{"h":"NLP 的演进主线：从词袋到 LLM","pts":["传统 NLP（1990s-2013）依赖手工特征：词袋模型（Bag of Words）把文本表示为词频向量，忽略词序；TF-IDF 按词的区分度加权；N-gram 捕捉短程词序；命名实体识别用 CRF（条件随机场）建模序列标注。这些方法在词序和长程依赖上有根本局限，但在计算资源有限的时代是最实用的选择。","Word2Vec（2013）是 NLP 的第一次深度学习革命：用浅层神经网络（2层）从大规模文本中学习词的向量表示，使得语义相关的词在向量空间里距离近（「国王」-「男人」+「女人」≈「女王」的类比关系成立）。Word2Vec 证明了「从无标注文本自监督学习」的可行性，是 BERT/GPT 的思想先驱，尽管它的模型本身已经过时。","seq2seq + Attention（2014-2017）是第二次革命：用 LSTM Encoder-Decoder 架构处理「序列到序列」的任务（机器翻译、摘要），Attention 机制让 Decoder 在生成每个词时能选择性关注 Encoder 的不同部分，解决了长序列的信息瓶颈。这个 Attention 机制直接演化成了 Transformer 里的 Self-Attention。","BERT（2018）和 GPT（2018）代表了 LLM 时代的两条路线：BERT 用双向 Transformer 编码器 + Masked Language Model 预训练，适合理解任务（分类/NER/QA）；GPT 用单向 Transformer 解码器 + next-token prediction 预训练，适合生成任务。BERT 在当时的理解任务 benchmark 上全面超越，但 GPT 路线的 Scaling 更好——GPT-3 之后，生成式 LLM 成为绝对主流，BERT 逐渐退出顶级 NLP 赛道。"]},{"h":"优化器演进：SGD 到 AdamW","pts":["随机梯度下降（SGD）每次用单个样本（或小批量 mini-batch）估计梯度，有噪声但计算快。问题是：不同参数的梯度尺度差异很大，用同一学习率对所有参数更新效果很差；遇到平坦区域（梯度接近零）收敛极慢；遇到峡谷地形（某些方向梯度大，某些方向梯度小）会来回震荡。","Momentum（动量）把历史梯度加权积累，使更新方向有惯性——在正确方向上加速，在震荡方向上抵消。Adam（2014）结合了 Momentum（一阶矩）和 RMSprop（二阶矩，自适应学习率）：用梯度历史均值（一阶矩）确定更新方向，用梯度平方历史均值（二阶矩）缩放步长，让更新稳定的参数步子大，更新不稳定的参数步子小。","AdamW（2019）是修正版：L2 正则化在 Adam 里会被自适应学习率缩放（不同参数的有效正则强度不同），AdamW 把权重衰减（Weight Decay）从梯度更新中解耦出来，作为独立的参数衰减项。GPT/LLaMA 系列都用 AdamW + Cosine Learning Rate Schedule（学习率先 Warmup 再余弦衰减）。"],"img_key":"optimizers","img_link":"Stochastic Gradient Descent","img_title":"https://en.wikipedia.org/wiki/Stochastic_gradient_descent"},{"h":"Transformer：统一所有模态的架构","pts":["Transformer 的关键洞察是：用 Self-Attention 替代 RNN 作为序列建模的基础操作。Self-Attention 让每个位置同时「看到」整个序列（而 RNN 只能看到历史），解决了长程依赖问题；Self-Attention 在所有位置可以并行计算（而 RNN 必须顺序计算），使得大规模并行训练成为可能。这两个特性是 LLM Scaling 的基础。","Transformer 为什么能统一所有模态：图像可以切成 patch token（ViT）；音频可以转为 Mel Spectrogram 的 patch token（Whisper）；视频是图像 token 的时序序列；代码是离散 token 序列；动作可以被离散化为 token（RT-2）。把所有模态统一为 token 序列后，同一套 Transformer 架构就能处理所有模态，甚至跨模态的联合理解和生成。","Pre-norm vs Post-norm 是 Transformer 设计的一个细节但影响很大：原始 Transformer 在残差连接之后做 Layer Norm（Post-norm），训练时容易不稳定需要仔细的学习率调度；现代 LLM（LLaMA/GPT-4）在残差连接之前做 Layer Norm（Pre-norm），训练更稳定允许更大的学习率，是当前的标准配置。RMSNorm 进一步简化了 LayerNorm（去掉 mean 减法），速度更快效果基本相当。"],"img_key":"transformer","img_link":"Transformer Architecture","img_title":"https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"}],"res":[{"tp":"可视化","tc":"b-visual","t":"Neural Network Playground（TensorFlow）","d":"浏览器里交互式训练神经网络，直觉理解深度学习","u":"https://playground.tensorflow.org/","lv":"entry"},{"tp":"视频","tc":"b-video","t":"Let's Build GPT from Scratch — Andrej Karpathy","d":"从零实现 Transformer，NLP 演进主线的最好实践入门","u":"https://www.youtube.com/watch?v=kCc8FmEb1nY","lv":"entry"},{"tp":"论文","tc":"b-paper","t":"Attention Is All You Need（Transformer 原论文）","d":"Transformer 架构奠基，Self-Attention 机制的设计","u":"https://arxiv.org/abs/1706.03762","lv":"mid"},{"tp":"书籍","tc":"b-book","t":"Deep Learning（Goodfellow/Bengio/Courville，免费）","d":"深度学习理论权威教材，数学基础到 RNN/CNN 完整覆盖","u":"https://www.deeplearningbook.org/","lv":"mid"}],"intro_lines":["▸ <strong>神经网络基础</strong> — 感知机到多层网络，反向传播如何解锁深层训练，激活函数演进（Sigmoid→ReLU→GELU）","▸ <strong>NLP 演进主线</strong> — 词袋→Word2Vec→seq2seq+Attention→BERT→GPT，每一步解决了前一步的什么缺陷","▸ <strong>优化器演进</strong> — SGD 的不稳定问题，Momentum 的惯性直觉，Adam 的自适应学习率，AdamW 的修正","▸ <strong>Transformer</strong> — Self-Attention 替代 RNN 的理由，为什么 Transformer 能统一所有模态"]},{"id":"selection","phase":"选型决策","title":"技术选型框架 · 什么时候用什么","color":"#0f766e","bg":"#F0FDFA","intro":"技术选型没有标准答案，但有系统性的判断框架。给定约束条件，正确的技术路线通常是可以推导出来的，不需要靠经验猜测。","notes":[{"h":"五维度判断矩阵","pts":["数据维度：数据量和标注质量是第一判断依据。数据量 < 1 万条 → 传统 ML（XGBoost/SVM）+ 充分特征工程，深度学习会过拟合；1 万到 100 万条 → 深度学习开始有优势，但需要数据增强和正则化；> 100 万条 → 深度学习全面领先，模型复杂度值得投入；无标注数据充足 → 自监督预训练 + 少量标注微调（BERT/ViT fine-tuning）。标注质量同样关键——嘈杂标注会让复杂模型更容易过拟合。","任务维度：任务类型决定了基础框架。结构化/表格数据 → 传统 ML 通常是首选（XGBoost/LightGBM/CatBoost）；图像/视频 → CNN 或 ViT；文本理解（分类/NER/问答）→ BERT 系列 fine-tuning；文本生成（摘要/翻译/对话）→ LLM（API 或开源模型）；多模态（图文/视频文字）→ VLM；序列决策（游戏/机器人控制/推荐策略）→ 强化学习；时序预测 → 传统统计方法（ARIMA）+ ML（XGBoost+时序特征）+ 深度学习（Transformer for TS）三选一视数据量。","延迟维度：推理延迟要求是重要约束。< 10ms（实时交易/游戏/自动驾驶控制）→ 传统 ML 或专用硬件，LLM 根本不可能；10ms-100ms（实时 API 调用）→ 小模型/量化模型/边缘部署；100ms-1s（交互式应用）→ 可以用较大模型，Streaming 输出；> 1s（批处理/离线分析）→ 无延迟约束，选最强模型。","成本维度：推理成本随模型大小线性增长，而能力提升是次线性的。GPT-4 API 的成本约是 GPT-4o-mini 的 30 倍，但对大多数任务 GPT-4o-mini 就够了。成本决策框架：先用最小的可行模型测试，只在明确证明需要更强能力时升级；对高频调用（> 百万次/天）的任务，考虑 Fine-tuning 小模型替代 API 调用（一次性训练成本 vs 持续 API 费用的权衡）。","可解释性维度：监管要求和业务理解决定了可解释性的重要程度。金融信贷决策/医疗诊断辅助 → 必须可解释，SHAP 值 + 决策树是首选；广告 CTR 预估/推荐系统 → 可解释性次要，效果优先；研究探索 → 无约束，最强模型。注意：「深度学习不可解释」是过时的观点，SHAP/LIME/Attention Visualization 等工具使得解释深度学习模型的预测变得可行，只是比树模型复杂。"]},{"h":"LLM vs 小模型 vs 传统 ML：决策树","pts":["什么时候直接用 LLM API 是最优解：任务需要开放域语言理解或生成（客服/文档分析/代码生成）；需要 zero-shot 或 few-shot 泛化（没有足够训练数据）；开发速度优先（Prompt 工程比训练模型快 10 倍）；任务复杂度高且不频繁调用（成本可接受）。判断标准是：如果一个人类凭通识知识就能完成这个任务（不需要专业训练），LLM API 通常就够了。","什么时候 Fine-tuning 小模型比 LLM API 更合适：任务领域高度专业化（医学/法律/金融）且有足够领域数据；输出格式严格固定（特定 JSON schema/特定语言风格）；推理延迟要求低（< 100ms）；调用频率极高（API 成本不可接受）；数据隐私要求（不能发给外部 API）。Fine-tuning 7B-13B 的开源模型（LLaMA/Mistral）在专业域任务上往往能以 1/10 的推理成本达到 GPT-4 级别的性能。","什么时候传统 ML 是对的选择：表格数据 + 样本量 < 10 万；需要严格的可解释性和审计追踪；推理延迟要求 < 1ms；需要快速迭代（特征工程比重新训练神经网络快）；已有高质量的领域特征（人类专家知识 > 自动特征提取）。在金融风控（欺诈检测/信贷评分）、医疗早期筛查（少量标注样本）、工业 IoT（边缘设备资源有限）里，XGBoost 仍然是最常见的生产模型。"],"img_key":"model_selection","img_link":"Model Selection","img_title":"https://en.wikipedia.org/wiki/Model_selection"},{"h":"RAG vs Fine-tuning vs Prompt Engineering","pts":["这三种方法解决的问题本质不同：Prompt Engineering 是「让现有模型更好地使用其已有能力」，不改变模型参数，快速但能力上限是模型本身；Fine-tuning 是「让模型学习新的知识或行为模式」，改变模型参数，效果更稳定但需要训练数据和算力；RAG 是「给模型访问外部知识的能力」，不改变模型，但能检索最新或私有信息，检索质量决定了回答质量。","选择框架：需要更新的外部知识（公司内部文档/最新数据）→ RAG；需要特定输出格式或风格（始终用中文/始终返回特定 JSON）→ Fine-tuning；需要复杂推理能力提升（数学/代码/多步推理）→ RLHF/GRPO 训练或更大模型；现有模型能力足够但输出不稳定 → Prompt Engineering + Structured Output。","最常见的错误：过早 Fine-tuning。很多团队在没有充分测试 Prompt Engineering 之前就去 Fine-tuning，浪费了大量时间和数据收集成本。正确的顺序是：先用 Prompt Engineering 建立 baseline → 评估哪些维度不够（知识/格式/风格/推理）→ 针对性地选择 RAG 或 Fine-tuning → 确定了方向后再投入数据收集和训练资源。"],"img_key":"rag_vs_ft","img_link":"Retrieval-Augmented Generation","img_title":"https://en.wikipedia.org/wiki/Retrieval-augmented_generation"},{"h":"时序数据：何时用深度学习","pts":["时序数据是一个特殊的领域，在表格数据里深度学习 vs 传统方法的争论在这里更加微妙。ARIMA 等经典统计方法在单变量短序列 + 强季节性的任务上仍然有竞争力（如月度销售额预测）；XGBoost + 时序特征工程（lag 特征/滚动统计/季节分解）在多变量 + 中等数据量的任务上通常是最实用的选择；深度学习（Transformer for TS：PatchTST/TimesNet）在数据量充分 + 多变量长序列 + 需要捕捉复杂跨序列关系时才明显更好。","Temporal Fusion Transformer（TFT）是少数真正在工业时序预测中超越树模型的深度学习架构：专门设计了处理静态特征（店铺位置）、历史观测（过去销量）、未来已知特征（节假日）的多路输入，以及可解释的注意力权重。在需要多个产品/位置的联合预测时，TFT 的跨序列学习能力明显优于为每个序列单独训练的统计方法。","异常检测的方法选择同样有层次：统计方法（3-sigma/IQR）简单无需训练，适合单变量稳定信号；Isolation Forest 无需标注，适合高维多变量；Autoencoder 能学习复杂正常模式的重建误差，适合有足够历史数据的场景；在有少量标注异常样本的情况下，监督分类（XGBoost/LSTM 分类器）效果最好。"]}],"res":[{"tp":"博客","tc":"b-blog","t":"Rules of Machine Learning — Google","d":"Google 内部 ML 最佳实践，特别是「什么时候不需要 ML」","u":"https://developers.google.com/machine-learning/guides/rules-of-ml","lv":"entry"},{"tp":"博客","tc":"b-blog","t":"When to use ML vs non-ML — Chip Huyen","d":"清晰的 ML 选型框架，什么时候 ML 不是答案","u":"https://huyenchip.com/2022/05/01/can-ml-engineering-stop-the-climate-crisis.html","lv":"mid"},{"tp":"论文","tc":"b-paper","t":"Why do tree-based models still outperform DL on tabular data?","d":"系统性实验，树模型在表格数据上优势的原因分析","u":"https://arxiv.org/abs/2207.08815","lv":"mid"}],"intro_lines":["▸ <strong>五维度判断矩阵</strong> — 数据量/任务类型/延迟/成本/可解释性，每个维度的决策阈值","▸ <strong>LLM vs 小模型 vs 传统 ML</strong> — 什么情况下直接用 API，什么情况下 Fine-tuning，什么情况下 XGBoost 仍是最优解","▸ <strong>RAG vs Fine-tuning vs Prompt Engineering</strong> — 三者解决的不同问题，最常见的过早 Fine-tuning 错误","▸ <strong>时序数据的特殊性</strong> — 为什么时序数据上深度学习胜率比其他领域低，何时统计方法更好"]},{"id":"timeseries","phase":"专项领域","title":"时间序列 · 异常检测 · 结构化数据深度学习","color":"#b45309","bg":"#FEF3C7","intro":"时间序列是工业界最广泛使用但学术界最不重视的 ML 方向。核心判断力在于：统计方法/XGBoost/深度学习三条路，何时选哪条。","notes":[{"h":"时序预测方法栈","pts":["经典统计方法仍然有效的场景：ARIMA（AutoRegressive Integrated Moving Average）适合单变量、有明确趋势/季节性的中短序列（月度/季度销售额/GDP/气温）；Exponential Smoothing（ETS）系列适合强季节性数据，Facebook Prophet 是 ETS + 趋势分解 + 节假日效应的工程化封装，在电商零售场景被大量使用。这些方法的优势是：参数有明确的统计解释，预测区间（置信区间）有理论保证，数据量要求低（几十到几百个数据点就够）。","XGBoost + 时序特征工程是目前工业时序预测的最常用组合：把时序问题转化为「用历史窗口特征预测未来值」的监督学习，特征包括 lag 特征（过去 t-1, t-7, t-30 的值）、滚动统计（过去 N 天的均值/标准差/最大值）、日期特征（星期/月份/是否节假日）、外部变量（价格/促销/天气）。这个方法在多变量、多序列（数千个 SKU 的销售预测）场景下比统计方法有明显优势，因为可以跨序列学习共同模式。","深度学习在时序预测上的真实优势：N-BEATS（纯 MLP 架构，在 M4 竞赛上超过所有统计方法）证明深度学习在大数据集上能自动学习复杂的分解模式；Transformer for TS（Informer/PatchTST/TimesNet）在超长序列（> 1000 步）+ 多变量 + 跨序列依赖的场景有优势，但在常见的中短序列预测中仍然难以超越 XGBoost + 好的特征工程。N-BEATS 和 LightGBM 的组合是当前实战中最稳健的 baseline。"]},{"h":"异常检测：有标签 vs 无标签","pts":["异常检测的本质挑战是数据不平衡（异常通常只占总数据的 0.1%-1%）和标注成本高（专家需要逐条确认是否异常）。根据标注情况分三类：完全无标注 → 无监督方法（统计检测/Isolation Forest/Autoencoder）；少量标注异常 → 半监督（用正常样本学习分布，异常 = 离分布远的点）或直接监督（异常样本做数据增强）；有充足标注 → 标准二分类问题（XGBoost/LSTM 分类器）。","Isolation Forest 是工业界最常用的无监督异常检测算法：随机选择特征和分割点递归切割数据，异常点因为「孤立」在特征空间里，需要的切割次数更少（路径长度更短）。优势是不需要假设数据分布，对高维数据有效，计算高效。在网络安全（流量异常）、工业传感器（设备故障预警）、金融欺诈检测的初始 baseline 里非常实用。","Autoencoder 检测异常的思路是学习「正常数据的重建」：用大量正常数据训练 Autoencoder（编码→解码），对新样本计算重建误差，误差大的认为是异常（模型没见过类似的正常模式）。适合时序数据（LSTM Autoencoder 检测传感器时序异常）和图像数据（检测制造缺陷）。关键调参是重建误差的阈值选择——太松漏检多，太严误报多，通常用 ROC 曲线上的 F1 最优点。"]},{"h":"表格数据深度学习：值得一试的场景","pts":["TabNet（2019，Google）是专门为表格数据设计的深度学习架构：用可解释的特征选择机制（每步选择一部分特征进行推理，类似决策树的分裂逻辑）+ Transformer 风格的处理，在部分高维稀疏特征的表格任务上超过 XGBoost。TabNet 的特征重要性可以可视化（类似决策树的 feature importance），这在需要模型可解释性的场景里是加分项。","Embeddings for Categorical Features 是深度学习在表格数据上的独特优势：对于高基数类别特征（如数万个用户 ID/商品 ID），One-Hot 编码维度爆炸，XGBoost 的 Target Encoding 有 data leakage 风险，而 Embedding Layer 可以学习低维稠密表示，自动捕捉类别之间的相似性（两个相似行为的用户在 Embedding 空间里相近）。这是推荐系统和广告系统里深度学习取代树模型的核心理由之一。","FT-Transformer（Feature Tokenizer Transformer）把每个表格特征转化为 token，直接用 Transformer 处理，2021 年的论文表明在充分调参后可以在多数表格 benchmark 上匹敌 XGBoost。但 FT-Transformer 需要更多数据和调参，在样本量 < 5 万时通常不如 XGBoost，在样本量 > 50 万时开始有竞争力。实践建议：始终把 XGBoost 作为表格数据的第一个 baseline，只在明确 baseline 不够时才考虑深度学习。"]}],"res":[{"tp":"论文","tc":"b-paper","t":"N-BEATS: Neural Basis Expansion Analysis for TS Forecasting","d":"纯 MLP 时序预测，M4 竞赛冠军，深度学习在时序的突破","u":"https://arxiv.org/abs/1905.10437","lv":"adv"},{"tp":"论文","tc":"b-paper","t":"Why Tree-Based Models Beat Deep Learning on Tabular Data","d":"系统实验，表格数据树模型优势的深度分析","u":"https://arxiv.org/abs/2207.08815","lv":"mid"},{"tp":"工具","tc":"b-tool","t":"Prophet — Facebook 时序预测工具","d":"趋势+季节性+节假日分解，Python/R，入门最快","u":"https://facebook.github.io/prophet/","lv":"entry"},{"tp":"工具","tc":"b-tool","t":"PyOD — Python Outlier Detection","d":"30+ 异常检测算法统一接口，Isolation Forest/OCSVM/Autoencoder","u":"https://pyod.readthedocs.io/","lv":"entry"}],"intro_lines":["▸ <strong>时序预测方法栈</strong> — ARIMA/ETS 的适用场景，XGBoost+lag 特征的组合优势，Transformer for TS 真正有优势的情况","▸ <strong>异常检测</strong> — 有标签 vs 无标签的方法选择，Isolation Forest/Autoencoder 的适用逻辑，阈值设定","▸ <strong>表格数据深度学习</strong> — TabNet/FT-Transformer 有竞争力的条件，为什么 XGBoost 仍是表格数据的第一 baseline"]},{"id":"frontier","phase":"前沿研究","title":"前沿方向 · 神经符号 · 因果推断 · 持续学习","color":"#374151","bg":"#F9FAFB","intro":"这三个方向指向当前深度学习最根本的局限——「能做什么但做不对」的地方。了解这些边界，有助于判断什么时候 AI 真的不够用。","notes":[{"h":"神经符号融合：推理的瓶颈","pts":["当前 LLM 的推理缺陷来自一个根本问题：神经网络学习的是「统计相关性」，而不是「逻辑规则」。LLM 做数学题靠的是「在训练数据里见过类似的题目」，而不是「理解加减乘除的逻辑含义」。这使得 LLM 在分布外的推理任务（新类型的数学题/需要多步精确逻辑的问题）上会以人类无法预测的方式失败。","符号 AI（Symbolic AI）——规则系统、逻辑推理、知识库——在精确推理上有保障，但无法处理自然语言的模糊性，也无法从数据中学习。神经符号融合（Neuro-Symbolic AI）试图结合两者的优点：用神经网络处理感知和模式识别，用符号系统处理需要精确逻辑的推理。AlphaCode 和 AlphaGeometry（DeepMind 2024，解决奥数几何题）是这个方向目前最有影响力的成果。","从工程师视角看，这个方向最直接的应用是：结构化输出（Structured Output）+ 程序执行（Program Execution）的组合。不是让 LLM 直接「推理」出答案，而是让 LLM 生成可执行的程序（Python/SQL/形式化证明），由符号系统执行并验证。这是目前解决 LLM 精确计算/推理问题最实用的方案，不等待理论突破也能落地。"]},{"h":"因果推断：超越相关性","pts":["Judea Pearl 的因果革命（Causal Revolution）提出了机器学习的根本局限：当前所有 ML 方法学习的是相关性（「A 和 B 一起出现」），而不是因果性（「A 导致 B」）。这个区别在很多场景里后果严重：一个广告投放模型可能学到「送雨伞的区域下雨更多」（因为下雨区域投放了更多雨伞广告），从而推荐在晴天更少投放雨伞广告——完全颠倒了因果关系。","干预（Intervention，do-operator）是因果推断的核心概念：P(Y | do(X=x)) 是「强制设置 X=x 后 Y 的分布」，和 P(Y | X=x)（观测到 X=x 时 Y 的分布）有根本差别。前者是真正的因果效应，后者是相关性。在药物临床试验里，这个差别体现为「随机对照试验 vs 观察性研究」——只有随机对照试验才能估计真正的因果效应。","因果 ML 的实践应用：A/B 测试是最简单的因果推断（随机分配确保处理组和对照组可比）；差分双重（Difference-in-Differences）和工具变量（Instrumental Variables）是在无法随机化时的因果估计方法；在推荐系统里考虑位置偏差（用户更可能点击位置靠前的内容，不代表内容更好）是因果思维在工业的直接应用。这个领域正在从学术走向工程实践。"]},{"h":"持续学习：克服灾难性遗忘","pts":["灾难性遗忘（Catastrophic Forgetting）是神经网络的顽固问题：在任务 B 上训练后，模型会忘记任务 A 上学到的知识。这在 LLM 的 Fine-tuning 里直接体现为「微调后通用能力下降」——用医学数据 fine-tune 后，模型在通用问答上的表现下降。根本原因是神经网络的参数是共享的，新任务的梯度更新会覆盖旧任务学到的权重配置。","解决灾难性遗忘的主要方法：EWC（Elastic Weight Consolidation）识别对旧任务重要的参数，在新任务训练时对这些参数的变化加以约束；Replay Methods 保存少量旧任务数据，在训练新任务时混入旧数据；Progressive Networks 为每个新任务增加新的网络列，保留旧任务的网络不变；LoRA/Adapter 方法通过只训练少量新参数（插件式）来减少对原有参数的干扰。","持续学习对 LLM 部署的实际意义：知识更新（让 LLM 学习最新事件而不重新训练）、技能扩展（在不忘记通用能力的前提下学习新专业领域）、个性化（让模型记住特定用户的偏好而不影响其他用户）。这些是 LLM 走向真正实用的关键工程挑战，目前的主流实践是 RAG（不改变模型参数，用检索更新知识）+ 定期重新 fine-tuning（接受一定程度的遗忘，用数据混合缓解）。"]}],"res":[{"tp":"书籍","tc":"b-book","t":"The Book of Why — Judea Pearl","d":"因果推断通俗读本，相关性 vs 因果性的根本区别","u":"https://www.basicbooks.com/titles/judea-pearl/the-book-of-why/9780465097616/","lv":"entry"},{"tp":"论文","tc":"b-paper","t":"AlphaGeometry: An Olympiad-level AI for Geometry","d":"神经符号融合，DeepMind 解决奥数几何题","u":"https://www.nature.com/articles/s41586-023-06747-5","lv":"mid"},{"tp":"博客","tc":"b-blog","t":"Continual Learning Survey — Lilian Weng","d":"持续学习方法全面综述，灾难性遗忘的解决策略","u":"https://lilianweng.github.io/posts/2019-06-23-meta-learning/","lv":"mid"}],"intro_lines":["▸ <strong>神经符号融合</strong> — 神经网络学的是相关性而非逻辑，AlphaGeometry 的启示，工程层面的实用解法","▸ <strong>因果推断</strong> — 相关性 vs 因果性的根本差异，干预的概念，为什么 A/B 测试是因果推断而非统计","▸ <strong>持续学习</strong> — 灾难性遗忘的机制，EWC/Replay/LoRA 等缓解方法，LLM 部署中知识更新的实际挑战"]}];
+function dl(d){return d==='entry'?'入门':d==='mid'?'中级':'高级'}
+function dc(d){return d==='entry'?'de':d==='mid'?'dm':'da'}
+function render(){
+  const cont=document.getElementById('cont'),nav=document.getElementById('nav');
+  let tot=0,curP='';
+  D.forEach(s=>{
+    tot+=s.res.length;
+    if(s.phase!==curP){
+      curP=s.phase;
+      const lbl=document.createElement('div');lbl.className='nlbl';lbl.textContent=s.phase;nav.appendChild(lbl);
+    }
+    const a=document.createElement('a');a.className='nl';a.dataset.sec=s.id;a.onclick=()=>goto(s.id);
+    a.innerHTML=`<span class="ndot" style="background:${s.color}"></span>${s.title.split('·')[0].trim()}`;
+    nav.appendChild(a);
+    const div=document.createElement('div');div.className='sec';div.id=s.id;
+    div.dataset.search=[s.title,s.intro,...s.notes.map(n=>n.h+' '+n.pts.join(' ')),...s.res.map(r=>r.t+' '+r.d)].join(' ').toLowerCase();
+    const tid=`t-${s.id}`;
+    let notesHTML=`<div class="notes-block">`;
+    s.notes.forEach((n,ni)=>{
+      const _diag=n.img_key?document.getElementById('diag_'+n.img_key):null;
+      const _svg=_diag?_diag.innerHTML:'';
+      const _link=n.img_key&&n.img_link?`<a class="diag-link" href="${n.img_link}" target="_blank" rel="noopener">↗ ${n.img_title||'参考资料'}</a>`:'';
+      const _img=_svg?`<figure class="note-fig">${_svg}${_link}</figure>`:(_link?`<p>${_link}</p>`:'')
+      
+      const aid=`a-${s.id}-${ni}`;
+      notesHTML+=`<div class="acc" id="nh-${s.id}-${ni}"><div class="acc-hdr" onclick="toggleAcc('${aid}',this)"><span class="acc-arrow">▶</span><span class="acc-htxt">${n.h}</span></div><div class="acc-body" id="${aid}">${_img}<div class="pts-wrap">${n.pts.map(p=>`<div class="pt">${p}</div>`).join('')}</div></div></div>`;
+    });
+    notesHTML+='</div>';
+    let resHTML=`<div class="res-block"><div class="res-section-label">🔗 学习资源</div><div class="grid">`;
+    s.res.forEach(r=>{
+      resHTML+=`<div class="card"><div class="ctop"><span class="badge ${r.tc}">${r.tp}</span><div class="ctit"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a></div></div><div class="cdesc">${r.d}</div><div class="cmeta"><span class="csrc">${r.s||''}</span><span class="cdiff ${dc(r.lv)}">${dl(r.lv)}</span></div><a class="curl" href="${r.u}" target="_blank" rel="noopener">${r.u.replace(/https?:\/\//,'').split('/')[0]}</a></div>`;
+    });
+    resHTML+='</div></div></div>';
+    div.innerHTML=`<div class="sch"><span class="sdot" style="background:${s.color}"></span><span class="stit">${s.title}</span></div><div class="intro-txt">${s.intro}${renderIntroLines(s.intro_lines)}</div>${notesHTML}${resHTML}`;
+    cont.appendChild(div);
+  });
+  document.getElementById('stag').textContent=`${D.length} 个版块 · ${tot} 个资源`;
+}
+function switchTab(tid,which,btn){
+  document.querySelectorAll(`#${tid}-notes,#${tid}-res`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${tid}-${which}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleAcc(id,hdr){
+  const body=document.getElementById(id),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);hdr.classList.toggle('open',!isOpen);
+}
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();let m=0;
+  document.querySelectorAll('.sec').forEach(sec=>{
+    if(!q){sec.classList.remove('hidden-sec');m++;return;}
+    const hit=(sec.dataset.search||'').includes(q);sec.classList.toggle('hidden-sec',!hit);if(hit)m++;
+  });
+  document.getElementById('nr').style.display=m===0&&q?'block':'none';
+  document.getElementById('stag').textContent=q?`找到 ${m} 个版块`:`${D.length} 个版块`;
+});
+const obs={observe:()=>{}};
+function detectSection(){
+  const secs=[...document.querySelectorAll('.sec[id]')];
+  if(!secs.length)return;
+  const threshold=100;
+  let current=secs[0];
+  for(const s of secs){
+    const top=s.getBoundingClientRect().top;
+    if(top<=threshold)current=s;
+    else break;
+  }
+  const id=current.id;
+  document.querySelectorAll('.nl[data-sec]').forEach(l=>l.classList.toggle('active',l.dataset.sec===id));
+  updateGuide(id);
+}
+window.addEventListener('scroll',detectSection,{passive:true});
+window.addEventListener('scroll',()=>document.getElementById('btt').classList.toggle('show',scrollY>400));
+render();
+buildToc();setTimeout(detectSection,100);
+function renderIntroLines(lines){if(!lines||!lines.length)return'';return'<div class="intro-lines">'+lines.map(function(l){return'<div class="intro-line">'+l+'</div>';}).join('')+'</div>';}
+function buildToc(){
+  const rail=document.getElementById('toc-rail');
+  if(rail&&!document.getElementById('resize-handle')){
+    rail.innerHTML='<div class="resize-handle" id="resize-handle"></div><div class="guide-content" id="guide-content"></div>';
+    initResize();
+  }
+  updateGuide(D[0].id);
+}
+function updateGuide(id){
+  const rail=document.getElementById('guide-content')||document.getElementById('toc-rail');
+  if(!rail)return;
+  const s=D.find(x=>x.id===id);
+  if(!s)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const items=s.intro_lines&&s.intro_lines.length?s.intro_lines
+    :s.notes?s.notes.map(n=>n.h):[];
+  if(!items.length){rail.innerHTML='';return;}
+  let h='<span class="guide-head">本节要点</span>';
+  items.forEach((line,ni)=>{
+    const key='kb_'+fk+'_'+id+'_'+ni;
+    const done=localStorage.getItem(key)==='1';
+    h+=`<div class="guide-item${done?' done':''}" id="gi-${id}-${ni}">`;
+    h+=`<div class="guide-check" onclick="toggleDone('${fk}','${id}',${ni})">✓</div>`;
+    h+=`<div class="guide-text" onclick="gotoEl('nh-${id}-${ni}')">${line}</div>`;
+    h+='</div>';
+  });
+  rail.innerHTML=h;
+}
+function toggleDone(fk,sid,ni){
+  const key='kb_'+fk+'_'+sid+'_'+ni;
+  const done=localStorage.getItem(key)==='1';
+  done?localStorage.removeItem(key):localStorage.setItem(key,'1');
+  const el=document.getElementById('gi-'+sid+'-'+ni);
+  if(el)el.classList.toggle('done',!done);
+}
+function gotoEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function initResize(){
+  const handle=document.getElementById('resize-handle');
+  if(!handle)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const stored=localStorage.getItem('toc-w-'+fk);
+  if(stored)setTocWidth(parseInt(stored));
+  let sx,sw;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    sx=e.clientX;
+    sw=document.getElementById('toc-rail').getBoundingClientRect().width;
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',endDrag);
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    handle.classList.add('dragging');
+  });
+  function onDrag(e){
+    setTocWidth(Math.max(160,Math.min(640,sw+(sx-e.clientX))));
+  }
+  function endDrag(){
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',endDrag);
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    handle.classList.remove('dragging');
+    localStorage.setItem('toc-w-'+fk,
+      Math.round(document.getElementById('toc-rail').getBoundingClientRect().width));
+  }
+}
+function setTocWidth(w){
+  const lay=document.querySelector('.lay');
+  if(!lay)return;
+  const cols=window.getComputedStyle(lay).gridTemplateColumns.split(' ');
+  lay.style.setProperty('grid-template-columns',cols[0]+' 1fr '+w+'px','important');
+}
+</script>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style><a class="home-btn" href="index.html">← 主页</a>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# Claude.ai page-export (not part of the wiki)
+AI_LLM Learning Roadmap_ Complete Study Guide 2025 _ Claude.html
+AI_LLM Learning Roadmap_ Complete Study Guide 2025 _ Claude_files/
+
+# Backups
+_*_legacy.html
+*.bak
+
+# Stale dupe folder
+files/

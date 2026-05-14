@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI / LLM 学习大纲 — 推荐路径</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f7f8fc; color: #1a1a1a; font-size: 13px; }
+  @media print { @page { size: A4 landscape; margin: 12mm; } .no-print { display:none; } body { background:#fff; } }
+
+  .print-btn { position:fixed; top:16px; right:16px; background:#1a5fa8; color:#fff; border:none; border-radius:6px; padding:7px 14px; cursor:pointer; font-size:13px; font-family:inherit; z-index:999; }
+  .print-btn:hover { background:#0f4a8a; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  .cover { background: linear-gradient(135deg, #0f2d5e 0%, #1a5fa8 55%, #0d8a6e 100%); color:#fff; border-radius:12px; padding:32px 36px 28px; margin-bottom:28px; }
+  .cover h1 { font-size:22px; font-weight:700; margin-bottom:6px; }
+  .cover p { font-size:13px; opacity:.85; }
+
+  /* Section headers */
+  .section-title { display:flex; align-items:center; gap:10px; margin: 28px 0 14px; }
+  .section-num { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; flex-shrink:0; }
+  .section-title h2 { font-size:16px; font-weight:700; color:#0f2d5e; }
+
+  /* Main table */
+  table { width:100%; border-collapse:collapse; border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.08); background:#fff; margin-bottom:24px; }
+  th { background:#0f2d5e; color:#fff; padding:9px 12px; text-align:left; font-size:11px; font-weight:600; white-space:nowrap; }
+  td { padding:10px 12px; border-bottom:1px solid #eef0f5; vertical-align:top; font-size:12px; line-height:1.6; }
+  tr:last-child td { border-bottom:none; }
+  tr:nth-child(even) td { background:#f9fafe; }
+  tr:hover td { background:#f0f5ff; }
+
+  .num-cell { font-size:18px; font-weight:700; text-align:center; width:42px; color:#c8d8f0; }
+  .priority { font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600; display:inline-block; white-space:nowrap; }
+  .p-must { background:#fee2e2; color:#991b1b; }
+  .p-high { background:#fef3c7; color:#92400e; }
+  .p-opt  { background:#f0fdf4; color:#166534; }
+
+  .tag { display:inline-block; font-size:10px; padding:1px 6px; border-radius:3px; margin-right:4px; margin-bottom:2px; }
+  .tag-video { background:#ede9fe; color:#5b21b6; }
+  .tag-article { background:#e0f2fe; color:#0369a1; }
+  .tag-course { background:#fef9c3; color:#854d0e; }
+  .tag-doc { background:#f0fdf4; color:#166534; }
+  .tag-free { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+  .tag-paid { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
+
+  a { color:#1a5fa8; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .link-cell { word-break:break-all; font-size:11px; color:#1a5fa8; }
+
+  .time-badge { background:#f1f5f9; color:#475569; padding:2px 7px; border-radius:4px; font-size:11px; white-space:nowrap; }
+
+  .layer-bar { height:4px; border-radius:2px; margin-bottom:2px; }
+
+  /* Compact summary table at end */
+  .summary-table td:first-child { font-weight:600; color:#0f2d5e; }
+
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:20px; font-size:11px; }
+  .legend-item { display:flex; align-items:center; gap:5px; }
+
+  .footer { text-align:center; font-size:11px; color:#888; margin-top:28px; padding-top:16px; border-top:1px solid #e3e8f0; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 打印 / PDF</button>
+
+<div class="container">
+
+<div class="cover">
+  <h1>AI / LLM 深度学习大纲 — 推荐学习路径（含链接）</h1>
+  <p>覆盖 LLM 原理 · RAG 系统 · 向量检索算法 · Agentic AI · 金融应用 · Snowflake Cortex　｜　面向 Fidelity ISS 数据可视化 AI 集成方向</p>
+</div>
+
+<div class="legend">
+  <span class="legend-item"><span class="tag tag-video">视频</span>YouTube / 课程视频</span>
+  <span class="legend-item"><span class="tag tag-article">文章</span>深度技术文章</span>
+  <span class="legend-item"><span class="tag tag-course">课程</span>系统课程</span>
+  <span class="legend-item"><span class="tag tag-doc">官方文档</span>官方文档</span>
+  <span class="legend-item"><span class="tag tag-free">免费</span>免费资源</span>
+  <span class="legend-item"><span class="tag tag-paid">付费</span>付费资源</span>
+  <span class="legend-item"><span class="priority p-must">必学</span>核心必学</span>
+  <span class="legend-item"><span class="priority p-high">推荐</span>强烈推荐</span>
+  <span class="legend-item"><span class="priority p-opt">选修</span>深入选学</span>
+</div>
+
+<!-- ══ LAYER 1 ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#5f6b7a;">1</div>
+  <h2>第一层：数学与深度学习基础（地基）</h2>
+</div>
+
+<table>
+<tr>
+  <th style="width:42px;">#</th>
+  <th style="width:200px;">资源名称</th>
+  <th>核心内容</th>
+  <th style="width:80px;">类型</th>
+  <th style="width:70px;">时间</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:220px;">链接</th>
+</tr>
+<tr>
+  <td class="num-cell">1</td>
+  <td><strong>3Blue1Brown — 线性代数本质</strong></td>
+  <td>矩阵、向量空间、特征值——RAG embedding 和余弦相似度的数学基础，动画讲解极清楚</td>
+  <td><span class="tag tag-video">视频</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">3h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank">youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab</a></td>
+</tr>
+<tr>
+  <td class="num-cell">2</td>
+  <td><strong>3Blue1Brown — 神经网络直觉</strong></td>
+  <td>神经网络工作原理 4 集动画，建立直觉后再看代码快 5 倍，必看</td>
+  <td><span class="tag tag-video">视频</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1.5h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi" target="_blank">youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi</a></td>
+</tr>
+<tr>
+  <td class="num-cell">3</td>
+  <td>Andrew Ng — Machine Learning Specialization</td>
+  <td>梯度下降、过拟合、正则化——ML 核心概念最权威入门，可只看 Course 1</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-free">免费旁听</span></td>
+  <td><span class="time-badge">15h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">coursera.org/specializations/machine-learning-introduction</a></td>
+</tr>
+<tr>
+  <td class="num-cell">4</td>
+  <td>Andrew Ng — Deep Learning Specialization（C4-C5）</td>
+  <td>C5 重点：RNN → Attention → Transformer，HuggingFace Tokenizers，NLP 任务实战，是从 RNN 到 Transformer 最系统路径</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-paid">付费</span></td>
+  <td><span class="time-badge">20h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://www.coursera.org/specializations/deep-learning" target="_blank">coursera.org/specializations/deep-learning</a></td>
+</tr>
+</table>
+
+<!-- ══ LAYER 2 ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#1a5fa8;">2</div>
+  <h2>第二层：LLM 核心原理（ROI 最高的一层）</h2>
+</div>
+
+<table>
+<tr>
+  <th style="width:42px;">#</th>
+  <th style="width:200px;">资源名称</th>
+  <th>核心内容</th>
+  <th style="width:80px;">类型</th>
+  <th style="width:70px;">时间</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:220px;">链接</th>
+</tr>
+<tr>
+  <td class="num-cell">5</td>
+  <td><strong>🌟 Karpathy — Neural Networks: Zero to Hero</strong></td>
+  <td>从 Backprop 到 GPT 全程代码实现，真正理解 Token、Embedding、Attention 数据流。整个大纲 ROI 最高的资源，看完后所有框架都不再是黑盒</td>
+  <td><span class="tag tag-video">视频</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">10h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://karpathy.ai/zero-to-hero.html" target="_blank">karpathy.ai/zero-to-hero.html</a></td>
+</tr>
+<tr>
+  <td class="num-cell">6</td>
+  <td><strong>🌟 Karpathy — Deep Dive into LLMs（2025 最新）</strong></td>
+  <td>3h31m，覆盖完整训练栈：预训练数据/Tokenization/Transformer 架构，SFT 对话数据，RLHF/DeepSeek-R1，幻觉根源，LLM Psychology 解析</td>
+  <td><span class="tag tag-video">视频</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">4h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/watch?v=7xTGNNLPyMI" target="_blank">youtube.com/watch?v=7xTGNNLPyMI</a></td>
+</tr>
+<tr>
+  <td class="num-cell">7</td>
+  <td>Attention Is All You Need 原论文解析</td>
+  <td>Transformer 原始论文，配合 Annotated Transformer 逐行代码解读版食用最佳</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">3h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://nlp.seas.harvard.edu/annotated-transformer/" target="_blank">nlp.seas.harvard.edu/annotated-transformer/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">8</td>
+  <td>Karpathy — Intro to LLMs（60 分钟版）</td>
+  <td>LLM 入门讲座，LLM OS 隐喻，安全攻击（Prompt Injection），适合先快速建立全局观</td>
+  <td><span class="tag tag-video">视频</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank">youtube.com/watch?v=zjkBMFhNj_g</a></td>
+</tr>
+</table>
+
+<!-- ══ LAYER 3 ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#0d8a6e;">3</div>
+  <h2>第三层：向量检索算法（RAG 的算法基础）</h2>
+</div>
+
+<table>
+<tr>
+  <th style="width:42px;">#</th>
+  <th style="width:200px;">资源名称</th>
+  <th>核心内容</th>
+  <th style="width:80px;">类型</th>
+  <th style="width:70px;">时间</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:220px;">链接</th>
+</tr>
+<tr>
+  <td class="num-cell">9</td>
+  <td><strong>AI-Powered Vector Search 基础：BM25 / Bi-encoder / Cross-encoder</strong></td>
+  <td>搜索系统两阶段（检索+排序），BM25 词频匹配 vs 向量语义检索 vs Cross-encoder 精排，三者组合是生产最优解</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1.5h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://cameronrwolfe.substack.com/p/the-basics-of-ai-powered-vector-search" target="_blank">cameronrwolfe.substack.com/p/the-basics-of-ai-powered-vector-search</a></td>
+</tr>
+<tr>
+  <td class="num-cell">10</td>
+  <td><strong>Dense vs Sparse Retrieval — FAISS、BM25、混合检索实战</strong></td>
+  <td>带完整 Python 代码，实现 BM25 + HNSW 混合检索 + RRF 融合，混合检索比单一方法召回率提升 15-30%，HNSW 是默认首选索引</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">2h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://dev.to/qvfagundes/dense-vs-sparse-retrieval-mastering-faiss-bm25-and-hybrid-search-4kb1" target="_blank">dev.to/qvfagundes/dense-vs-sparse-retrieval-mastering-faiss-bm25-and-hybrid-search-4kb1</a></td>
+</tr>
+<tr>
+  <td class="num-cell">11</td>
+  <td>HNSW 算法原理 + 代码实现</td>
+  <td>用 hnswlib + sentence-transformers 从零构建向量搜索引擎，理解 ef_construction、M 参数调优，为什么 pgvector 能毫秒级检索 1 万 chunk</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://esteininger.medium.com/building-a-vector-search-engine-using-hnsw-and-cosine-similarity-753fb5268839" target="_blank">esteininger.medium.com/building-a-vector-search-engine-using-hnsw-and-cosine-similarity-753fb5268839</a></td>
+</tr>
+<tr>
+  <td class="num-cell">12</td>
+  <td>向量数据库完整指南 2025（pgvector / Pinecone / Weaviate）</td>
+  <td>各向量库选型对比，HNSW vs IVF vs IVF-PQ 适用规模，metadata 过滤，生产部署注意事项</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://machinelearningmastery.com/the-complete-guide-to-vector-databases-for-machine-learning/" target="_blank">machinelearningmastery.com/the-complete-guide-to-vector-databases-for-machine-learning/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">13</td>
+  <td>BM25 深度讲解（Milvus 实现）</td>
+  <td>BM25 算法公式拆解（TF × IDF × 文档长度归一化），稀疏向量表示，与 Dense 检索对比</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">0.5h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://zilliz.com/learn/mastering-bm25-a-deep-dive-into-the-algorithm-and-application-in-milvus" target="_blank">zilliz.com/learn/mastering-bm25-a-deep-dive-into-the-algorithm-and-application-in-milvus</a></td>
+</tr>
+</table>
+
+<!-- ══ LAYER 4 ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#6b42b8;">4</div>
+  <h2>第四层：RAG 系统工程（核心实战层）</h2>
+</div>
+
+<table>
+<tr>
+  <th style="width:42px;">#</th>
+  <th style="width:200px;">资源名称</th>
+  <th>核心内容</th>
+  <th style="width:80px;">类型</th>
+  <th style="width:70px;">时间</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:220px;">链接</th>
+</tr>
+<tr>
+  <td class="num-cell">14</td>
+  <td><strong>LlamaIndex 官方生产 RAG 指南</strong></td>
+  <td>官方最佳实践：解耦检索 chunk 和综合 chunk、多级索引、查询变换、评估方法，生产部署 checklist</td>
+  <td><span class="tag tag-doc">官方文档</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">2h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://developers.llamaindex.ai/python/framework/optimizing/production_rag/" target="_blank">developers.llamaindex.ai/python/framework/optimizing/production_rag/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">15</td>
+  <td><strong>LlamaIndex 完整教程（From Zero to Production 2025）</strong></td>
+  <td>Documents → Nodes → Index → Retriever → Query Engine 核心心智模型，Chunking（512-1024 tokens，20-50 overlap），混合检索，Reranker，RAGAS 评估</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">3h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://medium.com/@gautsoni/llamaindex-for-beginners-2025-a-complete-guide-to-building-rag-apps-from-zero-to-production-cb15ad290fe0" target="_blank">medium.com/@gautsoni/llamaindex-for-beginners-2025</a></td>
+</tr>
+<tr>
+  <td class="num-cell">16</td>
+  <td>LangChain vs LlamaIndex vs Haystack 2025 对比</td>
+  <td>三大框架选型指南：LangGraph（Agentic 编排第一）、LangChain（快速原型）、LlamaIndex（检索质量）、Haystack（受监管场景）各自适用场景</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://alphacorp.ai/top-5-rag-frameworks-november-2025/" target="_blank">alphacorp.ai/top-5-rag-frameworks-november-2025/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">17</td>
+  <td>Production-Ready RAG Systems 2024-2025</td>
+  <td>向量库选型（FAISS/Pinecone/Weaviate），混合检索，流式摄取，评估策略，生产部署 Tips，来自 100+ 技术团队经验总结</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1.5h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://medium.com/@meeran03/building-production-ready-rag-systems-best-practices-and-latest-tools-581cae9518e7" target="_blank">medium.com/@meeran03/building-production-ready-rag-systems</a></td>
+</tr>
+<tr>
+  <td class="num-cell">18</td>
+  <td>NL2SQL 系统设计完整指南 2025</td>
+  <td>Text-to-SQL 架构设计，Schema RAG 最佳实践，SQL 安全验证，评估方法，与 Fidelity NLQ 项目直接相关</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1.5h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://medium.com/@adityamahakali/nl2sql-system-design-guide-2025-c517a00ae34d" target="_blank">medium.com/@adityamahakali/nl2sql-system-design-guide-2025-c517a00ae34d</a></td>
+</tr>
+<tr>
+  <td class="num-cell">19</td>
+  <td>RAG 课程 — LlamaIndex + LangChain 实战（Jerry Liu 主讲）</td>
+  <td>LlamaIndex CEO 主讲，金融/法律/医疗场景检索准确率提升，Deep Memory，多模态 RAG，适合想做完整项目的人</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">10h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://learn.activeloop.ai/courses/rag" target="_blank">learn.activeloop.ai/courses/rag</a></td>
+</tr>
+</table>
+
+<!-- ══ LAYER 5 ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#c45e0a;">5</div>
+  <h2>第五层：Agentic AI 与 LangGraph（前沿层）</h2>
+</div>
+
+<table>
+<tr>
+  <th style="width:42px;">#</th>
+  <th style="width:200px;">资源名称</th>
+  <th>核心内容</th>
+  <th style="width:80px;">类型</th>
+  <th style="width:70px;">时间</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:220px;">链接</th>
+</tr>
+<tr>
+  <td class="num-cell">20</td>
+  <td><strong>🌟 DeepLearning.AI — AI Agents in LangGraph（Harrison Chase 主讲）</strong></td>
+  <td>LangChain 创始人亲讲，从零搭 Agent 再用 LangGraph 重构，状态管理、持久化、Human-in-loop，最快建立 Agentic 直觉的路径，免费</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">4h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/" target="_blank">deeplearning.ai/short-courses/ai-agents-in-langgraph/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">21</td>
+  <td>LangGraph 官方文档 + Academy</td>
+  <td>官方 Academy 课程免费，Nodes/Edges/State 核心概念，Checkpointing，Streaming，最权威参考</td>
+  <td><span class="tag tag-doc">官方文档</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">3h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://langchain-ai.github.io/langgraph/" target="_blank">langchain-ai.github.io/langgraph/</a> · <a href="https://academy.langchain.com" target="_blank">academy.langchain.com</a></td>
+</tr>
+<tr>
+  <td class="num-cell">22</td>
+  <td>Agentic AI with LangChain and LangGraph（IBM / Coursera）</td>
+  <td>3 周系统课程，Reflection / Reflexion / ReAct Agent 架构，Multi-agent RAG 系统，查询路由和 Agent 治理，Coursera 免费旁听</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-free">免费旁听</span></td>
+  <td><span class="time-badge">15h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://www.coursera.org/learn/agentic-ai-with-langchain-and-langgraph" target="_blank">coursera.org/learn/agentic-ai-with-langchain-and-langgraph</a></td>
+</tr>
+<tr>
+  <td class="num-cell">23</td>
+  <td>Agentic AI — LangGraph + CrewAI + MCP 完整课</td>
+  <td>LangGraph（控制流）+ CrewAI（角色分工）+ AutoGen（对话群体）+ MCP 协议，8 个真实项目（自主研究 Agent、代码调试 Agent、Stock Picker）</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-paid">付费</span></td>
+  <td><span class="time-badge">20h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://www.udemy.com/course/agentic-ai-bootcamp-build-ai-agents/" target="_blank">udemy.com/course/agentic-ai-bootcamp-build-ai-agents/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">24</td>
+  <td>Complete Agentic AI Bootcamp With LangGraph and LangChain（Udemy）</td>
+  <td>Multi-agent 协作系统，状态机工作流，记忆管理，事件驱动行为，从入门到部署，适合有 Python 基础的工程师</td>
+  <td><span class="tag tag-course">课程</span><span class="tag tag-paid">付费</span></td>
+  <td><span class="time-badge">15h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://www.udemy.com/course/complete-agentic-ai-bootcamp-with-langgraph-and-langchain/" target="_blank">udemy.com/course/complete-agentic-ai-bootcamp-with-langgraph-and-langchain/</a></td>
+</tr>
+</table>
+
+<!-- ══ LAYER 6 ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#991b1b;">6</div>
+  <h2>第六层：金融 AI 专题资源</h2>
+</div>
+
+<table>
+<tr>
+  <th style="width:42px;">#</th>
+  <th style="width:200px;">资源名称</th>
+  <th>核心内容</th>
+  <th style="width:80px;">类型</th>
+  <th style="width:70px;">时间</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:220px;">链接</th>
+</tr>
+<tr>
+  <td class="num-cell">25</td>
+  <td><strong>🌟 Snowflake Cortex AI 完整演示</strong></td>
+  <td>Cortex Analyst（NL→SQL，数据不出 SF），Cortex Search（RAG），Document AI，Cortex ML Functions（异常检测/预测），与 Fidelity 方案直接相关</td>
+  <td><span class="tag tag-video">视频</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">2h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/watch?v=i0kd-gEPU4Y" target="_blank">youtube.com/watch?v=i0kd-gEPU4Y</a></td>
+</tr>
+<tr>
+  <td class="num-cell">26</td>
+  <td><strong>Agentic AI for Finance（CFA Institute）</strong></td>
+  <td>金融机构 Agentic AI 落地现状，因子模型 + Agent 结合构建定制投资组合，监管合规考量，73% Y Combinator 金融初创是 Agentic AI</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">3h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://rpc.cfainstitute.org/research/the-automation-ahead-content-series/agentic-ai-for-finance" target="_blank">rpc.cfainstitute.org/research/.../agentic-ai-for-finance</a></td>
+</tr>
+<tr>
+  <td class="num-cell">27</td>
+  <td>Agentic AI for Capital Markets（AWS 官方）</td>
+  <td>资产管理 Agentic AI 架构，对全部可投宇宙产出研究报告，主题聚类，组合影响评估，AWS Bedrock AgentCore</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1h</span></td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://aws.amazon.com/blogs/industries/agentic-ai-for-capital-markets-building-a-foundation-for-success/" target="_blank">aws.amazon.com/blogs/industries/agentic-ai-for-capital-markets</a></td>
+</tr>
+<tr>
+  <td class="num-cell">28</td>
+  <td>金融 AI 2025 全景（10 大机构对比）</td>
+  <td>JPMorgan / BlackRock / Goldman / UBS 等 10 家机构 AI 落地全景，具体数字和架构，面试参考材料</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">2h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://trainingthestreet.com/the-state-of-ai-in-finance-2025-global-outlook/" target="_blank">trainingthestreet.com/the-state-of-ai-in-finance-2025-global-outlook/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">29</td>
+  <td>资产管理 AI 合规挑战（13 用例域）</td>
+  <td>$70 万亿 AUM 机构 AI 用例全景，EU AI Act 风险分类，MNPI/Reg FD 合规边界，金融 AI 监管最新动态</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">2h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://convergences.substack.com/p/the-compliance-bill-for-ai-in-asset" target="_blank">convergences.substack.com/p/the-compliance-bill-for-ai-in-asset</a></td>
+</tr>
+<tr>
+  <td class="num-cell">30</td>
+  <td>Agentic AI Portfolio Management（MongoDB + AWS）</td>
+  <td>多 Agent 投资组合管理系统代码实现，Market Analysis / News / Social Media Agent 分工协作，Vector Search 语义检索金融新闻</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1.5h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://www.mongodb.com/docs/atlas/architecture/current/solutions-library/fin-services-agentic-portfolio/" target="_blank">mongodb.com/docs/.../fin-services-agentic-portfolio/</a></td>
+</tr>
+<tr>
+  <td class="num-cell">31</td>
+  <td>OAC REST API 详解（Mike Durran）</td>
+  <td>OAC Catalog API / Embed API 实际使用，Workbook JSON 结构，OAuth 2.0 认证流程，与 Python AI 服务集成的关键参考</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">1h</span></td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://medium.com/oracledevs/get-to-know-the-oracle-analytics-rest-apis-e547fa0bf575" target="_blank">medium.com/oracledevs/get-to-know-the-oracle-analytics-rest-apis</a></td>
+</tr>
+<tr>
+  <td class="num-cell">32</td>
+  <td>WEF 金融服务 AI 白皮书 2025（Accenture 联合）</td>
+  <td>监管框架、治理原则、金融 AI 应用边界，权威机构联合发布，适合了解行业整体方向</td>
+  <td><span class="tag tag-article">文章</span><span class="tag tag-free">免费</span></td>
+  <td><span class="time-badge">2h</span></td>
+  <td><span class="priority p-opt">选修</span></td>
+  <td class="link-cell"><a href="https://reports.weforum.org/docs/WEF_Artificial_Intelligence_in_Financial_Services_2025.pdf" target="_blank">reports.weforum.org/.../WEF_Artificial_Intelligence_in_Financial_Services_2025.pdf</a></td>
+</tr>
+</table>
+
+<!-- ══ QUICK ORDER TABLE ══ -->
+<div class="section-title">
+  <div class="section-num" style="background:#0f2d5e;">★</div>
+  <h2>推荐学习顺序（按投入产出排列）</h2>
+</div>
+
+<table class="summary-table">
+<tr>
+  <th style="width:42px;">顺序</th>
+  <th style="width:40px;">#</th>
+  <th style="width:220px;">资源</th>
+  <th style="width:70px;">时间</th>
+  <th>学完后你能做什么</th>
+  <th style="width:70px;">优先级</th>
+  <th style="width:200px;">链接</th>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">1</td>
+  <td style="text-align:center;color:#888;">①</td>
+  <td>3Blue1Brown 线性代数 + 神经网络</td>
+  <td><span class="time-badge">4.5h</span></td>
+  <td>理解向量空间和 Embedding 的物理意义</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank">线性代数</a> · <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi" target="_blank">神经网络</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">2</td>
+  <td style="text-align:center;color:#888;">⑤</td>
+  <td><strong>🌟 Karpathy — Zero to Hero（前 4 集）</strong></td>
+  <td><span class="time-badge">8h</span></td>
+  <td>真正理解 Token、Attention、Embedding 数据流，LLM 不再是黑盒</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://karpathy.ai/zero-to-hero.html" target="_blank">karpathy.ai/zero-to-hero.html</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">3</td>
+  <td style="text-align:center;color:#888;">⑥</td>
+  <td><strong>🌟 Karpathy — Deep Dive into LLMs（2025）</strong></td>
+  <td><span class="time-badge">4h</span></td>
+  <td>理解完整训练栈：SFT / RLHF / 幻觉根源 / DeepSeek-R1</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/watch?v=7xTGNNLPyMI" target="_blank">youtube.com/watch?v=7xTGNNLPyMI</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">4</td>
+  <td style="text-align:center;color:#888;">⑨</td>
+  <td>BM25 + Bi-encoder + Cross-encoder 检索基础</td>
+  <td><span class="time-badge">1.5h</span></td>
+  <td>理解为什么混合检索必须做，三者各自优缺点</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://cameronrwolfe.substack.com/p/the-basics-of-ai-powered-vector-search" target="_blank">cameronrwolfe.substack.com</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">5</td>
+  <td style="text-align:center;color:#888;">⑩</td>
+  <td>Dense vs Sparse + 混合检索实战代码</td>
+  <td><span class="time-badge">2h</span></td>
+  <td>能手写 BM25 + HNSW + RRF 混合检索 Pipeline</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://dev.to/qvfagundes/dense-vs-sparse-retrieval-mastering-faiss-bm25-and-hybrid-search-4kb1" target="_blank">dev.to/qvfagundes</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">6</td>
+  <td style="text-align:center;color:#888;">⑭⑮</td>
+  <td>LlamaIndex 官方生产 RAG 指南 + 完整教程</td>
+  <td><span class="time-badge">5h</span></td>
+  <td>能设计企业级 Schema RAG，分层 Chunking，Reranker</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://developers.llamaindex.ai/python/framework/optimizing/production_rag/" target="_blank">LlamaIndex 官方</a> · <a href="https://medium.com/@gautsoni/llamaindex-for-beginners-2025-a-complete-guide-to-building-rag-apps-from-zero-to-production-cb15ad290fe0" target="_blank">完整教程</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#0d8a6e;">7</td>
+  <td style="text-align:center;color:#888;">㉕</td>
+  <td><strong>🌟 Snowflake Cortex AI 完整演示</strong></td>
+  <td><span class="time-badge">2h</span></td>
+  <td>理解 Cortex Analyst / Search / Document AI 能力边界</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.youtube.com/watch?v=i0kd-gEPU4Y" target="_blank">youtube.com/watch?v=i0kd-gEPU4Y</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#1a5fa8;">8</td>
+  <td style="text-align:center;color:#888;">㉑</td>
+  <td><strong>🌟 DeepLearning.AI — AI Agents in LangGraph</strong></td>
+  <td><span class="time-badge">4h</span></td>
+  <td>快速建立 Agentic 直觉，Human-in-loop 实现</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/" target="_blank">deeplearning.ai/short-courses/ai-agents-in-langgraph/</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#1a5fa8;">9</td>
+  <td style="text-align:center;color:#888;">㉖㉗</td>
+  <td>CFA Institute Agentic AI for Finance + AWS Capital Markets</td>
+  <td><span class="time-badge">4h</span></td>
+  <td>金融 AI 落地现状、合规边界、真实架构案例</td>
+  <td><span class="priority p-must">必学</span></td>
+  <td class="link-cell"><a href="https://rpc.cfainstitute.org/research/the-automation-ahead-content-series/agentic-ai-for-finance" target="_blank">CFA Institute</a> · <a href="https://aws.amazon.com/blogs/industries/agentic-ai-for-capital-markets-building-a-foundation-for-success/" target="_blank">AWS Blog</a></td>
+</tr>
+<tr>
+  <td style="text-align:center;font-weight:700;font-size:16px;color:#6b42b8;">10</td>
+  <td style="text-align:center;color:#888;">㉒</td>
+  <td>Coursera LangGraph 完整课（IBM）+ 进阶 Agentic</td>
+  <td><span class="time-badge">15h+</span></td>
+  <td>生产级 Multi-agent 系统，治理策略，按需深入</td>
+  <td><span class="priority p-high">推荐</span></td>
+  <td class="link-cell"><a href="https://www.coursera.org/learn/agentic-ai-with-langchain-and-langgraph" target="_blank">coursera.org/.../agentic-ai-with-langchain-and-langgraph</a></td>
+</tr>
+</table>
+
+<div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 16px;margin-top:20px;font-size:12px;line-height:1.7;color:#1e3a5f;">
+  <strong>📌 核心原则：</strong>先看 Karpathy（顺序 2-3），把 LLM 原理真正理解了，再看任何框架都快 3 倍。很多人直接学 LangChain 框架，遇到奇怪行为完全不知道为什么，因为底层不清楚。<br>
+  <strong>💡 总计时间：</strong>顺序 1-9 约 <strong>35 小时</strong>，建议 6-8 周完成（工作日 1h + 周末 3h）。每学完一个资源，结合 Fidelity Snowflake + OAC 场景写一小段代码验证理解。
+</div>
+
+<div class="footer">整理自 Karpathy / DeepLearning.AI / LlamaIndex / CFA Institute / AWS / Snowflake 官方资源 · 2025 · Fidelity ISS AI 学习参考</div>
+</div>
+</body>
+</html>

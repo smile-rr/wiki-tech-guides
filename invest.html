@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>投资研究指南 · A股 · 港股 · AI辅助投资 · 量化入门</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f8fafc;--s:#fff;--s2:#f1f5f9;--s3:#e8f0fe;--bd:#e2e8f0;--bd2:#cbd5e1;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bl:#1d4ed8;--blbg:#eff6ff;--blbd:#bfdbfe;--sw:220px}
+html{font-size:14px;line-height:1.6;color:var(--tx)}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}
+.hdr{position:sticky;top:0;z-index:100;background:var(--s);border-bottom:1px solid var(--bd);padding:8px 16px;display:flex;align-items:center;gap:12px}
+.htit{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.hsub{font-size:10px;color:var(--tx3);font-weight:400}
+.srch{flex:1;max-width:380px;position:relative}
+.srch input{width:100%;padding:5px 11px 5px 28px;border:1px solid var(--bd2);border-radius:7px;font-size:12px;background:var(--s2);color:var(--tx);outline:none}
+.srch input:focus{border-color:#93c5fd;background:#fff}
+.si{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx3)}
+.stag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blbg);color:var(--bl);border:1px solid var(--blbd);white-space:nowrap}
+.lay{display:flex;min-height:calc(100vh - 41px)}
+.sb{width:var(--sw);flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;background:var(--s);border-right:1px solid var(--bd);padding:8px 0}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.nlbl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;padding:7px 12px 2px;margin-top:4px}
+.nl{display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:11px;color:var(--tx2);cursor:pointer;transition:background .1s}
+.nl:hover{background:var(--s2);color:var(--tx)}
+.nl.active{background:var(--blbg);color:var(--bl)}
+.ndot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nc{margin-left:auto;font-size:9px;padding:1px 4px;background:var(--s2);border-radius:8px;color:var(--tx3)}
+.main{flex:1;padding:16px 22px 60px;overflow-x:hidden}
+.sec{margin-bottom:28px;scroll-margin-top:50px}
+.sch{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--bd)}
+.sdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stit{font-size:14px;font-weight:600}
+.intro-txt{font-size:12px;color:var(--tx3);margin-bottom:10px;padding:8px 12px;border-radius:6px;border-left:3px solid #93c5fd;background:var(--blbg);line-height:1.6}
+.tabs{display:flex;gap:3px;margin-bottom:10px}
+.tab-btn{padding:5px 14px;font-size:12px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);color:var(--tx2);cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--s);color:var(--tx);border-color:var(--bl);font-weight:500}
+.tab-btn:hover:not(.active){background:var(--s)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.acc{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:8px;transition:box-shadow .15s}
+.acc:hover{box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.acc-hdr{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--s2);cursor:pointer;user-select:none;transition:background .15s}
+.acc-hdr:hover{background:#e8edf2}
+.acc-arrow{font-size:9px;color:var(--tx3);transition:transform .2s;flex-shrink:0}
+.acc-hdr.open .acc-arrow{transform:rotate(90deg)}
+.acc-htxt{font-size:12.5px;font-weight:500;color:var(--tx)}
+.acc-body{display:none}
+.acc-body.open{display:block}
+.pts-wrap{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.pt{font-size:12.5px;color:var(--tx2);line-height:1.75;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-left:3px solid #cbd5e1;border-radius:0 7px 7px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--bd2);box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.card.hidden{display:none}
+.ctop{display:flex;align-items:flex-start;gap:6px}
+.badge{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;flex-shrink:0;white-space:nowrap;margin-top:1px;border:1px solid transparent}
+.ctit{font-size:12px;font-weight:500;color:var(--tx);line-height:1.4}
+.ctit a{color:inherit;text-decoration:none}
+.ctit a:hover{color:var(--bl);text-decoration:underline}
+.cdesc{font-size:11px;color:var(--tx2);line-height:1.4}
+.cmeta{display:flex;align-items:center;gap:6px;margin-top:1px}
+.csrc{font-size:10px;color:var(--tx3)}
+.cdiff{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.de{background:#f0fdf4;color:#15803d}.dm{background:#fffbeb;color:#b45309}.da{background:#fef2f2;color:#b91c1c}
+.curl{font-size:10px;color:#64748b;word-break:break-all;text-decoration:none}
+.curl:hover{color:var(--bl)}
+.b-paper{background:#f8fafc;color:#334155;border-color:#cbd5e1}
+.b-blog{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.b-video{background:#dbeafe;color:#1e40af;border-color:#bfdbfe}
+.b-docs{background:#ede9fe;color:#5b21b6;border-color:#ddd6fe}
+.b-github{background:#f0fdf4;color:#14532d;border-color:#bbf7d0}
+.b-course{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+.b-book{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.b-tool{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}
+.b-visual{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.sec.hidden-sec{display:none}
+.nr{display:none;text-align:center;padding:40px;color:var(--tx3);font-size:13px}
+.btt{position:fixed;bottom:20px;right:20px;width:32px;height:32px;background:var(--bl);color:#fff;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:13px}
+.btt.show{opacity:1}.btt:hover{background:#1e3a8a}
+.leg{display:flex;flex-wrap:wrap;gap:4px;padding:14px 0 0;border-top:1px solid var(--bd);margin-top:4px}
+.res-block{margin-top:14px}.res-section-label{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding-top:12px;border-top:1px solid var(--bd)}/* ── READABILITY OVERRIDES ── */
+.acc-body{display:block!important}
+.acc{border:none!important;border-radius:0!important;box-shadow:none!important;margin-bottom:0!important}
+.acc+.acc{border-top:1px solid var(--bd)!important}
+.acc:hover{box-shadow:none!important}
+.acc-hdr{background:transparent!important;padding:16px 0 5px!important;cursor:default!important;gap:0!important}
+.acc-hdr:hover,.acc-hdr.open{background:transparent!important}
+.acc-arrow{display:none!important}
+.acc-htxt{font-size:13.5px!important;font-weight:600!important;color:var(--tx)!important;letter-spacing:-.01em}
+.pts-wrap{padding:4px 0 22px!important;gap:16px!important}
+.pt{font-size:13.5px!important;line-height:1.85!important;color:var(--tx2)!important;padding:0!important;background:transparent!important;border:none!important;border-radius:0!important}
+.pt:hover{border-left-color:transparent!important}
+.intro-txt{font-size:13px!important;line-height:1.72!important}
+.intro-txt{font-style:normal!important;color:var(--tx)!important;background:transparent!important;padding:2px 0 2px 14px!important;border-radius:0!important}.intro-lines{margin-top:11px;display:flex;flex-direction:column;gap:6px}.intro-line{font-size:13px;line-height:1.65;color:var(--tx2)}.intro-line strong{color:var(--tx);font-weight:600}
+/* ── THREE-COLUMN LAYOUT ── */
+.content-area{flex:1;display:flex;align-items:flex-start;min-width:0;gap:0}
+.main{flex:1;max-width:720px;min-width:0}
+.toc-rail{width:190px;flex-shrink:0;position:sticky;top:41px;height:calc(100vh - 41px);overflow-y:auto;padding:14px 0 20px 14px;border-left:1px solid var(--bd);background:var(--s)}
+.toc-rail::-webkit-scrollbar{width:2px}.toc-rail::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.toc-head{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd);padding-right:14px}
+.toc-sec{display:block;font-size:11px;color:var(--tx3);text-decoration:none;padding:3px 0;line-height:1.4;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px;transition:color .12s}
+.toc-sec:hover{color:var(--tx2)}
+.toc-sec.active{color:var(--bl)!important;font-weight:600}
+.toc-notes{flex-direction:column;display:none}
+.toc-notes.open{display:flex}
+.toc-note{display:block;font-size:10.5px;color:var(--tx3);text-decoration:none;padding:2px 14px 2px 10px;line-height:1.4;cursor:pointer;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.toc-note:hover{color:var(--tx2)}
+.toc-note.active{color:var(--bl);border-left-color:var(--bl)}
+[id^="nh-"]{scroll-margin-top:60px}
+@media(max-width:1200px){.toc-rail{display:none}}
+/* ── GUIDE RAIL REDESIGN ── */
+.content-area{gap:40px!important}
+.toc-rail{background:transparent!important;border-left:none!important;padding:18px 0 20px 0!important}
+.guide-head{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin-bottom:14px}
+.guide-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:none}
+.guide-check{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s}
+.guide-check:hover{border-color:var(--bl)}
+.guide-item.done .guide-check{background:var(--bl);border-color:var(--bl);color:#fff}
+.guide-text{font-size:11.5px;color:var(--tx3);line-height:1.6;cursor:pointer;flex:1;transition:color .12s}
+.guide-text:hover{color:var(--tx2)}
+.guide-text strong{color:var(--tx2);font-weight:600}
+.guide-item.done .guide-text{opacity:.4;text-decoration:line-through;text-decoration-color:var(--bd2)}
+.guide-item.done .guide-text strong{color:inherit}
+/* ── RESPONSIVE 3-COLUMN GRID (overrides all previous layout rules) ── */
+.lay{display:grid!important;align-items:start!important;gap:0!important;
+     grid-template-columns:clamp(180px,16%,240px) 1fr clamp(220px,22%,320px)!important}
+.content-area{display:contents!important;flex:unset!important;gap:unset!important}
+.main{flex:unset!important;max-width:none!important;min-width:0!important;padding-right:36px!important}
+.toc-rail{width:unset!important;min-width:unset!important;flex-shrink:unset!important;
+          padding-left:22px!important;border-left:1px solid var(--bd)!important;
+          background:transparent!important}
+@media(max-width:1200px){
+  .toc-rail{display:none!important}
+  .lay{grid-template-columns:clamp(180px,16%,240px) 1fr!important}
+}
+/* ── RESIZE HANDLE ── */
+.toc-rail{position:relative!important}
+.resize-handle{position:absolute;left:-1px;top:0;bottom:0;width:8px;cursor:col-resize;
+  z-index:20;background:transparent;border-left:2px solid transparent;transition:border-color .15s,background .15s}
+.resize-handle:hover,.resize-handle.dragging{border-left-color:var(--bl);background:rgba(99,102,241,.07)}
+.guide-content{width:100%}
+/* === STICKY GUIDE FIX === */
+.toc-rail{
+  position:sticky!important;
+  top:41px!important;
+  height:calc(100vh - 41px)!important;
+  overflow-y:auto!important;
+  align-self:start!important;
+}
+.lay{align-items:start!important}
+
+.note-fig{margin:12px 0 16px;border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden;background:var(--s)}
+.note-fig svg{width:100%;height:auto;display:block;max-height:300px}
+.diag-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--accent,#2563eb);text-decoration:none;opacity:.8}
+.diag-link:hover{opacity:1;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htit">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    AI · LLM · 多模态 完整学习笔记
+    <span class="hsub">· 硬件 / 训练 / 推理 / 架构 / 对齐 / Agent / RAG / 多模态 / 生产工程 / Evals</span>
+  </div>
+  <div class="srch"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="search" placeholder="搜索投资概念、工具、市场..."></div>
+  <span class="stag" id="stag">加载中…</span>
+</div>
+<div class="lay">
+<nav class="sb" id="sb"><div id="nav"></div></nav>
+<div class="content-area"><main class="main"><div id="cont"></div><div id="nr" class="nr">未找到匹配内容</div><div class="leg" id="leg"></div></main><nav class="toc-rail" id="toc-rail"></nav></div>
+</div>
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- DIAGRAM TEMPLATES -->
+<div id="diag_a_share" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">A股：政策市的运行逻辑</text>
+<rect x="10" y="24" width="150" height="130" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="85" y="42" text-anchor="middle" fill="#831843">政策主导特征</text>
+<text class="sm" x="85" y="58" text-anchor="middle" fill="#be185d">散户主导（~75%交易量）</text>
+<text class="sm" x="85" y="72" text-anchor="middle" fill="#be185d">情绪驱动、波动大</text>
+<text class="sm" x="85" y="88" text-anchor="middle" fill="#be185d">政策底=市场底</text>
+<text class="sm" x="85" y="104" text-anchor="middle" fill="#be185d">资金面比基本面更重要</text>
+<text class="sm" x="85" y="118" text-anchor="middle" fill="#be185d">监管干预频繁</text>
+<rect x="185" y="24" width="155" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="262" y="42" text-anchor="middle" fill="#1e40af">核心跟踪指标</text>
+<text class="sm" x="262" y="58" text-anchor="middle" fill="#3b82f6">北向资金净流入</text>
+<text class="sm" x="262" y="72" text-anchor="middle" fill="#3b82f6">两融余额（杠杆情绪）</text>
+<text class="sm" x="262" y="88" text-anchor="middle" fill="#3b82f6">成交量是否放量</text>
+<text class="sm" x="262" y="104" text-anchor="middle" fill="#3b82f6">政策会议时间窗口</text>
+<text class="sm" x="262" y="118" text-anchor="middle" fill="#3b82f6">M1-M2 剪刀差</text>
+<rect x="365" y="24" width="145" height="130" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="437" y="42" text-anchor="middle" fill="#14532d">历史规律</text>
+<text class="sm" x="437" y="58" text-anchor="middle" fill="#15803d">3年大周期</text>
+<text class="sm" x="437" y="72" text-anchor="middle" fill="#15803d">牛→熊跌60-80%</text>
+<text class="sm" x="437" y="88" text-anchor="middle" fill="#15803d">行业轮动快</text>
+<text class="sm" x="437" y="104" text-anchor="middle" fill="#15803d">年报前后效应</text>
+<text class="sm" x="437" y="118" text-anchor="middle" fill="#15803d">春节红包行情</text>
+</svg></div>
+<div id="diag_inv_frameworks" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">四种投资框架：没有最好，只有适合</text>
+<rect x="10" y="24" width="115" height="130" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="62" y="42" text-anchor="middle" fill="#1e40af">价值投资</text>
+<text class="sm" x="62" y="58" text-anchor="middle" fill="#3b82f6">买入被低估的公司</text>
+<text class="sm" x="62" y="72" text-anchor="middle" fill="#3b82f6">安全边际</text>
+<text class="sm" x="62" y="88" text-anchor="middle" fill="#3b82f6">长期持有</text>
+<text class="sm" x="62" y="104" text-anchor="middle" fill="#6b7280">巴菲特/格雷厄姆</text>
+<text class="sm" x="62" y="118" text-anchor="middle" fill="#6b7280">需要耐心等待</text>
+<rect x="140" y="24" width="115" height="130" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="197" y="42" text-anchor="middle" fill="#14532d">成长投资</text>
+<text class="sm" x="197" y="58" text-anchor="middle" fill="#15803d">买入高增长公司</text>
+<text class="sm" x="197" y="72" text-anchor="middle" fill="#15803d">ROE > 15%</text>
+<text class="sm" x="197" y="88" text-anchor="middle" fill="#15803d">估值可以贵些</text>
+<text class="sm" x="197" y="104" text-anchor="middle" fill="#6b7280">彼得·林奇</text>
+<text class="sm" x="197" y="118" text-anchor="middle" fill="#6b7280">高估值风险</text>
+<rect x="270" y="24" width="115" height="130" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="327" y="42" text-anchor="middle" fill="#78350f">指数投资</text>
+<text class="sm" x="327" y="58" text-anchor="middle" fill="#92400e">买市场平均收益</text>
+<text class="sm" x="327" y="72" text-anchor="middle" fill="#92400e">低成本 ETF</text>
+<text class="sm" x="327" y="88" text-anchor="middle" fill="#92400e">定投平均成本</text>
+<text class="sm" x="327" y="104" text-anchor="middle" fill="#6b7280">博格尔/巴菲特推荐</text>
+<text class="sm" x="327" y="118" text-anchor="middle" fill="#6b7280">长期大概率跑赢</text>
+<rect x="400" y="24" width="110" height="130" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="455" y="42" text-anchor="middle" fill="#831843">宏观投资</text>
+<text class="sm" x="455" y="58" text-anchor="middle" fill="#be185d">自上而下分析</text>
+<text class="sm" x="455" y="72" text-anchor="middle" fill="#be185d">跨资产配置</text>
+<text class="sm" x="455" y="88" text-anchor="middle" fill="#be185d">利率/汇率/商品</text>
+<text class="sm" x="455" y="104" text-anchor="middle" fill="#6b7280">达里奥桥水</text>
+<text class="sm" x="455" y="118" text-anchor="middle" fill="#6b7280">需要宏观判断力</text>
+</svg></div>
+<div id="diag_active_vs_passive" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">为什么主动投资者长期跑不赢指数？</text>
+<rect x="10" y="24" width="230" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#831843">主动基金的劣势</text>
+<text class="sm" x="125" y="58" text-anchor="middle" fill="#be185d">管理费 1.5-2%/年</text>
+<text class="sm" x="125" y="74" text-anchor="middle" fill="#be185d">交易摩擦成本</text>
+<text class="sm" x="125" y="90" text-anchor="middle" fill="#be185d">规模越大越难超越指数</text>
+<text class="sm" x="125" y="106" text-anchor="middle" fill="#be185d">S&amp;P研究：15年内</text>
+<text class="sm" x="125" y="118" text-anchor="middle" fill="#be185d">92%基金跑输指数</text>
+<rect x="280" y="24" width="230" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#14532d">指数投资的优势</text>
+<text class="sm" x="395" y="58" text-anchor="middle" fill="#15803d">费率 0.03-0.1%/年</text>
+<text class="sm" x="395" y="74" text-anchor="middle" fill="#15803d">市场平均收益</text>
+<text class="sm" x="395" y="90" text-anchor="middle" fill="#15803d">不需要选股能力</text>
+<text class="sm" x="395" y="106" text-anchor="middle" fill="#15803d">长期复利威力大</text>
+<text class="sm" x="395" y="118" text-anchor="middle" fill="#15803d">定投消除择时风险</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="158" text-anchor="middle">个人投资者例外：规模小 / 无人监管 / 可以比机构更有耐心 → 可能有超额收益空间</text>
+</svg></div>
+<div id="diag_fed_cycle" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">美联储加息/降息周期对各类资产的影响</text>
+<rect x="10" y="28" width="490" height="30" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+<text class="sm" x="70" y="47" fill="#dc2626">加息期</text>
+<text class="sm" x="210" y="47" fill="#f59e0b">加息见顶</text>
+<text class="sm" x="340" y="47" fill="#16a34a">降息期</text>
+<text class="sm" x="460" y="47" fill="#3b82f6">降息见底</text>
+<line x1="150" y1="28" x2="150" y2="58" stroke="#e2e8f0" stroke-width="1"/>
+<line x1="290" y1="28" x2="290" y2="58" stroke="#e2e8f0" stroke-width="1"/>
+<line x1="430" y1="28" x2="430" y2="58" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="10" y="68" width="490" height="90" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="80" y="86" text-anchor="middle" fill="#dc2626">加息期资产</text>
+<text class="sm" x="80" y="100" text-anchor="middle" fill="#dc2626">↓ 股票估值</text>
+<text class="sm" x="80" y="114" text-anchor="middle" fill="#dc2626">↑ 美元强势</text>
+<text class="sm" x="80" y="128" text-anchor="middle" fill="#dc2626">↑ 短债收益</text>
+<text class="sm" x="80" y="142" text-anchor="middle" fill="#dc2626">↓ A/港股承压</text>
+<text class="t" x="220" y="86" text-anchor="middle" fill="#f59e0b">见顶信号</text>
+<text class="sm" x="220" y="100" text-anchor="middle" fill="#f59e0b">通胀回落</text>
+<text class="sm" x="220" y="114" text-anchor="middle" fill="#f59e0b">就业走弱</text>
+<text class="sm" x="220" y="128" text-anchor="middle" fill="#f59e0b">→ 布局股票</text>
+<text class="t" x="360" y="86" text-anchor="middle" fill="#16a34a">降息期资产</text>
+<text class="sm" x="360" y="100" text-anchor="middle" fill="#16a34a">↑ 股票估值</text>
+<text class="sm" x="360" y="114" text-anchor="middle" fill="#16a34a">↑ 黄金/大宗</text>
+<text class="sm" x="360" y="128" text-anchor="middle" fill="#16a34a">↑ 新兴市场</text>
+<text class="t" x="470" y="86" text-anchor="middle" fill="#3b82f6">见底信号</text>
+<text class="sm" x="470" y="100" text-anchor="middle" fill="#3b82f6">经济复苏</text>
+<text class="sm" x="470" y="114" text-anchor="middle" fill="#3b82f6">→ 布局周期</text>
+</svg></div>
+<div id="diag_financial_3" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">财务三表：相互勾稽，综合判断</text>
+<rect x="10" y="24" width="150" height="125" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="85" y="42" text-anchor="middle" fill="#1e40af">利润表 P&amp;L</text>
+<text class="sm" x="85" y="58" text-anchor="middle" fill="#3b82f6">收入 - 成本 = 利润</text>
+<text class="sm" x="85" y="72" text-anchor="middle" fill="#3b82f6">关注：毛利率趋势</text>
+<text class="sm" x="85" y="88" text-anchor="middle" fill="#3b82f6">净利润含金量</text>
+<text class="sm" x="85" y="104" text-anchor="middle" fill="#6b7280">警惕：非经常性收益</text>
+<text class="sm" x="85" y="116" text-anchor="middle" fill="#6b7280">关联交易虚增收入</text>
+<rect x="185" y="24" width="150" height="125" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#14532d">资产负债表</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#15803d">资产 = 负债 + 净资产</text>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#15803d">关注：现金/有息负债</text>
+<text class="sm" x="260" y="88" text-anchor="middle" fill="#15803d">商誉减值风险</text>
+<text class="sm" x="260" y="104" text-anchor="middle" fill="#6b7280">流动比率 &gt; 2</text>
+<text class="sm" x="260" y="116" text-anchor="middle" fill="#6b7280">资产负债率 &lt; 60%</text>
+<rect x="360" y="24" width="150" height="125" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="435" y="42" text-anchor="middle" fill="#78350f">现金流量表</text>
+<text class="sm" x="435" y="58" text-anchor="middle" fill="#92400e">经营/投资/融资</text>
+<text class="sm" x="435" y="72" text-anchor="middle" fill="#92400e">经营现金流最重要</text>
+<text class="sm" x="435" y="88" text-anchor="middle" fill="#92400e">自由现金流 = 判断</text>
+<text class="sm" x="435" y="104" text-anchor="middle" fill="#6b7280">利润好但现金差→差</text>
+<text class="sm" x="435" y="116" text-anchor="middle" fill="#6b7280">现金流好于利润→好</text>
+</svg></div>
+<div id="diag_valuation" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">估值指标：用对场景才有意义</text>
+<rect x="10" y="24" width="115" height="120" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="62" y="42" text-anchor="middle" fill="#1e40af">PE 市盈率</text>
+<text class="sm" x="62" y="58" text-anchor="middle" fill="#3b82f6">股价/每股收益</text>
+<text class="sm" x="62" y="74" text-anchor="middle" fill="#3b82f6">适合：稳定盈利</text>
+<text class="sm" x="62" y="88" text-anchor="middle" fill="#6b7280">消费/金融股</text>
+<text class="sm" x="62" y="104" text-anchor="middle" fill="#6b7280">A股低估：&lt;15</text>
+<text class="sm" x="62" y="116" text-anchor="middle" fill="#6b7280">高估：&gt;30</text>
+<rect x="140" y="24" width="115" height="120" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="197" y="42" text-anchor="middle" fill="#14532d">PB 市净率</text>
+<text class="sm" x="197" y="58" text-anchor="middle" fill="#15803d">股价/每股净资产</text>
+<text class="sm" x="197" y="74" text-anchor="middle" fill="#15803d">适合：重资产</text>
+<text class="sm" x="197" y="88" text-anchor="middle" fill="#6b7280">银行/地产/钢铁</text>
+<text class="sm" x="197" y="104" text-anchor="middle" fill="#6b7280">低于1=可能低估</text>
+<text class="sm" x="197" y="116" text-anchor="middle" fill="#6b7280">ROE低则无意义</text>
+<rect x="270" y="24" width="115" height="120" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="327" y="42" text-anchor="middle" fill="#78350f">PS 市销率</text>
+<text class="sm" x="327" y="58" text-anchor="middle" fill="#92400e">股价/每股收入</text>
+<text class="sm" x="327" y="74" text-anchor="middle" fill="#92400e">适合：亏损成长</text>
+<text class="sm" x="327" y="88" text-anchor="middle" fill="#6b7280">SaaS/科技股</text>
+<text class="sm" x="327" y="104" text-anchor="middle" fill="#6b7280">增长率补偿估值</text>
+<rect x="400" y="24" width="110" height="120" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="455" y="42" text-anchor="middle" fill="#4c1d95">DCF 现金流</text>
+<text class="sm" x="455" y="58" text-anchor="middle" fill="#6d28d9">未来现金流折现</text>
+<text class="sm" x="455" y="74" text-anchor="middle" fill="#6d28d9">理论上最准确</text>
+<text class="sm" x="455" y="88" text-anchor="middle" fill="#6b7280">对折现率敏感</text>
+<text class="sm" x="455" y="104" text-anchor="middle" fill="#6b7280">垃圾进垃圾出</text>
+<text class="sm" x="455" y="116" text-anchor="middle" fill="#6b7280">用于估值区间</text>
+</svg></div>
+<div id="diag_moat" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">护城河：竞争优势能持续多久</text>
+<rect x="10" y="24" width="96" height="120" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="58" y="42" text-anchor="middle" fill="#1e40af">切换成本</text>
+<text class="sm" x="58" y="58" text-anchor="middle" fill="#3b82f6">用户迁移很贵</text>
+<text class="sm" x="58" y="72" text-anchor="middle" fill="#3b82f6">SAP/Oracle</text>
+<text class="sm" x="58" y="88" text-anchor="middle" fill="#3b82f6">银行账户</text>
+<text class="sm" x="58" y="104" text-anchor="middle" fill="#6b7280">★★★★</text>
+<rect x="120" y="24" width="96" height="120" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="168" y="42" text-anchor="middle" fill="#14532d">网络效应</text>
+<text class="sm" x="168" y="58" text-anchor="middle" fill="#15803d">用户越多越好</text>
+<text class="sm" x="168" y="72" text-anchor="middle" fill="#15803d">微信/美团</text>
+<text class="sm" x="168" y="88" text-anchor="middle" fill="#15803d">VISA网络</text>
+<text class="sm" x="168" y="104" text-anchor="middle" fill="#6b7280">★★★★★</text>
+<rect x="230" y="24" width="96" height="120" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="278" y="42" text-anchor="middle" fill="#78350f">成本优势</text>
+<text class="sm" x="278" y="58" text-anchor="middle" fill="#92400e">规模/流程/资源</text>
+<text class="sm" x="278" y="72" text-anchor="middle" fill="#92400e">拼多多价格</text>
+<text class="sm" x="278" y="88" text-anchor="middle" fill="#92400e">矿产资源</text>
+<text class="sm" x="278" y="104" text-anchor="middle" fill="#6b7280">★★★</text>
+<rect x="340" y="24" width="96" height="120" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="388" y="42" text-anchor="middle" fill="#4c1d95">无形资产</text>
+<text class="sm" x="388" y="58" text-anchor="middle" fill="#6d28d9">品牌/专利/牌照</text>
+<text class="sm" x="388" y="72" text-anchor="middle" fill="#6d28d9">茅台品牌</text>
+<text class="sm" x="388" y="88" text-anchor="middle" fill="#6d28d9">医药专利</text>
+<text class="sm" x="388" y="104" text-anchor="middle" fill="#6b7280">★★★★</text>
+<rect x="450" y="24" width="60" height="120" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="480" y="42" text-anchor="middle" fill="#831843">有效</text>
+<text class="t" x="480" y="56" text-anchor="middle" fill="#831843">规模</text>
+<text class="sm" x="480" y="72" text-anchor="middle" fill="#be185d">细分市场</text>
+<text class="sm" x="480" y="86" text-anchor="middle" fill="#be185d">难以规模</text>
+<text class="sm" x="480" y="100" text-anchor="middle" fill="#be185d">复制</text>
+<text class="sm" x="480" y="114" text-anchor="middle" fill="#6b7280">★★</text>
+</svg></div>
+<div id="diag_core_satellite" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Core-Satellite：两种逻辑管理两类仓位</text>
+<circle cx="175" cy="100" r="75" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+<circle cx="175" cy="100" r="45" fill="#2563eb"/>
+<text class="t" x="175" y="95" text-anchor="middle" fill="white">Core</text>
+<text class="sm" x="175" y="110" text-anchor="middle" fill="#bfdbfe">60-80%</text>
+<text class="sm" x="175" y="38" text-anchor="middle" fill="#1e40af">指数ETF</text>
+<text class="sm" x="175" y="168" text-anchor="middle" fill="#1e40af">稳定持仓·低成本</text>
+<circle cx="380" cy="60" r="28" fill="#7c3aed"/>
+<text class="sm" x="380" y="56" text-anchor="middle" fill="white">Satellite</text>
+<text class="sm" x="380" y="69" text-anchor="middle" fill="#ddd6fe">AI主题</text>
+<circle cx="430" cy="120" r="22" fill="#059669"/>
+<text class="sm" x="430" y="116" text-anchor="middle" fill="white">Satellite</text>
+<text class="sm" x="430" y="130" text-anchor="middle" fill="#bbf7d0">港股</text>
+<circle cx="350" cy="150" r="20" fill="#dc2626"/>
+<text class="sm" x="350" y="146" text-anchor="middle" fill="white">Satellite</text>
+<text class="sm" x="350" y="160" text-anchor="middle" fill="#fca5a5">个股</text>
+<text style="font:10px sans-serif;fill:#374151" x="430" y="168" text-anchor="middle">20-40%</text>
+<text style="font:10px sans-serif;fill:#374151" x="430" y="182" text-anchor="middle">主动追求超额</text>
+</svg></div>
+<div id="diag_position_sizing" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">仓位管理：凯利公式 + 止损纪律</text>
+<rect x="10" y="28" width="230" height="120" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="125" y="46" text-anchor="middle" fill="#1e40af">凯利公式（理论最优）</text>
+<text style="font:600 14px monospace;fill:#1e40af" x="125" y="70" text-anchor="middle">f* = (bp - q) / b</text>
+<text class="sm" x="125" y="90" text-anchor="middle" fill="#3b82f6">f* = 最优仓位比例</text>
+<text class="sm" x="125" y="104" text-anchor="middle" fill="#3b82f6">b = 盈亏比  p = 胜率</text>
+<text class="sm" x="125" y="118" text-anchor="middle" fill="#3b82f6">q = 1-p（失败概率）</text>
+<text class="sm" x="125" y="132" text-anchor="middle" fill="#6b7280">实践：用半凯利减少波动</text>
+<rect x="280" y="28" width="230" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="395" y="46" text-anchor="middle" fill="#831843">止损纪律</text>
+<text class="sm" x="395" y="62" text-anchor="middle" fill="#be185d">单笔最大亏损 ≤ 总资金 2%</text>
+<text class="sm" x="395" y="78" text-anchor="middle" fill="#be185d">单股仓位上限 20%</text>
+<text class="sm" x="395" y="94" text-anchor="middle" fill="#be185d">跌破关键位强制止损</text>
+<text class="sm" x="395" y="110" text-anchor="middle" fill="#be185d">不要补仓摊低成本</text>
+<text class="sm" x="395" y="126" text-anchor="middle" fill="#6b7280">情绪是最大的敌人</text>
+</svg></div>
+<div id="diag_asset_alloc" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">资产配置：相关性比预期收益更重要</text>
+<rect x="10" y="28" width="235" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="122" y="46" text-anchor="middle" fill="#14532d">全天候组合（达里奥）</text>
+<text class="sm" x="122" y="62" text-anchor="middle" fill="#15803d">股票 30%</text>
+<text class="sm" x="122" y="76" text-anchor="middle" fill="#15803d">长期国债 40%</text>
+<text class="sm" x="122" y="90" text-anchor="middle" fill="#15803d">中期国债 15%</text>
+<text class="sm" x="122" y="104" text-anchor="middle" fill="#15803d">黄金 7.5%  大宗 7.5%</text>
+<text class="sm" x="122" y="118" text-anchor="middle" fill="#6b7280">历史最大回撤仅 -11%</text>
+<rect x="275" y="28" width="235" height="120" rx="7" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="392" y="46" text-anchor="middle" fill="#78350f">相关性矩阵逻辑</text>
+<text class="sm" x="392" y="62" text-anchor="middle" fill="#92400e">股票 vs 债券：负相关(-0.3)</text>
+<text class="sm" x="392" y="76" text-anchor="middle" fill="#92400e">股票 vs 黄金：低相关(0.1)</text>
+<text class="sm" x="392" y="90" text-anchor="middle" fill="#92400e">A股 vs 美股：低相关(0.3)</text>
+<text class="sm" x="392" y="106" text-anchor="middle" fill="#92400e">低相关资产组合→</text>
+<text class="sm" x="392" y="120" text-anchor="middle" fill="#92400e">整体波动率降低</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="158" text-anchor="middle">危机时相关性趋向1：2008年金融危机，几乎所有风险资产同步下跌 → 黄金/现金才是真避险</text>
+</svg></div>
+<!-- END DIAGRAM TEMPLATES -->
+<script>
+const D=[{"id":"market_basics","phase":"市场认知","title":"三市基础认知 · A股 · 港股 · 美股特征","color":"#1e40af","bg":"#EFF6FF","intro":"A 股、港股、美股是三个运行逻辑完全不同的市场——投资者结构不同、定价机制不同、信息流动方式不同。在同一套框架里分析三个市场是最常见的错误，理解差异才是多市场投资的起点。","intro_lines":["▸ <strong>A股特征</strong> — 散户主导、政策市权重高、T+1限制、涨跌停制度的实际影响","▸ <strong>港股特征</strong> — 机构主导、流动性分化极大、AH溢价含义、南向资金的定价影响","▸ <strong>美股特征</strong> — T+0、无涨跌停、机构与散户信息不对称、指数化大趋势","▸ <strong>三市联动</strong> — 北向/南向资金、中概股与港股科技的关系、汇率传导","▸ <strong>开户现实</strong> — 大陆投资港股/美股的合规路径和实际操作"],"notes":[{"h":"A股：政策市的真实运行逻辑","pts":["A股有约 2.2 亿个人投资者账户，散户持股市值占比约 30-40%（交易量占比超过 70%）——这和美国市场（机构持股超过 80%）是完全相反的结构。散户主导的市场特征：短期交易行为主导价格波动、情绪驱动的板块轮动比基本面快、「消息面」和「政策面」对短期价格的影响常常大于公司基本面。这是 A 股独特的 Alpha 来源，也是机构在 A 股的超额收益来源之一。","政策市的理解：A 股有「政策底」的传统说法——当监管层或重要官员发出积极信号时，往往形成阶段性底部。国家队（汇金/社保基金/主权基金）的存在使得极端下跌有一定缓冲。这不是 A 股的弱点，而是投资框架的一部分——读懂政策信号是 A 股投资者必须掌握的技能，这在美股是不需要的。T+1（当天买入第二天才能卖出）和 ±10% 的涨跌停制度限制了做空效率，也使得某些非理性价格无法被快速纠正。","A 股的主要指数：上证综指（代表性不好，因为包含了大量低质量股票）；沪深 300（市值前 300，是机构的主要参考基准）；中证 500（中小市值，成长性更强但波动更大）；创业板指（成长型公司集中，和纳斯达克有相似的行业结构）；科创 50（科技硬件/半导体/医疗器械）。A 股的北向资金（沪深港通北向）是外资机构对 A 股的配置情绪指标，持续净流入对应外资看好。"],"img_key":"a_share","img_link":"A-share Market","img_title":"https://en.wikipedia.org/wiki/Shanghai_Stock_Exchange"},{"h":"港股：最被低估也最难理解的市场","pts":["港股的本质是「中国资产的离岸定价市场」——在港上市的大多数公司是中国内地公司，但投资者以国际机构为主。这创造了一种独特的张力：基本面由中国经济决定，但定价逻辑受国际资本流动、美元周期、地缘政治情绪的影响极大。当国际资本因为某些原因撤离新兴市场时，即使中国经济基本面不错，港股也会大幅下跌。","AH 溢价（或折价）：同一家公司在 A 股和 H 股的价格差异。通常 A 股溢价于 H 股（AH 溢价率 > 100%），因为 A 股的散户情绪推高了价格，而 H 股以机构定价为主。AH 溢价率极高时（比如 > 140%），H 股通常更「划算」；溢价率收窄时说明南向资金大量买入 H 股（认为 H 股被低估）。AH 溢价是港股投资里一个实用的参考信号。","港股流动性分化是最重要的风险之一：恒生指数的大市值权重股（腾讯/阿里/美团/友邦）流动性很好，交易成本低；但港股小市值股票（市值 < 5 亿港币）流动性极差，买卖价差极大，甚至可能出现「无人接盘」的情况。个人投资者应该严格限制在流动性足够的标的——成交额每日至少 1000 万港币是一个基本门槛。"]},{"h":"美股：最成熟也最「卷」的市场","pts":["美股的信息效率是三个市场里最高的：SEC 严格的信息披露要求、高频量化交易对价格异常的快速修正、全球最多的专业机构投研覆盖，使得「公开信息的挖掘价值」相对最低。个人投资者在美股的相对优势：① 长期持有优质公司（时间维度，机构需要短期绩效，你不需要）；② 特定行业的深度专业知识（你懂的，市场不一定定价对了）；③ 通过低成本指数 ETF 参与市场（个人投资者最确定的策略）。","美股的T+0和无涨跌停意味着价格发现更快，大事件（财报/美联储决议/宏观数据）的反应往往在几分钟内完成。这使得「追消息」的散户更难赚钱，但也使得长期持有的策略更容易执行——你永远可以在合理价格卖出，不需要等到「明天才能卖」。美股做空机制完善，这意味着高估值的「炒作」泡沫更难维持，但也使得估值回归可能比 A 股更快。","三市联动的实际逻辑：美联储加息→美元升值→资金从新兴市场流出→港股/A 股估值承压；中国政策利好→A 股上涨→南向资金（港股通）买入港股→港股同步上涨；美股科技板块大跌→中概股（在美上市的中国公司）同步下跌→情绪传导到港股科技板块。理解这三条传导路径，能解释 80% 以上的跨市场联动现象。"]}],"res":[{"tp":"工具","tc":"b-tool","t":"富途牛牛 / 老虎证券","d":"港美股交易平台，行情/研报/资讯一体，大陆用户最常用","u":"https://www.futunn.com/","lv":"entry","s":"futunn.com"},{"tp":"工具","tc":"b-tool","t":"东方财富 — A股行情与研报","d":"A股最全的免费数据平台，研报中心/资金流向/北向资金","u":"https://www.eastmoney.com/","lv":"entry","s":"eastmoney.com"},{"tp":"工具","tc":"b-tool","t":"Koyfin — 类 Bloomberg 免费平台","d":"覆盖美股/港股/宏观数据，Dashboard 可定制，比 Yahoo Finance 强","u":"https://app.koyfin.com/","lv":"mid","s":"koyfin.com"},{"tp":"博客","tc":"b-blog","t":"AH 溢价指数 — 同花顺","d":"实时 AH 溢价数据，港股 vs A 股价差的参考工具","u":"https://data.10jqka.com.cn/hkmarket/ah_stock/","lv":"entry","s":"10jqka.com.cn"},{"tp":"视频","tc":"b-video","t":"Bloomberg Markets — 港股/中概股日常行情","d":"Bloomberg 官方 YouTube，每日市场评论，港股/宏观新闻最快的英文来源","u":"https://www.youtube.com/@BloombergTelevision","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"CNBC — 美股/全球市场实时播报","d":"CNBC 官方频道，财报季/美联储会议/宏观数据发布时的第一手报道","u":"https://www.youtube.com/@CNBC","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"南华早报 SCMP — 中国/香港财经分析","d":"香港最权威英文媒体，中国政策解读 + 港股视频评论，YouTube 免费","u":"https://www.youtube.com/@SouthChinaMorningPost","lv":"entry","s":"youtube.com"}]},{"id":"investment_framework","phase":"投资框架","title":"投资框架 · 价值 vs 成长 vs 量化 · 个人边界","color":"#0f766e","bg":"#F0FDFA","intro":"先确认自己是哪类投资者，再选择匹配的框架——用错了框架比没有框架更危险。每种投资框架都有它成立的前提条件和它无法处理的场景。","intro_lines":["▸ <strong>四种框架的本质</strong> — 价值/成长/量化/宏观各自在做什么，需要什么信息优势","▸ <strong>个人投资者的真实优势</strong> — 你能做到机构做不到的事情有哪些","▸ <strong>中长期 vs 短中期的框架差异</strong> — 两种视野用的分析工具完全不同","▸ <strong>为什么大多数主动投资者跑不赢指数</strong> — 以及什么情况下可以"],"notes":[{"h":"四种投资框架的本质","pts":["价值投资（Value Investing）的核心是「以低于内在价值的价格买入资产，等待价值回归」。需要的能力：准确估算公司内在价值（财务分析能力 + 行业判断力）、长期持有的心理承受力（等待可能需要 3-5 年）、忽略短期市场情绪的能力。适合：有深度行业知识、有足够流动性不需要频繁变现、投资期限超过 3 年。巴菲特的方法在中国市场的应用需要调整：A 股的市场效率不如美股，估值扭曲持续时间可能更长，但政策因素可以快速让低估的资产重新定价。","成长投资（Growth Investing）的核心是「以合理价格买入未来增速高于市场预期的公司」。需要的能力：对行业趋势的前瞻判断（什么行业在 5 年后会显著更大）、对公司竞争优势可持续性的判断、对「合理价格」的定义（成长投资不是不看估值，而是愿意为增长付溢价）。成长投资失败的最常见原因：买在行业爆发已经被市场充分定价之后（PE 已经 100 倍+），或者行业趋势判断正确但选错了受益公司。","量化投资（Quantitative Investing）的核心是「用系统性的规则替代主观判断，从历史数据中提取统计优势」。个人投资者的量化不需要高频交易，而是：①因子选股（用多个财务/市场因子的组合系统性筛选股票）；②趋势跟踪（动量策略）；③统计套利（AH 溢价套利/配对交易）。量化的优势是消除情绪，劣势是历史规律在未来可能失效（尤其是结构性变化时期）。","宏观策略（Macro Investing）的核心是「基于宏观经济判断在资产类别之间配置」——利率上行时减持长债和高估值成长股、持有美元；经济复苏初期加配周期股；政策刺激预期时加配国内消费和基建。宏观策略对个人投资者最有价值的应用：大方向的仓位管理（市场整体是高估还是低估？现在适合重仓还是轻仓？），而不是精确的资产轮动时机预测（这连机构都做不好）。"],"img_key":"inv_frameworks","img_link":"Investment Strategy","img_title":"https://en.wikipedia.org/wiki/Investment_strategy"},{"h":"个人投资者的真实优势","pts":["时间（最重要）：公募基金经理受季度考核压力，不能长期持有「短期表现差但长期正确」的仓位；私募受业绩报酬约束，极端亏损时需要强制减仓。个人投资者没有这些约束，可以在别人被迫卖出时持有，等待价值回归。巴菲特的名言「股市是把钱从不耐心的人转移到耐心的人」在机构主导的市场里对个人投资者格外有利。","规模限制的反面：大型基金管理百亿规模时，一个小市值公司即使上涨 100% 对整体组合影响也不到 1%，他们根本不会研究。但个人投资者规模小，可以在小市值公司里找到机构没有覆盖、定价低效的机会——这是机构无法复制的个人优势，但需要付出更多研究功夫。","专业领域的深度知识：如果你在银行/金融科技工作 16 年，你对金融科技行业的理解深度远超大多数股票分析师。你知道哪类风险系统真正有竞争力，哪类客户真正愿意付费，哪家公司的技术路线更可持续。这种「内行人的判断」在你熟悉的行业里比财务分析更有价值。"]},{"h":"为什么主动投资者长期跑不赢指数","pts":["统计事实：标普 500 的数据显示，超过 90% 的主动管理基金在 20 年维度上跑输同类指数基金。中国市场（A 股）主动基金的历史表现好于美股，但超额收益也在收窄（市场越来越有效）。这不是说主动投资不可能跑赢，而是说：对大多数不具备系统性优势的投资者，指数 ETF 是更正确的选择。","主动投资者跑输的主要原因：交易成本（频繁交易的摩擦成本在复利下很显著）；情绪决策（追涨杀跌是最普遍的亏损原因）；信息劣势（你的「消息」通常是最后知道的）；过度分散（持有 30 只股票的「组合」在预期收益上接近指数，但管理成本高得多）。","什么情况下可以跑赢：深度专业知识（了解的行业）+ 足够长的持有周期（3 年以上）+ 足够低的换手率（每年换手率 < 30%）+ 足够低的杠杆（不用融资融券）。这四个条件同时满足时，个人投资者是有真实优势的。不满足这四个条件时，与其主动选股，不如把主要仓位放在宽基指数 ETF，用少量仓位做自己熟悉领域的主动选择。"],"img_key":"active_vs_passive","img_link":"Passive Management","img_title":"https://en.wikipedia.org/wiki/Passive_management"}],"res":[{"tp":"书籍","tc":"b-book","t":"聪明的投资者 — Benjamin Graham","d":"价值投资圣经，巴菲特的启蒙读物，安全边际概念的来源","u":"https://www.amazon.com/Intelligent-Investor-Definitive-Investing-Essentials/dp/0060555661","lv":"mid","s":"amazon.com"},{"tp":"书籍","tc":"b-book","t":"价值 — 张磊（高瓴资本）","d":"中国长期价值投资的最佳本土视角，覆盖 A 股和中国企业","u":"https://book.douban.com/subject/35259327/","lv":"entry","s":"douban.com"},{"tp":"博客","tc":"b-blog","t":"Howard Marks 备忘录（橡树资本）","d":"全球顶级宏观投资者的思考记录，免费，每篇都值得细读","u":"https://www.oaktreecapital.com/insights","lv":"mid","s":"oaktreecapital.com"},{"tp":"博客","tc":"b-blog","t":"SPIVA Report — S&P 主动 vs 被动对比","d":"权威数据：主动管理基金 vs 指数基金的长期表现对比","u":"https://www.spglobal.com/spdji/en/research-insights/spiva/","lv":"mid","s":"spglobal.com"},{"tp":"视频","tc":"b-video","t":"Warren Buffett — 历年股东大会（精华剪辑）","d":"伯克希尔年会问答，价值投资哲学的最佳一手来源，YouTube 有大量剪辑","u":"https://www.youtube.com/results?search_query=Warren+Buffett+shareholder+meeting+2024","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Ben Felix — 循证投资（CSI）","d":"CFA，基于学术研究的投资分析，每期视频附参考文献，驳斥大量投资迷思","u":"https://www.youtube.com/@BenFelixCSI","lv":"mid","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"The Plain Bagel — 投资基础概念","d":"清晰讲解价值投资/成长投资/指数基金/行为金融，适合建立框架认知","u":"https://www.youtube.com/@ThePlainBagel","lv":"entry","s":"youtube.com"}]},{"id":"macro_policy","phase":"宏观与政策","title":"宏观分析 · 政策解读 · 美联储 · 2025动态","color":"#7c3aed","bg":"#F5F3FF","intro":"宏观分析在 A/H 股的权重远大于纯基本面分析。不读懂宏观周期和政策信号，在中国市场就是用了一半的地图在导航。这个版块提供实用的宏观框架，不是经济学理论，而是「如何把宏观数据用在投资决策里」。","intro_lines":["▸ <strong>中国宏观框架</strong> — GDP/通胀/信贷/汇率的传导链，哪些数据最值得跟踪","▸ <strong>政策信号解读</strong> — 如何读政府工作报告/重要会议/产业政策，识别真实信号","▸ <strong>美联储周期</strong> — 加息/降息对港股/中概股/汇率的传导机制","▸ <strong>2025-2026 关键背景</strong> — DeepSeek 引发的科技资产重估，贸易格局变化","▸ <strong>汇率与资产配置</strong> — 人民币汇率对不同资产类别的影响路径"],"notes":[{"h":"中国宏观：最值得跟踪的指标","pts":["不是所有宏观数据都值得花时间。最值得跟踪的五个指标：①社会融资规模（社融）——信用扩张的前置指标，社融同比增速加速通常领先于股市底部 1-2 个季度；② PMI（制造业/服务业采购经理指数）——经济活动的月度体温计，超过 50 代表扩张；③CPI/PPI——通胀/通缩的信号，PPI 深度负值时往往对应企业盈利压力；④外储/汇率——资本流动的信号；⑤房地产新开工数据——对上游产业链（钢铁/建材/家居）的传导先行指标。","政策工具箱：中国的主要政策工具是货币政策（央行降准/降息）、财政政策（专项债发行/减税降费）、产业政策（补贴/国产替代要求/监管收紧或放松）。和美联储的区别：中国不完全靠利率调控，行政手段（窗口指导/行业监管）有时比货币政策更直接。对投资的含义：关注政策方向的改变，而不只是看绝对政策力度——政策从收紧转向放松的拐点，往往是市场见底的信号。","跟踪政策信号的实用方法：① 每年 3 月两会，重点读政府工作报告里的「重点支持行业」和「GDP 增速目标」；② 每年 12 月中央经济工作会议，定调明年经济政策基调；③ 国务院/各部委的专项政策文件，特别关注「鼓励」和「限制」名单的调整；④ 主要媒体（新华社/人民日报）的措辞变化——从「防范」到「促进」的用词转变，通常早于正式政策发布。"]},{"h":"美联储周期对中国资产的影响","pts":["美联储加息周期的传导链：加息→美元升值→新兴市场资本外流→港股/中概股估值承压（用美元计价的资产面临折价）→人民币贬值压力→A 股外资持仓减少。这个链条在 2022-2023 年美联储快速加息期间非常清晰——港股恒生指数从 2021 年高点跌了超过 50%，核心原因之一正是美元流动性收紧导致的全球风险资产重定价。","美联储降息周期（2024 年开始）对中国资产通常是正面的：美元走弱→新兴市场吸引力上升→港股/中概股估值修复空间打开→南向资金加速流入港股（锁定高股息低估值资产）。但降息周期并不直接等于中国股市上涨——还需要国内经济数据的配合（内需恢复、企业盈利改善）。降息打开了「天花板」，国内基本面决定实际涨幅。","2025-2026 年最重要的背景变量：①DeepSeek R1（2025 年 1 月）引发了全球对中国 AI 能力的重新评估，港股 AI 受益标的在 DeepSeek 发布后 5 周内上涨 45%（J.P. Morgan 数据），超过所有其他中国股票类别。②贸易格局的结构性变化（中美科技脱钩、东南亚供应链重组）对不同行业的影响分化——有的公司受益（国产替代、海外产能布局），有的公司受损（依赖美国技术/市场）。③房地产长周期调整对消费的持续影响，这是宏观 Alpha 最难把握的部分。"],"img_key":"fed_cycle","img_link":"Federal Reserve","img_title":"https://en.wikipedia.org/wiki/Federal_Reserve"},{"h":"汇率：被低估的资产配置工具","pts":["人民币汇率对不同资产的影响路径各不相同：A 股——人民币贬值对出口型企业正面（营收换算成人民币更多），对进口型企业和持有大量美元债的公司负面；港股——港股以港元计价，港元与美元挂钩，人民币贬值意味着内地投资者买港股的成本上升，南向资金往往在人民币贬值期间减少；美股/美元资产——人民币贬值使美元资产的人民币收益率上升，利好持有美股/美债的投资者。","外汇管制下的个人操作现实：大陆居民每年外汇额度是 5 万美元。直接购汇投资美股需要占用额度；通过港股通（沪深港通南向）投资港股不需要外汇额度，是目前最便利的「离岸配置」路径；通过合格境内机构投资者（QDII）基金间接配置美股/港股/全球 ETF，不受个人外汇额度限制，是中长期全球配置的主要渠道。","汇率的简单判断框架：①中美利差（美债收益率 - 中债收益率）扩大时，人民币有贬值压力（资金倾向流向高息的美元资产）；②出口数据超预期时，外贸企业结汇的美元增加，对人民币形成支撑；③央行中间价的设置，是官方态度的直接信号——中间价持续比市场预期强时，说明央行在稳汇率；④CFETS 指数（人民币兑一篮子货币）比单看美元/人民币更全面，因为中国贸易伙伴不只是美国。"]}],"res":[{"tp":"工具","tc":"b-tool","t":"中国人民银行官网 — 货币政策数据","d":"利率/准备金率/社融/M2 等官方数据，一手来源","u":"http://www.pbc.gov.cn/","lv":"entry","s":"pbc.gov.cn"},{"tp":"工具","tc":"b-tool","t":"Macrotrends — 美国宏观历史数据","d":"美联储利率/通胀/GDP 等长期历史数据，可视化强","u":"https://www.macrotrends.net/","lv":"entry","s":"macrotrends.net"},{"tp":"博客","tc":"b-blog","t":"J.P. Morgan 私人银行亚洲市场洞察","d":"机构级别的中国/港股/宏观分析，部分报告公开","u":"https://privatebank.jpmorgan.com/apac/en/insights","lv":"mid","s":"jpmorgan.com"},{"tp":"博客","tc":"b-blog","t":"Wind 资讯 — 中国宏观数据库","d":"最全的中国宏观/金融数据，专业版收费但免费内容也够用","u":"https://www.wind.com.cn/","lv":"mid","s":"wind.com.cn"},{"tp":"视频","tc":"b-video","t":"Patrick Boyle — 宏观/衍生品/对冲基金","d":"量化对冲基金创始人 + 伦敦国王学院教授，深度宏观分析 + 幽默英式口吻","u":"https://www.youtube.com/@PBoyle","lv":"mid","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Economics Explained — 各国经济体分析","d":"深度讲解各国宏观经济，包含中国/美国/新兴市场经济结构分析","u":"https://www.youtube.com/@EconomicsExplained","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"George Gammon — 美联储与宏观机制","d":"用白板解释美联储政策/美元体系/货币机制，是理解美联储操作的最好入门","u":"https://www.youtube.com/@GeorgeGammon","lv":"mid","s":"youtube.com"}]},{"id":"fundamental","phase":"基本面分析","title":"基本面分析 · 财务三表 · 估值 · 行业框架","color":"#dc2626","bg":"#FEF2F2","intro":"基本面分析是「判断一家公司值多少钱」的系统性方法。不需要成为会计师——需要的是建立「哪些指标真正重要」的判断力，以及「这家公司的竞争优势能持续多久」的行业洞察。","intro_lines":["▸ <strong>财务三表联动</strong> — 利润表/资产负债表/现金流量表各自说明什么，最重要的红旗信号","▸ <strong>核心估值指标</strong> — PE/PB/PS/EV-EBITDA 的适用场景，以及为什么高 PE 不一定贵","▸ <strong>DCF 直觉</strong> — 什么是折现，利率对估值的杠杆效应为什么这么大","▸ <strong>行业分析框架</strong> — Porter 五力和护城河，如何判断竞争优势的持续性","▸ <strong>港股特有分析维度</strong> — H 股 vs 红筹 vs 本地股，持股结构分析"],"notes":[{"h":"财务三表：最重要的信号","pts":["利润表告诉你「公司在这个周期里赚了多少」，但最重要的是看「收入增长的质量」——是靠价格提升还是靠量的增长？是靠一次性收益还是持续经营？毛利率是否在改善？最常见的红旗信号：收入增速很高但应收账款增速更高（收入可能是「赊出去」的）；净利润很高但经营现金流为负（利润可能是「纸面上的」）；非经常性损益占净利润超过 20%（可持续性存疑）。","资产负债表告诉你「公司现在的财务健康程度」。关键比率：资产负债率（负债/总资产，制造业 < 60% 相对安全；金融行业因为杠杆模型不同，不能用同一标准）；流动比率（流动资产/流动负债 > 1.5 说明短期偿债能力足够）；商誉（Goodwill，历史并购累积的溢价，需要关注是否有减值风险，商誉超过净资产 30% 是需要关注的信号）。","现金流量表是三表里「最难造假」的——利润可以通过会计处理调整，但现金进出是实际发生的。自由现金流（Free Cash Flow）= 经营现金流 - 资本支出，是企业「真正赚到的现金」的最好衡量。长期投资最应该关注的公司特征：净利润 ≈ 经营现金流（利润质量高），自由现金流持续为正（可以自我扩张不依赖外部融资）。"],"img_key":"financial_3","img_link":"Financial Statements","img_title":"https://en.wikipedia.org/wiki/Financial_statement"},{"h":"估值指标：用对场景才有意义","pts":["PE（市盈率）= 股价/每股收益，直觉是「买这家公司需要多少年赚回投资」。适用于：盈利稳定的成熟公司（消费/医药/金融）。不适用于：亏损公司（PE 无意义）、周期性极强的公司（周期顶部 PE 低是假象）、高增长公司（用历史 PE 低估了增长价值）。相同行业内的 PE 横向比较有意义，跨行业比较需要非常谨慎。","PB（市净率）= 股价/每股净资产，衡量「为账面资产支付了多少溢价」。最适合银行/保险/地产等资产驱动型行业（资产值可以可靠计量）。对轻资产科技公司（资产主要是人才和品牌）PB 极高但没有参考意义。银行 PB < 1 是历史罕见的低估信号，但需要确认资产质量（不良贷款率）。PS（市销率）= 股价/每股收入，适用于亏损但有收入增长的早期公司（Saas/互联网）。","DCF 的核心直觉：一家公司的价值等于它未来所有现金流折现到今天的总和。折现率（通常用无风险利率 + 风险溢价，约 8-12%）代表「你要求的最低回报率」。当美联储加息时，折现率上升，未来现金流折现后更「不值钱」，所以高估值（估值全靠远期增长）的成长股在加息周期里会大幅下跌。这是 2022 年纳斯达克和港股科技股暴跌的数学原因——不是基本面变了，是折现率变了。"],"img_key":"valuation","img_link":"Valuation","img_title":"https://en.wikipedia.org/wiki/Valuation_(finance)"},{"h":"护城河：竞争优势能持续多久","pts":["Morningstar 的护城河分类是最实用的框架：无形资产（品牌/专利/监管许可，如贵州茅台的品牌溢价）；转换成本（用户切换竞争对手的代价，如企业 ERP 系统的高切换成本）；网络效应（用户越多产品越有价值，如微信/Visa）；成本优势（规模经济/独特低成本来源，如宁德时代的电池成本）；高效规模（市场容量有限，新进入者利润空间不够，如特定地区的垃圾处理厂）。","护城河判断的实践方法：① 这家公司能维持超过行业平均水平的利润率多少年了？（历史 ROE/ROIC 数据）；② 如果我有 10 亿美元想在这个领域竞争，能打败它吗？如果答案是「很难」，护城河可能是真实的；③ 这家公司的市场份额是在扩大还是在缩小？（趋势比绝对值更重要）；④ 它的增长是靠价格提升还是靠量的扩张？靠价格提升说明有定价权（护城河信号）。","港股特有分析：H股（在港上市、在内地注册的公司，大多是国企）vs 红筹股（在港注册、资产主要在内地）vs 本地港股（业务主要在香港，如长和/银行/地产）vs 中概股二次上市（阿里/京东/百度等在港上市的互联网公司）。持股结构分析特别重要：主要股东持股比例高的小市值港股流动性通常很差；外资机构持股比例高的公司受美联储周期影响更大；南向资金连续净买入是港股版的「北向资金」，是内地机构看好的信号。"],"img_key":"moat","img_link":"Economic Moat","img_title":"https://en.wikipedia.org/wiki/Economic_moat"}],"res":[{"tp":"工具","tc":"b-tool","t":"Seeking Alpha — 美港股研究","d":"机构级别的财务数据/估值比较/研究文章，部分免费","u":"https://seekingalpha.com/","lv":"mid","s":"seekingalpha.com"},{"tp":"工具","tc":"b-tool","t":"Choice 东方财富数据 — A股财务","d":"A股最全的财务数据，三表/指标历史/行业对比","u":"https://data.eastmoney.com/","lv":"entry","s":"eastmoney.com"},{"tp":"书籍","tc":"b-book","t":"财务报表分析与股票估值 — 徐子桐","d":"中国市场背景的财务分析教材，案例都是A/H股","u":"https://book.douban.com/subject/35121419/","lv":"mid","s":"douban.com"},{"tp":"工具","tc":"b-tool","t":"Morningstar 护城河分析","d":"全球股票的护城河评级，宽护城河/窄护城河/无护城河分类","u":"https://www.morningstar.com/","lv":"mid","s":"morningstar.com"},{"tp":"视频","tc":"b-video","t":"Aswath Damodaran — 估值课程全集（NYU 免费）","d":"「估值之神」，NYU Stern 教授，每年更新完整估值课程，DCF/相对估值/财务分析","u":"https://www.youtube.com/@AswathDamodaran","lv":"mid","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Damodaran：2025 年估值课程播放列表","d":"Spring 2025 最新一期完整估值课，26 节，每节 60-90 分钟，含幻灯片","u":"https://www.youtube.com/playlist?list=PLUkh9m2BorqnDpCBt6bnekXpz3K4JKBU9","lv":"mid","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Invest with Sven Carlin — 长期价值投资","d":"欧洲价值投资者，深度分析个股和行业，有大量护城河/财务分析实例视频","u":"https://www.youtube.com/@SvenCarlin","lv":"mid","s":"youtube.com"}]},{"id":"ai_investing","phase":"AI 辅助投资","title":"AI 辅助投资 · 工具实践 · 量化入门 · 2025最新","color":"#7c3aed","bg":"#F5F3FF","intro":"AI 在投资里正在从「效率工具」转向「真正的 Alpha 协作者」——这是 CFA Institute 2025 年《AI in Asset Management》报告的核心判断。摩根士丹利/高盛/JP Morgan 都在大规模部署 AI 投资工具。个人投资者可以用相似的思路，成本只是他们的千分之一。","intro_lines":["▸ <strong>AI 能做什么</strong> — 财报分析/研报摘要/情绪监控/异常信号检测，每项的真实效果","▸ <strong>机构实践参考</strong> — 摩根士丹利 AskResearchGPT / 高盛 GS AI Assistant 的实际应用","▸ <strong>个人 AI 工作流</strong> — 从信息摄入到分析到决策的完整流程搭建","▸ <strong>量化入门</strong> — Python + AkShare + Backtrader，个人量化的最低成本路径","▸ <strong>AI 投资工具对比</strong> — AInvest / Kavout / QuantConnect / stockinsights.ai 的定位"],"notes":[{"h":"AI 在投资里的真实价值边界","pts":["AI 能做好的事情：① 财报分析摘要——把 100 页的年报压缩为关键风险点和亮点，10 分钟内完成（Claude/GPT-4 的质量已经足够用）；② 电话会议记录分析——提取管理层言论的情绪变化和关键指引（「我们对下季度非常有信心」vs「市场环境充满挑战」）；③ 跨文档对比——同行业 5 家公司的毛利率/资本支出/增速同时对比；④ 新闻情绪监控——设定关键词，自动汇总和评估新闻情绪变化；⑤ 数据清洗和可视化——快速整理 AkShare/Tushare 拉来的原始数据。","AI 不能做的事情：预测价格（没有任何 AI 能可靠地预测未来股价）；替代判断（AI 给出的分析结论需要你理解背后的假设是否成立）；消除不确定性（市场的本质是不确定性，AI 只是减少了信息处理的时间，不能消除判断的本质难度）。2025 年的 AI 投资工具对宏观/地缘政治等「非结构化风险」的分析质量仍然有限，这类风险需要人的判断。","CFA Institute 2025 年报告的核心发现：机构投资者已经把 AI 从「效率工具」升级为「生成 Alpha 的协作者」——不只是快速处理信息，而是在寻找人力无法扫描的模式（比如几百家公司的供应链关系图谱）。个人投资者的机会：用免费/低成本的 AI 工具做「研究深度」的杠杆，弥补信息处理能力的差距。重点不是「AI 给我买什么」，而是「AI 帮我看更多，判断还是我来」。"]},{"h":"搭建个人 AI 投资分析工作流","pts":["信息摄入层（每天 15-20 分钟）：用 Perplexity 做实时研究（「过去 24 小时 [公司名] 有什么重要新闻？」）；用 Claude/ChatGPT 把关注公司的关键新闻做每日摘要；设置 Google Alert 或 Feedly 对关键词的监控。目标是：用 AI 过滤噪音，只把真正值得深入研究的信息留下来。","深度分析层（每个投资标的研究时）：① 用 Claude 分析财报——「这是 [公司] 最新一期年报的关键段落，请提取：收入增长驱动因素、主要风险因素、管理层对未来的判断、与上期相比的重要变化」；② 用 stockinsights.ai 分析电话会议记录（支持自动提取关键 Quote）；③ 用 Koyfin 的 AI 功能快速对比同行业估值。","量化验证层（验证投资假设）：Python + AkShare（A股免费数据）是个人量化的起点。基础工作流：① AkShare 拉取历史价格和财务数据；② pandas 做数据清洗和因子计算；③ Backtrader 或 VectorBT 做策略回测；④ 用回测结果验证你的投资假设（「ROE > 15% 且 PE < 行业均值的公司，持有 1 年的平均收益是多少？」）。注意回测的过拟合风险：样本内效果好不代表样本外（未来）有效，需要用 Walk-Forward 测试减少过拟合。"]},{"h":"主流 AI 投资工具对比","pts":["AInvest（ainvest.com）：AI 驱动的股票分析平台，覆盖美股/港股，实时新闻分析 + AI 生成研究报告 + 情绪分析。免费版功能已经相当实用。适合：每天快速浏览关注标的的 AI 摘要，不需要自己爬数据和分析。","QuantConnect（quantconnect.com）：开源 LEAN 引擎，支持美股/港股/加密货币的策略回测和实盘交易。专业量化工具，学习曲线较陡但功能最全面——覆盖数据获取、因子模型、蒙特卡洛模拟、Walk-Forward 优化。适合：想认真做量化投资的个人投资者，免费使用，社区活跃。","stockinsights.ai：专门分析公司 SEC 文件和电话会议记录的 AI 工具，支持自动提取关键引述和趋势变化。2024 年 IFTA 最佳 WealthTech 创新奖。适合：主要投资美股，需要深度财报分析的投资者。Kavout：机器学习因子分析，K-Score 排名系统，覆盖美股 9000+ 标的，整合基本面/技术/情绪多因子。适合：量化为主的美股选股。"]}],"res":[{"tp":"文档","tc":"b-docs","t":"CFA Institute：AI in Asset Management（2025，免费）","d":"机构 AI 投资工具的权威框架，CFA 出品，免费 PDF","u":"https://rpc.cfainstitute.org/research/foundation/2025/ai-in-asset-management-book","lv":"mid","s":"cfainstitute.org"},{"tp":"工具","tc":"b-tool","t":"AkShare — A股免费数据 Python 库","d":"覆盖 A股/港股/期货/宏观的完整免费数据接口，Python","u":"https://akshare.akfamily.xyz/","lv":"mid","s":"akshare.akfamily.xyz"},{"tp":"工具","tc":"b-tool","t":"QuantConnect — 量化策略平台","d":"LEAN 开源引擎，专业级回测+实盘，免费使用","u":"https://www.quantconnect.com/","lv":"adv","s":"quantconnect.com"},{"tp":"工具","tc":"b-tool","t":"AInvest — AI 股票分析","d":"AI 驱动的美港股研究，实时情绪分析，免费版可用","u":"https://www.ainvest.com/","lv":"entry","s":"ainvest.com"},{"tp":"工具","tc":"b-tool","t":"stockinsights.ai — 财报 AI 分析","d":"公司文件和电话会议 AI 深度分析，IFTA 2024 最佳 WealthTech","u":"https://www.stockinsights.ai/","lv":"mid","s":"stockinsights.ai"},{"tp":"视频","tc":"b-video","t":"Corey Hoffstein（Newfound Research）— 量化投资","d":"系统性量化投资策略，因子模型/动量/趋势，学术严谨但平易近人","u":"https://www.youtube.com/@NewfoundResearch","lv":"adv","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"QuantPy — Python 量化投资实战","d":"用 Python 实现量化策略：AkShare 数据获取 + Backtrader 回测 + 因子分析","u":"https://www.youtube.com/@QuantPy","lv":"mid","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Two Sigma / Citadel — 量化金融公开讲座","d":"顶级量化基金的公开演讲，机器学习在金融中的应用，学术会议视频","u":"https://www.youtube.com/results?search_query=two+sigma+quantitative+finance+lecture","lv":"adv","s":"youtube.com"}]},{"id":"portfolio_mgmt","phase":"组合管理","title":"投资组合管理 · 仓位 · 风控 · 再平衡","color":"#0891b2","bg":"#ECFEFF","intro":"投资组合管理是「如何分配资金」和「如何管理风险」的系统性方法。单只股票的选择只占投资成功的一部分，仓位管理、止损规则、再平衡策略决定了长期下来你是否能活过熊市、在牛市里充分参与。","intro_lines":["▸ <strong>Core-Satellite 结构</strong> — 70% 核心稳健 + 30% 主题机会，两部分用完全不同的逻辑管理","▸ <strong>仓位管理</strong> — 凯利公式的直觉，单票集中度的上限，如何根据信心程度分配仓位","▸ <strong>止损与止盈</strong> — 系统性规则，在情绪平静时设定，不在焦虑时执行","▸ <strong>资产配置与再平衡</strong> — 相关性比收益率更重要，何时再平衡"],"notes":[{"h":"Core-Satellite：两种逻辑管理两类仓位","pts":["Core（核心仓位，70%）：用低成本宽基指数 ETF 构建，目标是「跟上市场，不跑输大盘」。具体选择：A 股用沪深 300 ETF 或中证 500 ETF；港股用恒生科技 ETF 或 MSCI 中国 ETF；全球配置用标普 500 ETF（通过 QDII 基金实现）。核心仓位的操作是：定期定投，每半年再平衡一次，不因短期市场波动做调整。这是「用最少时间获得市场平均收益」的策略。","Satellite（卫星仓位，30%）：用主动选股填充，这是你的专业知识和研究的战场。原则：只在你有真实信息优势的领域下注（你深度了解的行业/公司）；单只股票不超过总组合的 10%（防止单票黑天鹅影响整体）；最多持有 5-8 只个股（超过这个数量，研究深度不够，等于变相的指数）。卫星仓位的目标是：在有高确定性机会时获得超额收益，不是把所有仓位都放在主动选股里。","核心和卫星的再平衡原则：当卫星仓位的某只股票因为大涨导致占比超过 15% 时，应该部分兑现利润补充回核心仓位；当市场整体极度悲观（VIX 极高/市场连续大跌）时，可以把卫星仓位比例暂时提高到 40%（更多买入低估的个股）；正常市场时保持 70/30 的平衡。"],"img_key":"core_satellite","img_link":"Core-Satellite Strategy","img_title":"https://en.wikipedia.org/wiki/Core%E2%80%93satellite_investing"},{"h":"仓位管理：用数学而非感觉","pts":["凯利公式的直觉版本：最优仓位 = 优势/赔率。如果你认为某只股票有 60% 的概率上涨 50%、40% 的概率下跌 30%，凯利公式建议的最大仓位约为 20%（实际操作中通常用半凯利，即 10%）。凯利公式的重要启示：不要在「不确定性高但潜在收益也大」的情况下满仓——满仓下注几次后，一次判断错误就可能毁掉多次正确积累的收益。","分批建仓的实践：不要一次性把计划仓位全部建完。先用计划仓位的 1/3 建初始仓，如果股价进一步下跌验证了你的判断（基本面没有恶化，只是市场情绪导致的下跌），用第二个 1/3 在更低价格加仓；第三个 1/3 留作备用。这种方式降低了平均持仓成本，也给了你「再次确认判断」的机会，避免「越跌越加」变成「越加越亏」的陷阱。","止损规则的设计：在买入之前就确定「什么情况下我会承认判断错误并卖出」，而不是在亏损后再做决定。基于价格的止损（跌超 20% 就卖）简单但可能因为正常波动就触发；基于基本面的止损（业绩连续两季度低于预期/管理层大规模减持/行业逻辑发生根本变化）更合理，但要求你持续跟踪公司动态。两者可以结合：正常波动内等待基本面信号，但价格跌超 30% 时无论如何减仓一半（控制最大亏损）。"],"img_key":"position_sizing","img_link":"Position Sizing","img_title":"https://en.wikipedia.org/wiki/Position_sizing"},{"h":"资产配置：相关性比收益率更重要","pts":["资产配置的核心逻辑是「不要把鸡蛋放在同一个篮子里」——但「篮子不同」的意思不是行业不同，而是相关性低。A 股的科技股和消费股在市场大跌时往往同步下跌（相关性高），真正的分散化需要加入：债券（与股票负相关）、黄金（与美元和股票均有低相关性）、美股（与A股的相关性不高，提供汇率对冲）。","中国个人投资者的实用资产配置框架（仅供参考，不是投资建议）：A 股 ETF（30-40%）→ 覆盖国内经济增长；港股（10-15%）→ 覆盖国内资产的离岸估值洼地；美股 ETF（15-20%，通过QDII）→ 全球科技增长 + 美元对冲；债券/货币基金（15-20%）→ 流动性储备 + 下行保护；黄金 ETF（5-10%）→ 通胀对冲 + 地缘政治对冲。这个框架在任何单一市场极端下跌时都有缓冲，长期复合收益率接近「参与了全球增长」的水平。","再平衡的时机和方式：时间触发（每 6 个月检查一次，如果某类资产偏离目标权重超过 5%，则再平衡）比价格触发更简单；阈值触发（某类资产偏离目标超过 10%，立即再平衡）更及时但操作频率更高。税务考量：在中国 A 股，股票转让收益（个人）目前免征个人所得税，再平衡的税务成本主要是交易印花税（双边各 0.1%，卖出方收）和佣金。"],"img_key":"asset_alloc","img_link":"Asset Allocation","img_title":"https://en.wikipedia.org/wiki/Asset_allocation"}],"res":[{"tp":"书籍","tc":"b-book","t":"全球资产配置 — Meb Faber","d":"数据驱动的全球资产配置方法，免费 PDF 版本可下载","u":"https://mebfaber.com/2016/02/24/global-asset-allocation/","lv":"mid","s":"mebfaber.com"},{"tp":"工具","tc":"b-tool","t":"Portfolio Visualizer — 组合回测","d":"资产配置回测工具，输入权重看历史表现和相关性矩阵","u":"https://www.portfoliovisualizer.com/","lv":"mid","s":"portfoliovisualizer.com"},{"tp":"工具","tc":"b-tool","t":"CNN Fear & Greed Index","d":"美国市场情绪指标，极端恐惧时是加仓信号","u":"https://www.cnn.com/markets/fear-and-greed","lv":"entry","s":"cnn.com"},{"tp":"视频","tc":"b-video","t":"Ben Felix：资产配置与指数投资深度讲解","d":"为什么低成本指数基金优于主动基金，资产配置的学术证据，必看 20 分钟","u":"https://www.youtube.com/watch?v=seaXsBHcMNI","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Ray Dalio：经济机器如何运作（经典 30 分钟）","d":"桥水创始人用动画讲解经济周期和债务周期，迄今最好的宏观入门视频","u":"https://www.youtube.com/watch?v=PHe0bXAIuk0","lv":"entry","s":"youtube.com"}]},{"id":"strategy_tools","phase":"策略与工具","title":"投资策略框架 · 中长期主题 · 工具汇总","color":"#374151","bg":"#F9FAFB","intro":"最后一个版块把所有东西整合起来：中长期策略如何判断、短中期机会如何把握、2025-2026 年值得关注的投资主题，以及所有实用工具和数据源的完整汇总。","intro_lines":["▸ <strong>中长期策略</strong> — 宏观趋势判断框架，核心仓位的选择逻辑，定投和网格的使用","▸ <strong>短中期机会</strong> — 事件驱动，财报季，情绪周期，技术面和基本面如何结合","▸ <strong>2025-2026 关键投资主题</strong> — AI 产业链/新能源/消费/港股高股息，每个主题的逻辑和风险","▸ <strong>完整工具与数据源汇总</strong> — 按用途分类的全部实用工具"],"notes":[{"h":"中长期投资策略框架","pts":["中长期投资（1-3 年）的核心是「在正确的时间，以合理的价格，买入正确方向上的优质公司，然后持有」。「正确的时间」不是预测底部，而是在估值合理/低估时买入，不在泡沫时追高；「正确方向」是顺应产业趋势（政策支持 + 市场空间 + 技术驱动），而非逆势而为；「优质公司」是护城河宽、管理层诚信、财务健康的标的。三个条件同时满足的机会不多，但一旦出现，应该重仓持有。","定投策略是解决「择时难题」的最实用方法：每月固定日期买入固定金额的宽基 ETF，不管市场涨跌。核心逻辑是「价格下跌时买到更多份额，价格上涨时已持有的份额升值」，长期平均成本低于市场平均价格（数学上可证明）。网格策略是定投的进阶版：预先设定价格区间，每下跌一定幅度加仓，每上涨一定幅度减仓，系统性地「低买高卖」，适合波动较大但长期趋势向上的资产（如宽基 ETF 或大市值核心股）。","中国产业趋势的判断框架：分辨「政策驱动」（补贴推动的短期热点）和「产业驱动」（真实市场需求）的区别。政策驱动的行业在补贴退坡后往往面临收入下滑和产能过剩（如某些阶段的光伏组件）；产业驱动的行业即使没有政策支持也在持续增长（如智能手机渗透、电动车普及）。当两者同时发生时（政策支持 + 真实需求）是最强的顺风机会——2020-2023 年的新能源汽车就是典型。"]},{"h":"2025-2026 年关键投资主题","pts":["AI 产业链（当前最重要的中长期主题）：DeepSeek 证明了中国在 AI 模型能力上的突破，但 AI 投资的 Alpha 需要更细分——算力基础设施（服务器/交换机/光模块，供给相对确定）vs AI 应用（变现路径不确定但空间更大）vs AI 赋能的传统行业（最难量化但可能是最大的机会）。港股 AI 受益标的在 DeepSeek 发布后 5 周累积涨幅 45%（J.P. Morgan 数据），这个幅度的快速重估说明外资之前对中国 AI 能力的低估程度。","港股高股息策略（防御性中长期配置）：港股有一类特殊的机会——H 股估值比 A 股低 20-40%，但股息率高达 5-8%（国企能源/银行/电信）。在美联储降息周期里，这类高股息港股的吸引力上升（相对收益改善），同时南向资金的持续流入提供了价格支撑。这是「吃息 + 低估值修复」的双重回报逻辑，适合作为组合里的防御性配置。","短中期机会的把握框架：财报季（3月/4月/7月/8月/10月）是最集中的事件驱动机会——提前研究几家公司，对业绩有超预期或低于预期的判断，在财报发布后根据实际情况快速决策。情绪周期的应用：恐慌时（A 股连续 3-5 天大跌、悲观情绪主导媒体标题时）往往是短期反弹的起点；亢奋时（FOMO 情绪蔓延、「人人都在谈论」某只股票时）往往是短期顶部的信号。这不是精确预测，而是概率提升——在极度恐慌时买入，在极度亢奋时减仓，长期来看是胜率最高的短中期策略。"]},{"h":"完整工具与数据源汇总","pts":["A 股数据与分析：东方财富（行情/研报/资金流向，免费）/ 同花顺（技术分析/北向资金，免费）/ Wind（专业级，订阅制，机构标准）/ Tushare（Python 接口，学术和个人免费）/ AkShare（完全免费，覆盖最全）。A 股研报获取：东方财富研报中心（免费）/ 各大券商 App 的研究报告（需要开户）/ 雪球（讨论区有大量个人研究分享）。","港股与国际数据：富途牛牛 / 老虎证券（港美股交易 + 行情，大陆用户最方便）/ aastocks.com（港股技术分析和新闻，免费）/ Koyfin（类 Bloomberg，覆盖全球，免费版功能强）/ Yahoo Finance（美股基础数据，免费）/ Seeking Alpha（深度研究，部分收费）/ Bloomberg（机构标准，个人版价格很高，不推荐个人订阅）。","AI 辅助投资工具：Claude / ChatGPT（财报分析/研报摘要，最通用）/ Perplexity（实时信息检索）/ AInvest（AI 股票分析，免费可用）/ stockinsights.ai（财报深度分析）/ QuantConnect（量化回测）/ Portfolio Visualizer（资产配置回测）/ Backtrader / VectorBT（本地量化框架）。宏观数据：中国人民银行官网 / Wind 宏观数据库 / Macrotrends（美国宏观历史数据）/ Fred（美联储经济数据库，免费）/ 国家统计局官网（中国宏观数据一手来源）。"]}],"res":[{"tp":"工具","tc":"b-tool","t":"AkShare — A股/港股/期货完整数据","d":"Python 完全免费数据接口，最全的量化数据源","u":"https://akshare.akfamily.xyz/","lv":"mid","s":"akshare.akfamily.xyz"},{"tp":"工具","tc":"b-tool","t":"FRED — 美联储经济数据库","d":"美国宏观经济数据完整免费库，利率/通胀/就业历史数据","u":"https://fred.stlouisfed.org/","lv":"entry","s":"stlouisfed.org"},{"tp":"博客","tc":"b-blog","t":"雪球 — A/H股讨论社区","d":"最活跃的中文投资社区，有大量高质量个人研究分享","u":"https://xueqiu.com/","lv":"entry","s":"xueqiu.com"},{"tp":"报告","tc":"b-blog","t":"J.P. Morgan Guide to the Markets（季度）","d":"每季度更新的宏观/市场数据图集，机构标准参考资料，免费","u":"https://am.jpmorgan.com/us/en/asset-management/adv/insights/market-insights/guide-to-the-markets/","lv":"mid","s":"jpmorgan.com"},{"tp":"工具","tc":"b-tool","t":"Portfolio Visualizer — 资产配置回测","d":"历史资产配置表现，相关性矩阵，有效前沿分析","u":"https://www.portfoliovisualizer.com/","lv":"mid","s":"portfoliovisualizer.com"},{"tp":"视频","tc":"b-video","t":"富途牛牛 / 老虎证券 — 港股视频分析","d":"富途和老虎官方 YouTube 频道，港股行情解读/新股分析/市场日报","u":"https://www.youtube.com/@Futunn_HK","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Price Action — 技术分析实战（经典频道）","d":"K 线/支撑阻力/均线/量价关系的视频教程，实操导向，适合技术分析入门","u":"https://www.youtube.com/results?search_query=price+action+technical+analysis+tutorial","lv":"entry","s":"youtube.com"},{"tp":"视频","tc":"b-video","t":"Bilibili 雪球财经 — A/H 股中文视频","d":"雪球官方 B 站账号，A/H 股分析/投资者访谈/市场解读，中文最活跃","u":"https://space.bilibili.com/171026","lv":"entry","s":"bilibili.com"}]}];
+function dl(d){return d==='entry'?'入门':d==='mid'?'中级':'高级'}
+function dc(d){return d==='entry'?'de':d==='mid'?'dm':'da'}
+function render(){
+  const cont=document.getElementById('cont'),nav=document.getElementById('nav');
+  let tot=0,curP='';
+  D.forEach(s=>{
+    tot+=s.res.length;
+    if(s.phase!==curP){
+      curP=s.phase;
+      const lbl=document.createElement('div');lbl.className='nlbl';lbl.textContent=s.phase;nav.appendChild(lbl);
+    }
+    const a=document.createElement('a');a.className='nl';a.dataset.sec=s.id;a.onclick=()=>goto(s.id);
+    a.innerHTML=`<span class="ndot" style="background:${s.color}"></span>${s.title.split('·')[0].trim()}<span class="nc">${s.res.length}</span>`;
+    nav.appendChild(a);
+    const div=document.createElement('div');div.className='sec';div.id=s.id;
+    div.dataset.search=[s.title,s.intro,...s.notes.map(n=>n.h+' '+n.pts.join(' ')),...s.res.map(r=>r.t+' '+r.d)].join(' ').toLowerCase();
+    const tid=`t-${s.id}`;
+    let notesHTML=`<div class="notes-block">`;
+    s.notes.forEach((n,ni)=>{
+      const _diag=n.img_key?document.getElementById('diag_'+n.img_key):null;
+      const _svg=_diag?_diag.innerHTML:'';
+      const _link=n.img_key&&n.img_link?`<a class="diag-link" href="${n.img_link}" target="_blank" rel="noopener">↗ ${n.img_title||'参考资料'}</a>`:'';
+      const _img=_svg?`<figure class="note-fig">${_svg}${_link}</figure>`:(_link?`<p>${_link}</p>`:'')
+      
+      const aid=`a-${s.id}-${ni}`;
+      notesHTML+=`<div class="acc" id="nh-${s.id}-${ni}"><div class="acc-hdr" onclick="toggleAcc('${aid}',this)"><span class="acc-arrow">▶</span><span class="acc-htxt">${n.h}</span></div><div class="acc-body" id="${aid}">${_img}<div class="pts-wrap">${n.pts.map(p=>`<div class="pt">${p}</div>`).join('')}</div></div></div>`;
+    });
+    notesHTML+='</div>';
+    let resHTML=`<div class="res-block"><div class="res-section-label">🔗 学习资源</div><div class="grid">`;
+    s.res.forEach(r=>{
+      resHTML+=`<div class="card"><div class="ctop"><span class="badge ${r.tc}">${r.tp}</span><div class="ctit"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a></div></div><div class="cdesc">${r.d}</div><div class="cmeta"><span class="csrc">${r.s}</span><span class="cdiff ${dc(r.lv)}">${dl(r.lv)}</span></div><a class="curl" href="${r.u}" target="_blank" rel="noopener">${r.u.replace(/https?:\/\//,'').split('/')[0]}</a></div>`;
+    });
+    resHTML+='</div></div></div>';
+    div.innerHTML=`<div class="sch"><span class="sdot" style="background:${s.color}"></span><span class="stit">${s.title}</span></div><div class="intro-txt">${s.intro}${renderIntroLines(s.intro_lines)}</div>${notesHTML}${resHTML}`;
+    cont.appendChild(div);
+  });
+  document.getElementById('stag').textContent=`${D.length} 个版块 · ${tot} 个资源`;
+  const items=[['b-paper','论文'],['b-blog','博客/文章'],['b-video','视频'],['b-docs','文档'],['b-book','书籍'],['b-course','课程'],['b-github','GitHub'],['b-tool','工具'],['b-visual','可视化']];
+  const lg=document.getElementById('leg');
+  items.forEach(([cls,lbl])=>{const s=document.createElement('span');s.className=`badge ${cls}`;s.style.cssText='font-size:11px;padding:3px 7px;';s.textContent=lbl;lg.appendChild(s);});
+}
+function switchTab(tid,which,btn){
+  document.querySelectorAll(`#${tid}-notes,#${tid}-res`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${tid}-${which}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function toggleAcc(id,hdr){
+  const body=document.getElementById(id),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);hdr.classList.toggle('open',!isOpen);
+}
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();let m=0;
+  document.querySelectorAll('.sec').forEach(sec=>{
+    if(!q){sec.classList.remove('hidden-sec');m++;return;}
+    const hit=(sec.dataset.search||'').includes(q);sec.classList.toggle('hidden-sec',!hit);if(hit)m++;
+  });
+  document.getElementById('nr').style.display=m===0&&q?'block':'none';
+  document.getElementById('stag').textContent=q?`找到 ${m} 个版块`:`${D.length} 个版块 · ${D.reduce((a,s)=>a+s.res.length,0)} 个资源`;
+});
+const obs={observe:()=>{}};
+function detectSection(){
+  const secs=[...document.querySelectorAll('.sec[id]')];
+  if(!secs.length)return;
+  const threshold=100;
+  let current=secs[0];
+  for(const s of secs){
+    const top=s.getBoundingClientRect().top;
+    if(top<=threshold)current=s;
+    else break;
+  }
+  const id=current.id;
+  document.querySelectorAll('.nl[data-sec]').forEach(l=>l.classList.toggle('active',l.dataset.sec===id));
+  updateGuide(id);
+}
+window.addEventListener('scroll',detectSection,{passive:true});
+window.addEventListener('scroll',()=>document.getElementById('btt').classList.toggle('show',scrollY>400));
+render();
+buildToc();setTimeout(detectSection,100);
+function renderIntroLines(lines){if(!lines||!lines.length)return'';return'<div class="intro-lines">'+lines.map(function(l){return'<div class="intro-line">'+l+'</div>';}).join('')+'</div>';}
+function buildToc(){
+  const rail=document.getElementById('toc-rail');
+  if(rail&&!document.getElementById('resize-handle')){
+    rail.innerHTML='<div class="resize-handle" id="resize-handle"></div><div class="guide-content" id="guide-content"></div>';
+    initResize();
+  }
+  updateGuide(D[0].id);
+}
+function updateGuide(id){
+  const rail=document.getElementById('guide-content')||document.getElementById('toc-rail');
+  if(!rail)return;
+  const s=D.find(x=>x.id===id);
+  if(!s)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const items=s.intro_lines&&s.intro_lines.length?s.intro_lines
+    :s.notes?s.notes.map(n=>n.h):[];
+  if(!items.length){rail.innerHTML='';return;}
+  let h='<span class="guide-head">本节要点</span>';
+  items.forEach((line,ni)=>{
+    const key='kb_'+fk+'_'+id+'_'+ni;
+    const done=localStorage.getItem(key)==='1';
+    h+=`<div class="guide-item${done?' done':''}" id="gi-${id}-${ni}">`;
+    h+=`<div class="guide-check" onclick="toggleDone('${fk}','${id}',${ni})">✓</div>`;
+    h+=`<div class="guide-text" onclick="gotoEl('nh-${id}-${ni}')">${line}</div>`;
+    h+='</div>';
+  });
+  rail.innerHTML=h;
+}
+function toggleDone(fk,sid,ni){
+  const key='kb_'+fk+'_'+sid+'_'+ni;
+  const done=localStorage.getItem(key)==='1';
+  done?localStorage.removeItem(key):localStorage.setItem(key,'1');
+  const el=document.getElementById('gi-'+sid+'-'+ni);
+  if(el)el.classList.toggle('done',!done);
+}
+function gotoEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function initResize(){
+  const handle=document.getElementById('resize-handle');
+  if(!handle)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const stored=localStorage.getItem('toc-w-'+fk);
+  if(stored)setTocWidth(parseInt(stored));
+  let sx,sw;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    sx=e.clientX;
+    sw=document.getElementById('toc-rail').getBoundingClientRect().width;
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',endDrag);
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    handle.classList.add('dragging');
+  });
+  function onDrag(e){
+    setTocWidth(Math.max(160,Math.min(640,sw+(sx-e.clientX))));
+  }
+  function endDrag(){
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',endDrag);
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    handle.classList.remove('dragging');
+    localStorage.setItem('toc-w-'+fk,
+      Math.round(document.getElementById('toc-rail').getBoundingClientRect().width));
+  }
+}
+function setTocWidth(w){
+  const lay=document.querySelector('.lay');
+  if(!lay)return;
+  const cols=window.getComputedStyle(lay).gridTemplateColumns.split(' ');
+  lay.style.setProperty('grid-template-columns',cols[0]+' 1fr '+w+'px','important');
+}
+</script>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style>
+<a class="home-btn" href="index.html">← 主页</a>
+</body>
+</html>

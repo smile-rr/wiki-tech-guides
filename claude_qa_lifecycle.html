@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 请求全链路解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f5f6f8;
+  --bg2:       #ffffff;
+  --bg3:       #f0f1f4;
+  --border:    rgba(0,0,0,0.08);
+  --border2:   rgba(0,0,0,0.14);
+  --text:      #1a1c24;
+  --muted:     #6b7080;
+  --faint:     #b0b4c4;
+  --blue:      #2563eb;
+  --blue-dim:  rgba(37,99,235,0.08);
+  --teal:      #0d9488;
+  --teal-dim:  rgba(13,148,136,0.08);
+  --amber:     #b45309;
+  --amber-dim: rgba(180,83,9,0.08);
+  --coral:     #dc2626;
+  --coral-dim: rgba(220,38,38,0.08);
+  --purple:    #7c3aed;
+  --purple-dim:rgba(124,58,237,0.08);
+  --green:     #16a34a;
+  --green-dim: rgba(22,163,74,0.08);
+  --mono:      'IBM Plex Mono', monospace;
+  --sans:      'IBM Plex Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── Header ── */
+header{
+  background:linear-gradient(135deg,#e8f0fe 0%,#f5f6f8 60%);
+  border-bottom:1px solid var(--border);
+  padding:2.5rem 2rem 2rem;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(37,99,235,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.header-tag{
+  display:inline-block;font-family:var(--mono);font-size:11px;
+  color:var(--teal);background:var(--teal-dim);
+  padding:3px 10px;border-radius:20px;border:1px solid rgba(13,148,136,0.2);
+  margin-bottom:14px;letter-spacing:.06em;text-transform:uppercase;
+}
+h1{font-size:clamp(1.4rem,4vw,2.1rem);font-weight:600;letter-spacing:-.02em;line-height:1.2;color:var(--text);margin-bottom:8px}
+.header-sub{color:var(--muted);font-size:13px}
+.header-meta{
+  display:flex;gap:16px;flex-wrap:wrap;margin-top:1.5rem;
+}
+.hmeta{
+  display:flex;align-items:center;gap:6px;font-size:12px;
+  color:var(--muted);font-family:var(--mono);
+}
+.hmeta span{color:var(--blue)}
+
+/* ── Layout ── */
+.container{max-width:900px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+
+/* ── Phase Nav ── */
+.phase-nav{
+  display:flex;gap:0;margin:1.5rem 0;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+  flex-wrap:wrap;
+}
+.pn{
+  flex:1;min-width:0;padding:10px 8px;
+  border:none;background:transparent;
+  color:var(--muted);font-family:var(--sans);font-size:11px;
+  cursor:pointer;transition:all .15s;text-align:center;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  position:relative;
+}
+.pn:last-child{border-right:none}
+.pn .pn-icon{font-size:15px}
+.pn .pn-num{font-family:var(--mono);color:var(--faint);font-size:9px;font-weight:500}
+.pn .pn-title{font-size:10px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pn.active{background:var(--blue-dim);color:var(--blue)}
+.pn.active .pn-num{color:var(--blue)}
+.pn.active .pn-title{color:var(--blue)}
+.pn.done{color:var(--teal)}
+.pn.done .pn-num{color:var(--teal)}
+.pn.done .pn-title{color:var(--teal)}
+.pn.done::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--teal);
+}
+.pn.active::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--blue);
+}
+.pn:hover:not(.active){background:rgba(255,255,255,0.03)}
+
+/* ── Progress ── */
+.progress{height:2px;background:var(--faint);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* ── Main Card ── */
+.card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card-header{
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,#f0f2f8 0%,#ffffff 100%);
+}
+.phase-icon{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;
+}
+.phase-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px}
+.phase-sub{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.phase-badge{
+  margin-left:auto;font-family:var(--mono);font-size:10px;
+  padding:4px 10px;border-radius:6px;background:var(--bg);
+  color:var(--muted);border:1px solid var(--border);white-space:nowrap;
+  flex-shrink:0;
+}
+.card-body{padding:1.5rem}
+
+/* ── Content Components ── */
+.layer{border-radius:8px;padding:12px 14px;margin:10px 0;border:1px solid var(--border)}
+.layer-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:8px;font-weight:500;
+}
+.layer.blue{background:var(--blue-dim);border-color:rgba(79,143,255,0.2)}
+.layer.blue .layer-label{color:var(--blue)}
+.layer.teal{background:var(--teal-dim);border-color:rgba(45,212,168,0.2)}
+.layer.teal .layer-label{color:var(--teal)}
+.layer.amber{background:var(--amber-dim);border-color:rgba(240,168,50,0.2)}
+.layer.amber .layer-label{color:var(--amber)}
+.layer.coral{background:var(--coral-dim);border-color:rgba(255,107,107,0.2)}
+.layer.coral .layer-label{color:var(--coral)}
+.layer.purple{background:var(--purple-dim);border-color:rgba(167,139,250,0.2)}
+.layer.purple .layer-label{color:var(--purple)}
+.layer.green{background:var(--green-dim);border-color:rgba(74,222,128,0.2)}
+.layer.green .layer-label{color:var(--green)}
+.layer.gray{background:var(--bg3);border-color:var(--border)}
+pre{
+  font-family:var(--mono);font-size:11.5px;line-height:1.7;
+  background:#f8f9fc;border-radius:8px;
+  padding:12px 14px;overflow-x:auto;margin:8px 0;
+  border:1px solid var(--border);color:#3d4460;
+}
+pre .k{color:var(--blue)}
+pre .s{color:var(--teal)}
+pre .n{color:var(--amber)}
+pre .c{color:var(--muted);font-style:italic}
+code{font-family:var(--mono);font-size:12px;background:#eef0f6;padding:1px 6px;border-radius:4px;color:var(--teal)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.split{grid-template-columns:1fr}}
+.diff-box{
+  border-left:2px solid;padding:10px 12px;border-radius:0 8px 8px 0;
+  font-size:13px;background:rgba(0,0,0,.2);
+}
+.diff-box.chat{border-color:var(--blue)}
+.diff-box.code{border-color:var(--teal)}
+.diff-box .diff-title{font-weight:600;font-size:13px;color:var(--text);margin-bottom:6px}
+.flow-row{display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap;margin:8px 0}
+.badge{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;font-weight:500}
+.badge.blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(79,143,255,.2)}
+.badge.teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,168,.2)}
+.badge.amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(240,168,50,.2)}
+.badge.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.2)}
+.badge.green{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+.badge.gray{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+.arrow{color:var(--faint)}
+.token-stream{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.tok{padding:3px 8px;border-radius:5px;font-size:11.5px;font-family:var(--mono)}
+.tok.sys{background:#eef0f6;color:var(--muted);border:1px solid var(--border)}
+.tok.tool{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(240,168,50,.2)}
+.tool-card{
+  border:1px solid var(--border);border-radius:8px;padding:10px 12px;
+  margin:6px 0;transition:border-color .15s;background:var(--bg3);
+}
+.tool-card:hover{border-color:var(--border2)}
+.tool-name{font-weight:600;font-size:13px;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.tool-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.note{
+  display:flex;align-items:flex-start;gap:8px;padding:10px 12px;
+  border-radius:8px;background:#f8f9fc;border:1px solid var(--border);
+  font-size:12.5px;color:var(--muted);margin:10px 0;line-height:1.6;
+}
+.note .note-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+
+/* ── Nav Buttons ── */
+.nav-btns{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.nav-step{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.btn{
+  padding:8px 20px;border-radius:8px;font-size:13px;cursor:pointer;
+  font-family:var(--sans);border:1px solid var(--border);
+  background:transparent;color:var(--text);transition:all .15s;
+}
+.btn:hover:not(:disabled){background:rgba(255,255,255,0.05);border-color:var(--border2)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn.primary{
+  background:var(--blue-dim);color:var(--blue);
+  border-color:rgba(79,143,255,0.3);
+}
+.btn.primary:hover{background:rgba(79,143,255,.2)}
+
+/* ── Keyboard hint ── */
+.kbd-hint{text-align:center;font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:1rem}
+kbd{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-size:11px}
+
+/* ── Footer ── */
+footer{text-align:center;font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:3rem;padding-bottom:2rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="max-width:900px;margin:0 auto">
+    <div class="header-tag">System Internals</div>
+    <h1>Claude 请求全链路解析</h1>
+    <p class="header-sub">从用户发送消息，到 SSE 流式响应结束的完整技术路径</p>
+    <div class="header-meta">
+      <div class="hmeta">Client <span>Claude.ai / Claude Code</span></div>
+      <div class="hmeta">Protocol <span>HTTP SSE</span></div>
+      <div class="hmeta">Phases <span>7</span></div>
+      <div class="hmeta">Includes <span>Memory · Tools · Web Search · Context Window</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <nav class="phase-nav" id="nav" aria-label="阶段导航"></nav>
+  <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+  <main id="content"></main>
+  <p class="kbd-hint">← → 键切换阶段 &nbsp;|&nbsp; <kbd>←</kbd> <kbd>→</kbd></p>
+</div>
+
+<footer>Claude QA Lifecycle · Built for technical reference</footer>
+
+<script>
+const phases = [
+{
+  icon:"⌨️", color:"rgba(79,143,255,0.15)", borderColor:"rgba(79,143,255,0.3)",
+  title:"用户发送消息", sub:"Client side — browser / terminal",
+  badge:"Phase 1 / 7",
+  html:`
+<div class="split">
+  <div class="diff-box chat">
+    <div class="diff-title">Claude.ai（浏览器）</div>
+    用户在 textarea 输入，点击 Send<br><br>
+    前端收集当前 <code>conversation_id</code>，使用 <code>fetch</code> + <code>AbortController</code> 构造 POST 请求，携带完整历史
+  </div>
+  <div class="diff-box code">
+    <div class="diff-title">Claude Code（终端）</div>
+    用户在 terminal 输入，按 Enter<br><br>
+    本地 Node.js 进程读取 stdin，调用 Anthropic SDK，同样构造完整 API 请求
+  </div>
+</div>
+<div class="layer blue" style="margin-top:14px">
+  <div class="layer-label">HTTP 请求体（POST /v1/messages）</div>
+  <pre>{
+  <span class="k">"model"</span>: <span class="s">"claude-sonnet-4-20250514"</span>,
+  <span class="k">"stream"</span>: <span class="n">true</span>,            <span class="c">// 触发 SSE 模式</span>
+  <span class="k">"max_tokens"</span>: <span class="n">8096</span>,
+  <span class="k">"system"</span>: <span class="s">"&lt;完整 system prompt...&gt;"</span>,
+  <span class="k">"messages"</span>: [
+    {<span class="k">"role"</span>:<span class="s">"user"</span>,    <span class="k">"content"</span>:<span class="s">"SSE 是什么？"</span>},     <span class="c">// 历史第1条</span>
+    {<span class="k">"role"</span>:<span class="s">"assistant"</span>,<span class="k">"content"</span>:<span class="s">"..."</span>},
+    {<span class="k">"role"</span>:<span class="s">"user"</span>,    <span class="k">"content"</span>:<span class="s">"这是第 N 条消息"</span>}  <span class="c">// 当前</span>
+  ],
+  <span class="k">"tools"</span>: [...]         <span class="c">// 可用工具的 JSON Schema 定义</span>
+}</pre>
+</div>
+<div class="note">
+  <span class="note-icon">💡</span>
+  <span>Claude 服务端没有 session 状态，<strong style="color:var(--text)">每次请求都把完整对话历史打包发过去</strong>，这就是 context window 的由来。第 N 条消息比第 1 条消耗更多 token，原因在此。</span>
+</div>
+`},
+{
+  icon:"🌐", color:"rgba(45,212,168,0.1)", borderColor:"rgba(45,212,168,0.25)",
+  title:"网络层 & API Gateway", sub:"TLS → Nginx → Gateway → 推理集群路由",
+  badge:"Phase 2 / 7",
+  html:`
+<div class="flow-row">
+  <span class="badge blue">Browser</span>
+  <span class="arrow">──TCP1──▶</span>
+  <span class="badge blue">Nginx / CDN</span>
+  <span class="arrow">──TCP2──▶</span>
+  <span class="badge blue">API Gateway</span>
+  <span class="arrow">──TCP3──▶</span>
+  <span class="badge blue">Inference Service</span>
+</div>
+<div class="note" style="margin:10px 0">
+  <span class="note-icon">🔑</span>
+  <span><strong style="color:var(--text)">TCP 是点对点的，永远不跨 server</strong>——反向代理的本质是两段独立 TCP + 应用层拼接。每个代理节点既是上游的服务端，也是下游的客户端。</span>
+</div>
+<div class="layer teal">
+  <div class="layer-label">每一跳做的事</div>
+  <div style="font-size:13px;line-height:1.9;color:var(--text)">
+    <strong style="color:var(--teal)">TLS 终止</strong>：在 Nginx/CDN 层，内部走 HTTP/2 明文<br>
+    <strong style="color:var(--teal)">鉴权</strong>：验证 session cookie / API Key，注入用户 ID<br>
+    <strong style="color:var(--teal)">限流</strong>：检查 RPM / TPM rate limit<br>
+    <strong style="color:var(--teal)">SSE 路由识别</strong>：<code>stream:true</code> → 设 <code>proxy_buffering off</code><br>
+    <strong style="color:var(--teal)">模型路由</strong>：按 model 字段分发到对应推理集群
+  </div>
+</div>
+<div class="layer amber">
+  <div class="layer-label">SSE 响应头（提前发出，不等 LLM 生成）</div>
+  <pre>HTTP/1.1 200 OK
+Content-Type: text/event-stream
+Cache-Control: no-cache
+X-Accel-Buffering: no      <span class="c">← 告诉 Nginx 不缓冲</span>
+Connection: keep-alive
+
+<span class="c">← response body 流保持打开，后续 token 随时推送</span></pre>
+</div>
+<div class="layer gray">
+  <span class="badge amber">生产坑点</span>&nbsp;
+  AWS API Gateway 有 29 秒硬超时上限，LLM 推理容易超。SSE 场景应换用 <strong style="color:var(--text)">ALB 直连</strong>（支持 4000s timeout），或专门的 streaming endpoint。
+</div>
+`},
+{
+  icon:"🧠", color:"rgba(167,139,250,0.1)", borderColor:"rgba(167,139,250,0.25)",
+  title:"Context Window 组装", sub:"Memory + System Prompt + Tools + 历史对话",
+  badge:"Phase 3 / 7",
+  html:`
+<div style="font-size:13px;color:var(--muted);margin-bottom:14px">LLM 看到的是一张"完整的纸"——以下内容从上到下依次压入 context window：</div>
+<div class="layer purple">
+  <div class="layer-label">① System Prompt</div>
+  <div style="font-size:13px;line-height:1.7;color:var(--text)">
+    产品身份定义、行为规则、格式要求、当前日期、用户地理位置、
+    可用工具 Schema（详细的 JSON 结构）、skill 文档内容 等
+  </div>
+</div>
+<div class="layer teal">
+  <div class="layer-label">② userMemories（跨会话长期记忆）</div>
+  <div style="font-size:13px;line-height:1.7;color:var(--text)">
+    从向量/结构化存储检索，基于当前消息的语义相似度 top-k 注入<br>
+    <em style="color:var(--muted)">"Radon 有 16 年金融系统经验，正在准备 SC Band5B 面试，熟悉 Kafka/Spark..."</em>
+  </div>
+</div>
+<div class="layer blue">
+  <div class="layer-label">③ Tools Schema（所有可用工具的结构定义）</div>
+  <pre>[
+  {<span class="k">"name"</span>:<span class="s">"web_search"</span>, <span class="k">"description"</span>:<span class="s">"..."</span>,
+   <span class="k">"input_schema"</span>:{<span class="k">"query"</span>:{<span class="k">"type"</span>:<span class="s">"string"</span>}}},
+  {<span class="k">"name"</span>:<span class="s">"bash_tool"</span>, ...},    <span class="c">// Claude Code 专属</span>
+  {<span class="k">"name"</span>:<span class="s">"str_replace"</span>, ...},
+  {<span class="k">"name"</span>:<span class="s">"memory_user_edits"</span>, ...}
+]</pre>
+</div>
+<div class="layer amber">
+  <div class="layer-label">④ 历史对话（第1条到第N-1条，含 tool_use blocks）</div>
+  <div class="token-stream">
+    <span class="tok sys">user: 问题1</span>
+    <span class="tok sys">assistant: 回答1</span>
+    <span class="tok tool">tool_use: web_search</span>
+    <span class="tok tool">tool_result: {...}</span>
+    <span class="tok sys">assistant: 回答2</span>
+    <span class="tok sys">user: 问题2</span>
+    <span class="tok sys">...</span>
+  </div>
+</div>
+<div class="layer coral">
+  <div class="layer-label">⑤ 当前用户消息（第 N 条，就是你刚发的）</div>
+  <code>"这是第 N 条消息，考虑了 memory、skill、tool 之后..."</code>
+</div>
+<div class="note" style="margin-top:12px">
+  <span class="note-icon">⚠️</span>
+  <span>以上所有内容合计 token 数必须小于 context window 上限（如 200k tokens）。超出时会截断最早的历史轮次，最新内容优先保留。</span>
+</div>
+`},
+{
+  icon:"🔍", color:"rgba(240,168,50,0.1)", borderColor:"rgba(240,168,50,0.25)",
+  title:"第一次 LLM 推理", sub:"模型决策：直接回答 or 调用工具",
+  badge:"Phase 4 / 7",
+  html:`
+<div style="font-size:13px;color:var(--muted);margin-bottom:14px">
+  GPU 开始处理 context window，输出的第一个 block 决定走哪条路：
+</div>
+<div class="split">
+  <div class="layer teal">
+    <div class="layer-label">路径 A：直接回答</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text)">
+      模型判断已有足够信息<br>
+      直接产出 <code>text</code> block<br>
+      → 跳过工具调用，直接进入流式输出阶段
+    </div>
+  </div>
+  <div class="layer amber">
+    <div class="layer-label">路径 B：调用工具</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--text)">
+      输出 <code>tool_use</code> block<br>
+      模型暂停生成，等工具结果<br>
+      → 进入工具执行循环阶段
+    </div>
+  </div>
+</div>
+<div class="layer blue" style="margin-top:4px">
+  <div class="layer-label">tool_use block 示例（本次对话的 web_search）</div>
+  <pre>{
+  <span class="k">"type"</span>: <span class="s">"tool_use"</span>,
+  <span class="k">"id"</span>:   <span class="s">"toolu_01XYZ"</span>,
+  <span class="k">"name"</span>: <span class="s">"web_search"</span>,
+  <span class="k">"input"</span>: {
+    <span class="k">"query"</span>: <span class="s">"nginx proxy_buffering SSE long connection"</span>
+  }
+}</pre>
+</div>
+<div class="note">
+  <span class="note-icon">💡</span>
+  <span>模型可以在一次响应中输出<strong style="color:var(--text)">多个 tool_use blocks</strong>（并行调用），服务端并发执行所有工具，然后一次性把所有结果注入 context。</span>
+</div>
+<div class="layer gray">
+  <span class="badge teal">Claude Code 特有工具</span>&nbsp;
+  除 web_search/web_fetch 外，还有 <code>bash_tool</code>（执行 shell 命令）、<code>str_replace</code>（编辑文件）、<code>read_file</code>、<code>create_file</code>——模型此时决定是否读代码或执行命令
+</div>
+`},
+{
+  icon:"⚙️", color:"rgba(240,168,50,0.1)", borderColor:"rgba(240,168,50,0.25)",
+  title:"工具执行循环", sub:"ReAct Loop — 可能多轮迭代",
+  badge:"Phase 5 / 7",
+  html:`
+<div style="font-size:13px;color:var(--muted);margin-bottom:12px">
+  这是 AI Agent 的核心——Reason + Act 循环。工具执行完后<strong style="color:var(--text)">重新发起完整 LLM 推理</strong>，直到模型不再输出 tool_use 为止。
+</div>
+<div class="tool-card">
+  <div class="tool-name">🔎 web_search<span class="badge gray" style="font-size:10px">Claude.ai & Code</span></div>
+  <div class="tool-desc">发出真实 HTTP 请求到搜索引擎 → 返回 top-10 结果 snippets → 作为 tool_result 注入 context</div>
+</div>
+<div class="tool-card">
+  <div class="tool-name">🌐 web_fetch<span class="badge gray" style="font-size:10px">Claude.ai & Code</span></div>
+  <div class="tool-desc">抓取指定 URL 的完整页面内容，转换为 markdown 格式注入 context（用于精读搜索结果）</div>
+</div>
+<div class="tool-card">
+  <div class="tool-name">💻 bash_tool<span class="badge teal" style="font-size:10px">Claude Code</span></div>
+  <div class="tool-desc">在隔离沙箱容器中执行 shell 命令，stdout/stderr 完整返回作为 tool_result</div>
+</div>
+<div class="tool-card">
+  <div class="tool-name">📄 str_replace / create_file / read_file<span class="badge teal" style="font-size:10px">Claude Code</span></div>
+  <div class="tool-desc">读取/编辑挂载到容器的本地文件系统，支持精确字符串替换，结果注入 context</div>
+</div>
+<div class="tool-card">
+  <div class="tool-name">🧠 memory_user_edits / conversation_search</div>
+  <div class="tool-desc">查询或更新用户跨会话记忆存储；搜索历史对话内容</div>
+</div>
+<div class="layer amber" style="margin-top:12px">
+  <div class="layer-label">tool_result 追加到 messages 历史（再次推理用）</div>
+  <pre>{
+  <span class="k">"role"</span>: <span class="s">"user"</span>,
+  <span class="k">"content"</span>: [{
+    <span class="k">"type"</span>:        <span class="s">"tool_result"</span>,
+    <span class="k">"tool_use_id"</span>: <span class="s">"toolu_01XYZ"</span>,
+    <span class="k">"content"</span>:     <span class="s">"Nginx: proxy_buffering off 关闭缓冲..."</span>
+  }]
+}</pre>
+</div>
+<div class="note">
+  <span class="note-icon">🔁</span>
+  <span>携带完整新 context <strong style="color:var(--text)">重新发起 LLM 推理</strong>（不是继续同一次推理）——这就是为什么调用多个工具会有明显延迟：每轮工具调用都是一次完整的 GPU 推理。</span>
+</div>
+`},
+{
+  icon:"🌊", color:"rgba(45,212,168,0.1)", borderColor:"rgba(45,212,168,0.25)",
+  title:"流式 Token 输出", sub:"SSE chunks → 客户端实时渲染",
+  badge:"Phase 6 / 7",
+  html:`
+<div style="font-size:13px;color:var(--muted);margin-bottom:12px">
+  最终 LLM 推理开始，每生成若干 token 立刻通过 SSE 推送，不等全部生成完毕。
+</div>
+<div class="layer teal">
+  <div class="layer-label">服务端逐块写入 response body</div>
+  <pre>data: {<span class="k">"type"</span>:<span class="s">"content_block_start"</span>,<span class="k">"index"</span>:<span class="n">0</span>}
+
+data: {<span class="k">"type"</span>:<span class="s">"content_block_delta"</span>,
+       <span class="k">"delta"</span>:{<span class="k">"type"</span>:<span class="s">"text_delta"</span>,<span class="k">"text"</span>:<span class="s">"SSE"</span>}}
+
+data: {<span class="k">"type"</span>:<span class="s">"content_block_delta"</span>,
+       <span class="k">"delta"</span>:{<span class="k">"type"</span>:<span class="s">"text_delta"</span>,<span class="k">"text"</span>:<span class="s">"（Server-Sent Events）"</span>}}
+
+data: {<span class="k">"type"</span>:<span class="s">"message_delta"</span>,
+       <span class="k">"delta"</span>:{<span class="k">"stop_reason"</span>:<span class="s">"end_turn"</span>},
+       <span class="k">"usage"</span>:{<span class="k">"output_tokens"</span>:<span class="n">312</span>}}
+
+data: [DONE]</pre>
+</div>
+<div class="split" style="margin-top:8px">
+  <div class="layer blue">
+    <div class="layer-label">Claude.ai 前端接收</div>
+    <div style="font-size:12.5px;line-height:1.8;color:var(--text)">
+      <code>fetch</code> + <code>ReadableStream</code><br>
+      每收到 chunk → 解析 SSE 格式<br>
+      → 追加文字到 DOM<br>
+      → Markdown 实时渲染<br>
+      用户看到文字逐字出现
+    </div>
+  </div>
+  <div class="layer teal">
+    <div class="layer-label">Claude Code 终端接收</div>
+    <div style="font-size:12.5px;line-height:1.8;color:var(--text)">
+      SDK 消费 AsyncIterator<br>
+      每个 text_delta →<br>
+      <code>process.stdout.write()</code><br>
+      终端实时打印字符<br>
+      Ctrl+C → AbortSignal 取消
+    </div>
+  </div>
+</div>
+<div class="note" style="margin-top:8px">
+  <span class="note-icon">📡</span>
+  <span>TCP 连接全程保持打开——HTTP response body 就是 socket 写端，只要服务端不 close 这个 write stream，TCP 就不断开。这和下载大文件是同一机制，只不过 SSE 是"慢慢写、写完一块推一块"。</span>
+</div>
+`},
+{
+  icon:"🔚", color:"rgba(74,222,128,0.1)", borderColor:"rgba(74,222,128,0.25)",
+  title:"响应结束 & 清理", sub:"取消检测 · 记忆更新 · 连接关闭",
+  badge:"Phase 7 / 7",
+  html:`
+<div class="layer teal">
+  <div class="layer-label">正常结束流程</div>
+  <div style="font-size:13px;line-height:1.9;color:var(--text)">
+    1. 模型输出 <code>stop_reason: "end_turn"</code><br>
+    2. 服务端发送 <code>data: [DONE]</code><br>
+    3. 关闭 SSE response body stream（TCP 连接可选归还连接池）<br>
+    4. 客户端 <code>reader.done === true</code>，渲染完成
+  </div>
+</div>
+<div class="layer amber">
+  <div class="layer-label">用户取消（点击停止按钮）</div>
+  <pre><span class="c">// 前端</span>
+controller.abort()  <span class="c">// → TCP RST 发给服务端</span>
+
+<span class="c"># Python 后端感知</span>
+if await request.is_disconnected():
+    task.cancel()   <span class="c">// 取消底层推理任务，释放 GPU slot</span>
+    return
+
+<span class="c">// Node.js 后端感知</span>
+req.on('close', () => { cancelled = true; })
+</pre>
+</div>
+<div class="layer purple">
+  <div class="layer-label">后处理（异步，不阻塞响应链路）</div>
+  <div style="font-size:13px;line-height:1.9;color:var(--text)">
+    <strong style="color:var(--purple)">Memory 更新</strong>：后台任务分析本次对话，提取新的用户偏好/事实写入记忆存储<br>
+    <strong style="color:var(--purple)">对话持久化</strong>：把本次 assistant 回复追加到数据库（供下次历史重建）<br>
+    <strong style="color:var(--purple)">Usage 计费</strong>：input_tokens + output_tokens 写入账单记录
+  </div>
+</div>
+<div class="layer green" style="margin-top:8px">
+  <div class="layer-label">🎯 全链路总结</div>
+  <div style="font-size:13px;line-height:1.9;color:var(--text)">
+    每条消息 = <strong style="color:var(--green)">无状态请求</strong>，完整 context 每次重新打包发送<br>
+    工具调用 = <strong style="color:var(--green)">多轮 LLM 推理</strong>，不是一次推理内部的分支<br>
+    流式输出 = <strong style="color:var(--green)">SSE 长连接</strong>，多跳 TCP 逐跳维持，每跳独立超时<br>
+    记忆更新 = <strong style="color:var(--green)">异步后处理</strong>，不影响响应延迟
+  </div>
+</div>
+`}
+];
+
+let cur = 0;
+
+function render() {
+  const p = phases[cur];
+  // Nav
+  document.getElementById('nav').innerHTML = phases.map((ph, i) => `
+    <button class="pn ${i===cur?'active':i<cur?'done':''}" onclick="go(${i})" title="${ph.title}">
+      <span class="pn-icon">${ph.icon}</span>
+      <span class="pn-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="pn-title">${ph.title}</span>
+    </button>`).join('');
+  // Progress
+  document.getElementById('pbar').style.width = (cur/(phases.length-1)*100)+'%';
+  // Content
+  document.getElementById('content').innerHTML = `
+    <div class="card">
+      <div class="card-header" style="border-top:2px solid ${p.borderColor}">
+        <div class="phase-icon" style="background:${p.color};border:1px solid ${p.borderColor}">${p.icon}</div>
+        <div>
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-sub">${p.sub}</div>
+        </div>
+        <span class="phase-badge">${p.badge}</span>
+      </div>
+      <div class="card-body">
+        ${p.html}
+        <div class="nav-btns">
+          <button class="btn" onclick="go(${cur-1})" ${cur===0?'disabled':''}>← 上一步</button>
+          <span class="nav-step">${cur+1} / ${phases.length}</span>
+          ${cur < phases.length-1
+            ? `<button class="btn primary" onclick="go(${cur+1})">下一步 →</button>`
+            : `<button class="btn primary" onclick="go(0)">↩ 重头开始</button>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+function go(i) {
+  if (i < 0 || i >= phases.length) return;
+  cur = i;
+  render();
+  window.scrollTo({top: document.querySelector('header').offsetHeight, behavior:'smooth'});
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') go(cur+1);
+  if (e.key === 'ArrowLeft')  go(cur-1);
+});
+
+render();
+</script>
+</body>
+</html>

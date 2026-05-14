@@ -1,0 +1,264 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   theme.css — wiki · tech
+   Apple HIG-inspired. White content, cool light-grey sidebar, blue accent.
+   System fonts only. No webfont download.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Type — pure system stacks. SF Pro on Apple, Segoe UI Variable on Windows,
+     PingFang SC for Chinese. */
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable Display', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-prose: var(--font-body);
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Scale (Apple Developer body = 17px) */
+  --fs-100: 0.6875rem;  /* 11px — meta */
+  --fs-200: 0.8125rem;  /* 13px — sidebar / small */
+  --fs-300: 0.875rem;   /* 14px — labels */
+  --fs-400: 1rem;       /* 16px — UI default */
+  --fs-450: 1.0625rem;  /* 17px — reading body */
+  --fs-500: 1.25rem;    /* 20px — h3 */
+  --fs-600: 1.625rem;   /* 26px — h2 */
+  --fs-700: 2.125rem;   /* 34px — h1 */
+  --fs-800: 2.75rem;    /* 44px — large display */
+
+  /* Spacing */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 28px; --sp-7: 40px; --sp-8: 56px; --sp-9: 80px;
+
+  /* Layout */
+  --sidebar-w: 260px;
+  --content-max: 780px;
+  --container: 1280px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --rule-w: 1px;
+
+  /* ── Color — Light (Apple HIG palette) ─────────────────────────────── */
+  --bg:         #ffffff;   /* content surface — pure white */
+  --bg-2:       #fbfbfd;   /* sidebar / subtle elevated surfaces */
+  --bg-3:       #f5f5f7;   /* hover, code blocks, chips */
+  --bg-4:       #ececef;   /* deeper hover, active */
+
+  --ink:        #1d1d1f;   /* primary text */
+  --ink-2:      #424245;   /* secondary text */
+  --ink-3:      #6e6e73;   /* tertiary, eyebrow, meta */
+  --ink-4:      #86868b;   /* quaternary, placeholder */
+
+  --rule:       #d2d2d7;   /* default hairline */
+  --rule-2:     #e8e8ed;   /* lighter divider (sidebar items) */
+
+  --accent:     #0071e3;   /* Apple system blue */
+  --accent-hover: #0077ed;
+  --accent-bg:  rgba(0,113,227,0.08);
+
+  --mark:       #fff3cd;
+  --danger:     #d70015;
+  --success:    #1f883d;
+
+  /* Subtle section colors — used as 6px dots only */
+  --pip-theory:      #6e6e73;
+  --pip-systems:     #b45309;
+  --pip-engineering: #0071e3;
+  --pip-polyglot:    #137333;
+  --pip-ai:          #5e5ce6;
+  --pip-topics:      #00827a;
+  --pip-design:      #c91464;
+  --pip-invest:      #b25000;
+  --pip-leadership:  #3a3a3c;
+
+  color-scheme: light;
+}
+
+/* ── Dark — Apple-style: near-black with elevated surfaces ──────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:         #000000;
+    --bg-2:       #1c1c1e;
+    --bg-3:       #2c2c2e;
+    --bg-4:       #3a3a3c;
+
+    --ink:        #f5f5f7;
+    --ink-2:      #c7c7cc;
+    --ink-3:      #8e8e93;
+    --ink-4:      #636366;
+
+    --rule:       #38383a;
+    --rule-2:     #2c2c2e;
+
+    --accent:     #0a84ff;
+    --accent-hover: #409cff;
+    --accent-bg:  rgba(10,132,255,0.16);
+
+    --mark:       #5a4500;
+
+    --pip-theory:      #aeaeb2;
+    --pip-systems:     #ff9f0a;
+    --pip-engineering: #0a84ff;
+    --pip-polyglot:    #30d158;
+    --pip-ai:          #bf5af2;
+    --pip-topics:      #5ac8fa;
+    --pip-design:      #ff375f;
+    --pip-invest:      #ffd60a;
+    --pip-leadership:  #aeaeb2;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:         #000000;
+  --bg-2:       #1c1c1e;
+  --bg-3:       #2c2c2e;
+  --bg-4:       #3a3a3c;
+
+  --ink:        #f5f5f7;
+  --ink-2:      #c7c7cc;
+  --ink-3:      #8e8e93;
+  --ink-4:      #636366;
+
+  --rule:       #38383a;
+  --rule-2:     #2c2c2e;
+
+  --accent:     #0a84ff;
+  --accent-hover: #409cff;
+  --accent-bg:  rgba(10,132,255,0.16);
+
+  --mark:       #5a4500;
+
+  --pip-theory:      #aeaeb2;
+  --pip-systems:     #ff9f0a;
+  --pip-engineering: #0a84ff;
+  --pip-polyglot:    #30d158;
+  --pip-ai:          #bf5af2;
+  --pip-topics:      #5ac8fa;
+  --pip-design:      #ff375f;
+  --pip-invest:      #ffd60a;
+  --pip-leadership:  #aeaeb2;
+
+  color-scheme: dark;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  Base                                                                      */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+a:hover { color: var(--accent-hover); }
+
+::selection { background: var(--accent-bg); color: var(--ink); }
+
+code, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-3);
+  padding: 0.12em 0.4em;
+  border-radius: var(--radius-sm);
+}
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--fs-300);
+  background: var(--bg-3);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4) var(--sp-5);
+  overflow-x: auto;
+  line-height: 1.55;
+}
+pre code { background: none; padding: 0; }
+
+hr {
+  border: 0;
+  height: var(--rule-w);
+  background: var(--rule-2);
+  margin: var(--sp-7) 0;
+}
+
+/* Headings — Apple-style: SF Pro Display, tightened tracking, weight hierarchy. */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+h1 { font-size: var(--fs-700); font-weight: 700; letter-spacing: -0.022em; }
+h2 { font-size: var(--fs-600); font-weight: 600; letter-spacing: -0.016em; margin-top: var(--sp-8); margin-bottom: var(--sp-4); }
+h3 { font-size: var(--fs-500); font-weight: 600; margin-top: var(--sp-6); margin-bottom: var(--sp-3); }
+h4 { font-size: var(--fs-400); font-weight: 600; margin-top: var(--sp-5); margin-bottom: var(--sp-2); }
+
+p { text-wrap: pretty; color: var(--ink); }
+
+/* Long-form prose */
+.prose {
+  font-size: var(--fs-450);
+  line-height: 1.65;
+  max-width: var(--content-max);
+  color: var(--ink-2);
+}
+.prose > * { max-width: 100%; }
+.prose p { color: var(--ink-2); }
+.prose p + p { margin-top: var(--sp-4); }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose blockquote {
+  color: var(--ink-2);
+  border-left: 3px solid var(--accent);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-5);
+  margin: var(--sp-5) 0;
+  background: var(--accent-bg);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.prose ul, .prose ol { padding-left: 1.5em; }
+.prose li + li { margin-top: var(--sp-2); }
+.prose li::marker { color: var(--ink-3); }
+
+/* Accessibility */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Scrollbar styling (subtle, Apple-like) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--ink-4); }

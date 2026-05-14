@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Pipeline — LangChain 完整参考手册</title>
+<style>
+:root {
+  --blue-dark: #1F4E79; --blue-mid: #2E75B6; --blue-light: #BDD7EE; --blue-xlight: #E6F1FB;
+  --teal-dark: #085041; --teal-mid: #1D9E75; --teal-light: #E1F5EE;
+  --green-dark: #27500A; --green-mid: #639922; --green-light: #EAF3DE;
+  --amber-dark: #633806; --amber-mid: #BA7517; --amber-light: #FFF2CC;
+  --coral-dark: #712B13; --coral-mid: #D85A30; --coral-light: #FAECE7;
+  --purple-dark: #3C3489; --purple-mid: #7F77DD; --purple-light: #EEEDFE;
+  --gray-dark: #444441; --gray-mid: #888780; --gray-light: #F1EFE8;
+  --text: #1a1a1a; --text2: #555; --bg: #fff; --bg2: #f8f9fa; --border: #e0e0e0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "PingFang SC","Microsoft YaHei",Arial,sans-serif; font-size: 14px; color: var(--text); background: var(--bg); line-height: 1.6; }
+.page { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
+.title-banner { background: var(--blue-dark); color: #fff; padding: 20px 24px 12px; border-radius: 10px 10px 0 0; }
+.title-banner h1 { font-size: 22px; font-weight: 700; letter-spacing: .5px; }
+.title-banner p { font-size: 13px; opacity: .8; margin-top: 4px; }
+.subtitle-bar { background: var(--blue-mid); color: #fff; padding: 8px 24px 10px; border-radius: 0 0 10px 10px; font-size: 12px; opacity: .95; margin-bottom: 28px; }
+
+.section { margin-bottom: 36px; }
+.sec-title { font-size: 16px; font-weight: 700; color: #fff; background: var(--blue-dark); padding: 8px 16px; border-radius: 6px 6px 0 0; }
+.sec-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 16px; background: var(--bg); }
+
+.pipeline-row { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding-bottom: 4px; }
+.stage { flex: 1; min-width: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; border-radius: 8px; text-align: center; }
+.stage .num { font-size: 18px; font-weight: 800; opacity: .9; }
+.stage .label { font-size: 12px; font-weight: 700; margin-top: 2px; }
+.stage .sub { font-size: 10px; opacity: .8; margin-top: 3px; }
+.arr { display: flex; align-items: center; padding: 0 4px; color: var(--gray-mid); font-size: 18px; font-weight: 300; }
+.online-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-top: 4px; }
+
+.phase-label { font-size: 11px; font-weight: 700; color: var(--text2); margin: 12px 0 4px; display: flex; align-items: center; gap: 6px; }
+.phase-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--blue-light); color: var(--blue-dark); font-weight: 700; padding: 8px 10px; text-align: left; border: 1px solid var(--border); font-size: 12px; }
+td { padding: 7px 10px; border: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: var(--bg2); }
+tr:hover td { background: var(--blue-xlight); }
+.cls { font-family: "Courier New",monospace; font-size: 12px; color: var(--blue-dark); font-weight: 700; white-space: nowrap; }
+.proj-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+.b-blue { background: var(--blue-xlight); color: var(--blue-dark); }
+.b-teal { background: var(--teal-light); color: var(--teal-dark); }
+.b-green { background: var(--green-light); color: var(--green-dark); }
+.b-amber { background: var(--amber-light); color: var(--amber-dark); }
+.b-coral { background: var(--coral-light); color: var(--coral-dark); }
+.b-purple { background: var(--purple-light); color: var(--purple-dark); }
+
+.note { background: var(--amber-light); border-left: 4px solid var(--amber-mid); border-radius: 0 6px 6px 0; padding: 10px 14px; margin-top: 12px; font-size: 12.5px; color: var(--amber-dark); line-height: 1.7; }
+.note strong { color: var(--amber-dark); }
+
+.code-block { background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px 16px; font-family: "Courier New",monospace; font-size: 12px; line-height: 1.8; overflow-x: auto; margin-top: 12px; color: #333; }
+.code-block .c { color: #6A9153; }
+.code-block .k { color: #0000ff; }
+.code-block .s { color: #a31515; }
+.code-block .h { color: var(--blue-mid); font-weight: 700; }
+
+.faq-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.faq-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.faq-card .q { font-weight: 700; color: var(--blue-dark); font-size: 13px; margin-bottom: 6px; }
+.faq-card .cls-line { font-family: "Courier New",monospace; font-size: 11px; color: var(--teal-dark); background: var(--teal-light); padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; display: inline-block; }
+.faq-card .ans { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:700px){ .two-col{grid-template-columns:1fr;} .pipeline-row{flex-wrap:nowrap;} }
+
+h2.sh { font-size: 14px; font-weight: 700; color: var(--blue-mid); margin: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
+h2.sh::before { content: ''; width: 4px; height: 16px; background: var(--blue-mid); border-radius: 2px; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="title-banner">
+  <h1>RAG Pipeline — LangChain 完整参考手册</h1>
+  <p>AI Engineer 面试备考 · Confluence Q&amp;A 项目技术梳理</p>
+</div>
+<div class="subtitle-bar">涵盖 Document Loader / Text Splitter / Embedding / Vector Store / Retriever / LLM / Prompt / Output Parser / Memory / LCEL Chain / Callback 共 11 个模块</div>
+
+<div class="section">
+  <div class="sec-title">1. RAG Pipeline 完整流程（7 个阶段）</div>
+  <div class="sec-body">
+    <div class="phase-label">离线阶段 — 批量索引时运行（不在用户查询路径上）</div>
+    <div class="pipeline-row">
+      <div class="stage" style="background:var(--blue-dark);color:#fff;">
+        <div class="num">①</div><div class="label">Load</div><div class="sub">文档加载</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">离线</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage" style="background:var(--blue-mid);color:#fff;">
+        <div class="num">②</div><div class="label">Split</div><div class="sub">文本分割</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">离线</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage" style="background:var(--teal-mid);color:#fff;">
+        <div class="num">③</div><div class="label">Embed</div><div class="sub">向量化</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">离线</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage" style="background:var(--green-mid);color:#fff;">
+        <div class="num">④</div><div class="label">Store</div><div class="sub">向量存储</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">离线</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage" style="background:var(--amber-mid);color:#fff;">
+        <div class="num">⑤</div><div class="label">Retrieve</div><div class="sub">语义检索</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">在线</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage" style="background:var(--coral-mid);color:#fff;">
+        <div class="num">⑥</div><div class="label">Augment</div><div class="sub">增强 Prompt</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">在线</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="stage" style="background:var(--gray-dark);color:#fff;">
+        <div class="num">⑦</div><div class="label">Generate</div><div class="sub">生成答案</div>
+        <span class="online-badge" style="background:#ffffff33;color:#fff;">在线</span>
+      </div>
+    </div>
+    <div class="phase-label" style="margin-top:16px;">在线阶段 — 用户查询时实时运行（延迟敏感）</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px;">
+      用户提问 → <strong>⑤ Retrieve</strong>（向量检索 + 相似度过滤）→ <strong>⑥ Augment</strong>（chunks 注入 prompt）→ <strong>⑦ Generate</strong>（LLM 生成答案）→ 返回结果 + 来源链接
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">2. 各阶段 LangChain Class 详解</div>
+  <div class="sec-body">
+
+    <h2 class="sh">2.1 Stage ① — Document Loaders（文档加载器）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">将原始文件或数据源转换为 LangChain <code>Document</code> 对象（包含 <code>page_content</code> 正文 + <code>metadata</code> 元数据）。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">PyMuPDFLoader</td><td>PDF 加载，<strong>保留布局和表格结构</strong></td><td><span class="proj-badge b-blue">技术文档、合规文件</span></td><td>比 PyPDFLoader 快 5~10 倍，保留更多格式信息；推荐首选</td></tr>
+        <tr><td class="cls">PyPDFLoader</td><td>基础 PDF 文字提取，每页独立 Document</td><td><span class="proj-badge b-blue">普通 PDF</span></td><td>无布局信息，处理速度慢；简单场景可用</td></tr>
+        <tr><td class="cls">UnstructuredPDFLoader</td><td>PDF + OCR 支持扫描件</td><td><span class="proj-badge b-blue">扫描版文档</span></td><td>依赖 unstructured 库；处理复杂 PDF 最强但最慢</td></tr>
+        <tr><td class="cls">CSVLoader</td><td>每行转为一个 Document</td><td><span class="proj-badge b-teal">结构化数据、配置表</span></td><td><code>source_column</code> 参数指定 metadata 来源列；适合 DORA metrics 数据</td></tr>
+        <tr><td class="cls">UnstructuredExcelLoader</td><td>Excel 多 sheet 加载</td><td><span class="proj-badge b-teal">报表、数据字典</span></td><td>自动处理合并单元格；需要 <code>unstructured</code> 库</td></tr>
+        <tr><td class="cls">ConfluenceLoader</td><td><strong>直接拉取 Confluence 页面</strong>（你项目核心）</td><td><span class="proj-badge b-coral">Confluence Q&amp;A 项目</span></td><td><code>space_key</code> / <code>page_ids</code> 过滤；metadata 包含 page_title、space_key、url</td></tr>
+        <tr><td class="cls">DirectoryLoader</td><td>批量加载目录下所有文件</td><td><span class="proj-badge b-green">本地知识库批量导入</span></td><td><code>glob</code> 参数过滤文件类型，<code>recursive=True</code> 支持递归</td></tr>
+        <tr><td class="cls">WebBaseLoader</td><td>抓取网页内容</td><td><span class="proj-badge b-green">实时网页知识库</span></td><td>基于 BeautifulSoup；JS 渲染页面需要 Playwright</td></tr>
+        <tr><td class="cls">NotionDBLoader</td><td>加载 Notion 数据库页面</td><td><span class="proj-badge b-purple">Notion 知识库</span></td><td>需要 Notion API token；支持 filter 参数</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>Confluence 项目实际用法：</strong><br>
+    <code>ConfluenceLoader(url=CONF_URL, username=USER, api_key=KEY, space_key="TEAM")</code><br>
+    离线索引架构中 Loader 只在批量 ingestion 时调用，不在用户查询路径——这正是你简历里"eliminating API rate limit bottlenecks"的核心逻辑：把拉取动作从"每次查询实时调"变为"定时批量拉"。</div>
+
+    <h2 class="sh" style="margin-top:24px;">2.2 Stage ② — Text Splitters（文本分割器）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">将 Document 切分为适合 embedding 的 chunk。<code>chunk_size</code> 控制每块大小，<code>chunk_overlap</code> 控制重叠保留上下文。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">RecursiveCharacterTextSplitter</td><td><strong>递归按分隔符分割（首选推荐）</strong></td><td><span class="proj-badge b-coral">通用文本，Confluence 页面</span></td><td><code>separators=["\n\n","\n"," "]</code>，语义保留最好；大多数场景用这个</td></tr>
+        <tr><td class="cls">CharacterTextSplitter</td><td>按单一字符分割</td><td><span class="proj-badge b-blue">简单文本</span></td><td>只按一个 separator，chunk 边界可能切在句子中间</td></tr>
+        <tr><td class="cls">MarkdownTextSplitter</td><td>按 Markdown 标题层级分割</td><td><span class="proj-badge b-teal">MD 格式文档</span></td><td>保留标题结构，适合 Confluence Markdown 导出</td></tr>
+        <tr><td class="cls">TokenTextSplitter</td><td>按 token 数精确控制</td><td><span class="proj-badge b-blue">精确控制 context 长度</span></td><td>依赖 tiktoken；用于需要精确 token 计数的场景</td></tr>
+        <tr><td class="cls">HTMLHeaderTextSplitter</td><td><strong>按 HTML 标题层级分割</strong></td><td><span class="proj-badge b-coral">Confluence HTML 导出</span></td><td>metadata 保留标题层级（h1/h2/h3），检索结果更可解释；Confluence 场景最佳</td></tr>
+        <tr><td class="cls">SemanticChunker</td><td>基于 embedding 相似度分割</td><td><span class="proj-badge b-purple">高语义一致性要求</span></td><td>相邻句子 embedding 相似度低时切割；质量最高但速度慢</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>Confluence 最佳实践（两段式分割）：</strong><br>
+    <strong>第一步</strong> HTMLHeaderTextSplitter（按 h1/h2 切大块，保留标题 metadata）→ <strong>第二步</strong> RecursiveCharacterTextSplitter（chunk_size=512, overlap=50，把大块进一步切小）<br>
+    metadata 保留 <code>page_title + space_key + heading</code>，检索结果展示来源时更清晰。</div>
+
+    <h2 class="sh" style="margin-top:24px;">2.3 Stage ③ — Embedding Models（向量化模型）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">将 chunk 文本转为高维向量。<strong>这是检索质量的核心决定因素</strong>，选型直接影响 recall 和 precision。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">OpenAIEmbeddings</td><td>调用 OpenAI text-embedding-3 系列 API</td><td><span class="proj-badge b-blue">快速原型，数据不敏感</span></td><td><code>model="text-embedding-3-large"</code>；维度可裁剪；数据出境，注意合规</td></tr>
+        <tr><td class="cls">HuggingFaceEmbeddings</td><td><strong>本地 HuggingFace 模型（私有部署首选）</strong></td><td><span class="proj-badge b-coral">Confluence 项目（内网）</span></td><td><code>model_name="BAAI/bge-base-en-v1.5"</code>；数据不外送；可 fine-tune</td></tr>
+        <tr><td class="cls">HuggingFaceBgeEmbeddings</td><td>BGE 系列专属封装，自动处理 query prefix</td><td><span class="proj-badge b-coral">BGE 模型优化封装</span></td><td>自动在 query 前加 <code>"Represent this sentence for searching..."</code>；比直接用 HF 版精度高</td></tr>
+        <tr><td class="cls">OllamaEmbeddings</td><td>本地 Ollama 模型，完全离线</td><td><span class="proj-badge b-green">完全离线场景</span></td><td>需要本地跑 Ollama 服务；<code>model="nomic-embed-text"</code></td></tr>
+        <tr><td class="cls">CohereEmbeddings</td><td>Cohere embed-v3，多语言强</td><td><span class="proj-badge b-purple">多语言场景</span></td><td><code>input_type</code> 区分 <code>search_query</code> vs <code>search_document</code>，<strong>混用会降精度</strong></td></tr>
+        <tr><td class="cls">GoogleGenerativeAIEmbeddings</td><td>Google text-embedding-004</td><td><span class="proj-badge b-teal">GCP 生态</span></td><td><code>task_type="retrieval_document"</code> 或 <code>"retrieval_query"</code>；区分用途</td></tr>
+        <tr><td class="cls">FakeEmbeddings</td><td>随机向量，仅用于测试</td><td><span class="proj-badge b-blue">单元测试 / CI</span></td><td>不调用真实模型，加速测试；<strong>生产禁用</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>关键区别 — query 和 document 必须用不同 instruction：</strong><br>
+    BGE 系列：document 不加 prefix；query 加 <code>"Represent this sentence for searching relevant passages:"</code><br>
+    Cohere：用 <code>input_type</code> 参数区分。混用会让向量空间错位，检索精度显著下降。<br>
+    <strong>Fine-tune embedding 模型：</strong>用 <code>(用户问题, 正确template)</code> 对做 contrastive learning，解决领域 semantic gap。</div>
+
+    <h2 class="sh" style="margin-top:24px;">2.4 Stage ④ — Vector Stores（向量数据库）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">存储 chunk 的向量和 metadata，支持相似度检索。生产选型要考虑：部署方式、metadata 过滤、实时更新、并发性能。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">FAISS</td><td>Facebook 本地内存向量库</td><td><span class="proj-badge b-blue">原型开发，小规模</span></td><td><code>save_local/load_local</code>；<strong>不支持多进程、不支持实时单条更新</strong>；不适合生产</td></tr>
+        <tr><td class="cls">Chroma</td><td>轻量嵌入式向量 DB</td><td><span class="proj-badge b-blue">本地部署，中小规模</span></td><td><code>persist_directory</code> 持久化；支持 metadata 过滤；单机部署简单</td></tr>
+        <tr><td class="cls">Qdrant</td><td><strong>高性能独立部署向量 DB（生产推荐）</strong></td><td><span class="proj-badge b-coral">生产级私有部署</span></td><td>REST + gRPC；支持 payload 过滤；支持实时 upsert；推荐替代 Pinecone</td></tr>
+        <tr><td class="cls">Pinecone</td><td>云托管向量 DB，全托管无运维</td><td><span class="proj-badge b-purple">云端快速上线</span></td><td>按量付费；数据在云端，<strong>金融场景注意合规风险</strong></td></tr>
+        <tr><td class="cls">Weaviate</td><td>多模态向量 DB</td><td><span class="proj-badge b-purple">图像+文本混合检索</span></td><td>GraphQL 查询；BM25+向量 hybrid search 内置</td></tr>
+        <tr><td class="cls">PGVector</td><td>PostgreSQL pgvector 扩展</td><td><span class="proj-badge b-green">已有 PG 的系统</span></td><td>SQL + 向量一体；运维成本最低；<code>connection_string</code> 参数</td></tr>
+        <tr><td class="cls">ElasticsearchStore</td><td>ES 向量 + 全文混合检索</td><td><span class="proj-badge b-teal">已有 ES 基础设施</span></td><td>BM25 + 向量 hybrid 天然支持；企业内网常用</td></tr>
+        <tr><td class="cls">InMemoryVectorStore</td><td>纯内存，进程内，无持久化</td><td><span class="proj-badge b-blue">单元测试</span></td><td><strong>仅测试用，进程结束数据消失</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>私有部署首选：</strong>Qdrant（独立进程，易横向扩展）或 PGVector（已有 PG 则零增量运维）。FAISS 不支持实时更新单条记录，Confluence 页面会被 Webhook 触发实时更新索引，FAISS 无法满足。</div>
+
+    <h2 class="sh" style="margin-top:24px;">2.5 Stage ⑤ — Retrievers（检索器）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">从 Vector Store 检索相关 chunk。<strong>这是 RAG 质量优化的核心战场</strong>，你的简历亮点都在这里。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">VectorStoreRetriever</td><td>基础向量相似度检索</td><td><span class="proj-badge b-blue">默认检索</span></td><td><code>search_type="similarity_score_threshold"</code>, <code>score_threshold=0.7</code> 过滤低质量结果</td></tr>
+        <tr><td class="cls">MultiQueryRetriever</td><td><strong>LLM 改写多个 query 并行检索</strong></td><td><span class="proj-badge b-coral">你 Confluence 项目有此</span></td><td>解决 single-query 召回不全问题；自动 deduplicate；需要一个 LLM 做改写</td></tr>
+        <tr><td class="cls">ContextualCompressionRetriever</td><td>检索后压缩/过滤低质量 chunk</td><td><span class="proj-badge b-teal">提升 context 质量</span></td><td>配合 <code>LLMChainFilter</code> 或 <code>EmbeddingsFilter</code> 使用</td></tr>
+        <tr><td class="cls">EnsembleRetriever</td><td>多路检索结果 RRF 算法融合</td><td><span class="proj-badge b-teal">Hybrid Search</span></td><td>典型：<code>BM25Retriever + VectorStoreRetriever</code>；关键词+语义互补</td></tr>
+        <tr><td class="cls">BM25Retriever</td><td>BM25 关键词检索</td><td><span class="proj-badge b-teal">Hybrid Search 关键词路</span></td><td>依赖 rank_bm25 库；与向量检索互补，专有名词召回强</td></tr>
+        <tr><td class="cls">ParentDocumentRetriever</td><td>小 chunk 检索，返回 parent 大 chunk</td><td><span class="proj-badge b-purple">平衡精度与上下文完整</span></td><td>小 chunk 精准定位，parent chunk 送给 LLM 保证上下文完整性</td></tr>
+        <tr><td class="cls">SelfQueryRetriever</td><td>LLM 从 query 提取 metadata 过滤条件</td><td><span class="proj-badge b-purple">结构化过滤+语义检索</span></td><td>自动从"HR 部门的休假政策"提取 <code>space_key='HR'</code> 加入过滤</td></tr>
+        <tr><td class="cls">TimeWeightedVectorStoreRetriever</td><td>时间加权，越新内容越靠前</td><td><span class="proj-badge b-amber">新鲜度要求高场景</span></td><td><code>decay_rate</code> 控制衰减速度；解决 Confluence 旧文档被高频引用的问题</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>你简历亮点对应关系：</strong><br>
+    "Multi-Query parallel retrieval" = <code>MultiQueryRetriever</code><br>
+    "relevance threshold filtering ensures answer quality" = <code>score_threshold=0.7</code><br>
+    "gracefully surfaces related page links when no match found" = threshold 未过时 fallback 返回 closest_pages 链接</div>
+
+    <h2 class="sh" style="margin-top:24px;">2.6 Stage ⑥⑦ — LLM & Chat Models（生成模型）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;"><code>LLM</code> 是文本补全接口；<code>ChatModel</code> 是对话消息接口（推荐）。两者都是 Runnable，可以直接插入 LCEL 链。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">ChatGoogleGenerativeAI</td><td><strong>Gemini 系列（你项目在用）</strong></td><td><span class="proj-badge b-coral">EE Insights NLQ 项目</span></td><td><code>model="gemini-2.0-pro"</code>；支持 100 万 token 上下文；中国大陆访问受限</td></tr>
+        <tr><td class="cls">ChatOpenAI</td><td>GPT-4o / GPT-4o-mini</td><td><span class="proj-badge b-blue">通用场景</span></td><td><code>response_format={"type":"json_object"}</code> 稳定 JSON 输出；mini 性价比高</td></tr>
+        <tr><td class="cls">ChatAnthropic</td><td>Claude Sonnet / Opus</td><td><span class="proj-badge b-blue">复杂推理、代码生成</span></td><td><code>max_tokens</code> 必须设置；XML 格式输出更稳定</td></tr>
+        <tr><td class="cls">ChatOllama</td><td>本地 Ollama 模型，完全离线</td><td><span class="proj-badge b-green">内网离线场景</span></td><td><code>model="qwen2.5:7b"</code>；base_url 指向本地服务；数据不出内网</td></tr>
+        <tr><td class="cls">ChatDeepSeek</td><td>DeepSeek V3 / R1 API</td><td><span class="proj-badge b-teal">性价比优先</span></td><td>R1 有 <code>reasoning_content</code> 字段需特殊处理；API 价格远低于 GPT-4o</td></tr>
+        <tr><td class="cls">AzureChatOpenAI</td><td>Azure OpenAI endpoint</td><td><span class="proj-badge b-purple">企业 Azure 合规部署</span></td><td><code>azure_deployment + api_version</code> 必须指定；数据留在 Azure 租户内</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sh" style="margin-top:24px;">2.7 Prompt Templates（提示词模板）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">分离 prompt 模板逻辑与变量填充，支持复用和版本管理。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">ChatPromptTemplate</td><td><strong>多角色消息模板（推荐首选）</strong></td><td><span class="proj-badge b-coral">所有对话系统</span></td><td>System + Human + AI 消息组合；<code>from_messages()</code> 快速创建</td></tr>
+        <tr><td class="cls">PromptTemplate</td><td>字符串 {变量} 占位符模板</td><td><span class="proj-badge b-blue">简单单轮问答</span></td><td><code>from_template()</code> 创建；适合旧 API 或非对话场景</td></tr>
+        <tr><td class="cls">FewShotChatMessagePromptTemplate</td><td>对话格式 few-shot 模板</td><td><span class="proj-badge b-coral">NLQ 参数提取</span></td><td>配合 <code>SemanticSimilarityExampleSelector</code> 动态选最相关示例</td></tr>
+        <tr><td class="cls">MessagesPlaceholder</td><td>动态插入消息历史占位符</td><td><span class="proj-badge b-teal">多轮对话记忆</span></td><td><code>variable_name="history"</code>；在 prompt 里预留历史消息插入位置</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sh" style="margin-top:24px;">2.8 Output Parsers（输出解析器）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">解析 LLM 输出为结构化数据。NLQ 参数提取的关键模块——LLM 输出 JSON，Parser 转为 Python 对象。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">StrOutputParser</td><td>纯字符串直通（最简单）</td><td><span class="proj-badge b-blue">普通问答输出</span></td><td>链式调用末尾常用；直接返回 LLM 文本</td></tr>
+        <tr><td class="cls">JsonOutputParser</td><td>解析 JSON 格式输出</td><td><span class="proj-badge b-coral">NLQ 参数提取</span></td><td>prompt 需明确要求输出 JSON；自动处理 markdown 代码块</td></tr>
+        <tr><td class="cls">PydanticOutputParser</td><td><strong>解析为 Pydantic 模型（类型安全）</strong></td><td><span class="proj-badge b-coral">结构化参数提取</span></td><td><code>get_format_instructions()</code> 生成格式说明自动注入 prompt；类型验证+错误提示</td></tr>
+        <tr><td class="cls">CommaSeparatedListOutputParser</td><td>解析逗号分隔列表</td><td><span class="proj-badge b-teal">Multi-query 改写结果</span></td><td>简单场景无需 JSON；返回 Python list</td></tr>
+        <tr><td class="cls">XMLOutputParser</td><td>解析 XML 格式输出</td><td><span class="proj-badge b-purple">Claude 模型（偏好 XML）</span></td><td>Claude 系列用 XML 标签输出比 JSON 更稳定</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sh" style="margin-top:24px;">2.9 Memory（对话记忆）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">管理多轮对话历史，维持上下文连贯性。长对话需要在"完整性"和"token 消耗"之间权衡。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">ConversationBufferMemory</td><td>存储全量对话历史</td><td><span class="proj-badge b-blue">短对话</span></td><td>token 不设上限，长对话会超 context window</td></tr>
+        <tr><td class="cls">ConversationBufferWindowMemory</td><td>只保留最近 K 轮</td><td><span class="proj-badge b-blue">控制 context 长度</span></td><td><code>k=5</code> 只保留最近 5 轮；简单但会丢失早期关键信息</td></tr>
+        <tr><td class="cls">ConversationSummaryBufferMemory</td><td><strong>近期全量 + 远期摘要（推荐生产用）</strong></td><td><span class="proj-badge b-coral">长对话 RAG 场景</span></td><td><code>max_token_limit</code> 控制缓冲区大小；超限自动 LLM 摘要压缩</td></tr>
+        <tr><td class="cls">RedisChatMessageHistory</td><td>Redis 持久化对话历史</td><td><span class="proj-badge b-teal">多进程/节点共享</span></td><td><code>session_id</code> 隔离不同用户；<code>ttl</code> 控制过期时间</td></tr>
+        <tr><td class="cls">PostgresChatMessageHistory</td><td>PG 持久化对话历史</td><td><span class="proj-badge b-teal">已有 PG 基础设施</span></td><td><code>connection_string</code> 指定 DB；与 unmatched_queries 表同库管理</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sh" style="margin-top:24px;">2.10 LCEL Chains & Callbacks（链式组装 + 回调追踪）</h2>
+    <p style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">LCEL 用 <code>|</code> 运算符串联所有模块。Callbacks 拦截 pipeline 各阶段事件实现追踪。</p>
+    <table>
+      <thead><tr><th>Class 名称</th><th>功能说明</th><th>你项目里对应</th><th>核心参数 / 重要区别</th></tr></thead>
+      <tbody>
+        <tr><td class="cls">RunnableSequence ( | )</td><td><strong>LCEL 顺序链（现代写法，推荐）</strong></td><td><span class="proj-badge b-coral">所有新项目</span></td><td><code>prompt | llm | parser</code>；类型安全；原生支持 async / stream / batch</td></tr>
+        <tr><td class="cls">RunnableParallel</td><td>并行执行多个 Runnable</td><td><span class="proj-badge b-teal">Multi-query 并行检索</span></td><td>dict 定义多分支，结果自动合并；<code>{"context": retriever, "question": passthrough}</code></td></tr>
+        <tr><td class="cls">RunnablePassthrough</td><td>透传输入不做修改</td><td><span class="proj-badge b-blue">保留原始 query</span></td><td>在 RunnableParallel 中保留原始输入传给下游</td></tr>
+        <tr><td class="cls">RunnableLambda</td><td>包装任意 Python 函数</td><td><span class="proj-badge b-blue">自定义处理步骤</span></td><td>快速将任何函数插入 LCEL 链</td></tr>
+        <tr><td class="cls">AsyncCallbackHandler</td><td><strong>异步自定义回调基类</strong></td><td><span class="proj-badge b-coral">自建 Splunk/DB trace</span></td><td>重写 <code>on_chain_end</code> 异步写 trace，<strong>不阻塞主流程</strong>；你项目不用 Langfuse 的关键</td></tr>
+        <tr><td class="cls">StdOutCallbackHandler</td><td>打印到标准输出</td><td><span class="proj-badge b-blue">本地调试</span></td><td>开发阶段快速查看中间结果</td></tr>
+        <tr><td class="cls">RetrievalQA</td><td>经典 RAG 链（旧 API）</td><td><span class="proj-badge b-amber">遗留代码</span></td><td><strong>已不推荐</strong>；用 LCEL 替代；面试如被问到说"知道但用 LCEL 替代了"</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>自建 trace 不用 Langfuse 的做法：</strong>继承 <code>AsyncCallbackHandler</code>，重写 <code>on_chain_end</code>，在里面异步写 PostgreSQL <code>unmatched_queries</code> 表或打结构化 JSON log 到 Splunk。no-match 判断在 <code>on_retriever_end</code> 回调里做——检查返回 chunks 数量和分数。</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">3. 完整 LCEL Pipeline 代码示例（Confluence Q&A 项目）</div>
+  <div class="sec-body">
+    <div class="code-block">
+<span class="c"># ========== 离线阶段：批量索引（不在用户查询路径）==========</span>
+<span class="h">from</span> langchain_community.document_loaders <span class="h">import</span> ConfluenceLoader
+<span class="h">from</span> langchain_text_splitters <span class="h">import</span> HTMLHeaderTextSplitter, RecursiveCharacterTextSplitter
+<span class="h">from</span> langchain_community.embeddings <span class="h">import</span> HuggingFaceEmbeddings
+<span class="h">from</span> langchain_community.vectorstores <span class="h">import</span> Qdrant
+
+loader   = ConfluenceLoader(url=CONF_URL, username=USER, api_key=KEY, space_key=<span class="s">"TEAM"</span>)
+splitter1 = HTMLHeaderTextSplitter(headers_to_split_on=[(<span class="s">"h1"</span>,<span class="s">"H1"</span>),(<span class="s">"h2"</span>,<span class="s">"H2"</span>)])
+splitter2 = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=50)
+embed    = HuggingFaceEmbeddings(model_name=<span class="s">"BAAI/bge-base-en-v1.5"</span>)
+store    = Qdrant.from_documents(docs, embed, url=QDRANT_URL, collection_name=<span class="s">"confluence"</span>)
+
+<span class="c"># ========== 在线阶段：用户查询（实时运行）==========</span>
+<span class="h">from</span> langchain.retrievers.multi_query <span class="h">import</span> MultiQueryRetriever
+<span class="h">from</span> langchain_core.prompts <span class="h">import</span> ChatPromptTemplate
+<span class="h">from</span> langchain_core.runnables <span class="h">import</span> RunnableParallel, RunnablePassthrough
+<span class="h">from</span> langchain_core.output_parsers <span class="h">import</span> StrOutputParser
+<span class="h">from</span> langchain_google_genai <span class="h">import</span> ChatGoogleGenerativeAI
+
+<span class="c"># Stage ⑤：Multi-Query Retriever + 相似度阈值过滤</span>
+base_ret  = store.as_retriever(
+    search_type=<span class="s">"similarity_score_threshold"</span>,
+    search_kwargs={<span class="s">"score_threshold"</span>: 0.7, <span class="s">"k"</span>: 5}
+)
+retriever = MultiQueryRetriever.from_llm(
+    retriever=base_ret,
+    llm=ChatGoogleGenerativeAI(model=<span class="s">"gemini-2.0-flash"</span>)  <span class="c"># 用 flash 改写 query，省成本</span>
+)
+
+<span class="c"># Stage ⑥⑦：Augment + Generate（LCEL 链）</span>
+prompt = ChatPromptTemplate.from_messages([
+    (<span class="s">"system"</span>, <span class="s">"你是 Confluence 知识库助手。仅基于以下内容回答，不要编造：\n\n{context}"</span>),
+    (<span class="s">"human"</span>, <span class="s">"{question}"</span>)
+])
+
+chain = (
+    RunnableParallel({<span class="s">"context"</span>: retriever, <span class="s">"question"</span>: RunnablePassthrough()})
+    | prompt
+    | ChatGoogleGenerativeAI(model=<span class="s">"gemini-2.0-pro"</span>, temperature=0)
+    | StrOutputParser()
+)
+
+<span class="c"># 调用 + 异步 trace 写入（不阻塞响应）</span>
+result = <span class="h">await</span> chain.ainvoke({<span class="s">"question"</span>: user_query})
+asyncio.create_task(log_trace_async(user_query, result, ctx))
+<span class="c"># ctx.has_answer=False 时 -> 写 PostgreSQL unmatched_queries
+# ctx.has_answer=True  时 -> 打结构化 JSON log 到 Splunk</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">4. 面试高频问题速查</div>
+  <div class="sec-body">
+    <div class="faq-grid">
+      <div class="faq-card">
+        <div class="q">如何提升检索召回率？</div>
+        <div class="cls-line">MultiQueryRetriever + EnsembleRetriever</div>
+        <div class="ans">多 query 改写并行检索解决单 query 召回不全；BM25 + 向量 RRF 融合弥补关键词匹配盲区（Hybrid Search）</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">如何过滤低质量检索结果？</div>
+        <div class="cls-line">score_threshold=0.7 + ContextualCompressionRetriever</div>
+        <div class="ans">相似度阈值过滤，低于阈值走 fallback 返回相关页面链接；Compression Retriever 进一步过滤 chunk 内无关内容</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">如何处理长文档保持上下文完整？</div>
+        <div class="cls-line">ParentDocumentRetriever</div>
+        <div class="ans">小 chunk（128 token）精准定位，检索命中后返回 parent 大 chunk（512 token）给 LLM，平衡检索精度和上下文完整性</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">如何实现多轮对话？</div>
+        <div class="cls-line">ConversationSummaryBufferMemory + MessagesPlaceholder</div>
+        <div class="ans">近期全量保留 + 远期 LLM 摘要压缩，MessagesPlaceholder 动态注入历史消息到 prompt</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">如何做结构化输出（NLQ 参数提取）？</div>
+        <div class="cls-line">PydanticOutputParser + JsonOutputParser</div>
+        <div class="ans">Pydantic 定义 schema，get_format_instructions() 自动生成格式说明注入 prompt；提供类型验证和自动错误提示</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">不用 Langfuse 怎么追踪 pipeline？</div>
+        <div class="cls-line">AsyncCallbackHandler（自定义）</div>
+        <div class="ans">继承基类重写 on_chain_end，异步写 trace 到数据库/Splunk，完全不阻塞主流程。no-match 写 DB，正常会话打 Splunk log</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">LCEL 和旧 Chain API 有什么区别？</div>
+        <div class="cls-line">RunnableSequence ( | ) vs RetrievalQA</div>
+        <div class="ans">LCEL 类型安全、原生 async/stream/batch 支持，更易调试；旧 Chain API（RetrievalQA、LLMChain）已不推荐，面试要知道"能识别但用 LCEL 替代"</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">Embedding 模型如何选型？</div>
+        <div class="cls-line">HuggingFaceEmbeddings vs OpenAIEmbeddings</div>
+        <div class="ans">私有部署/金融合规场景用 HF 本地（bge-base-en-v1.5），数据不外送；快速原型用 OpenAI；多语言用 bge-m3</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">如何解决 Confluence 索引实时性问题？</div>
+        <div class="cls-line">Webhook + 定时增量同步（双保险）</div>
+        <div class="ans">Webhook 事件驱动（延迟 &lt;30s）为主；每小时定时增量同步（lastModified 过滤）为兜底，实现 at-least-once 语义</div>
+      </div>
+      <div class="faq-card">
+        <div class="q">为什么选 fine-tune embedding 而非生成模型？</div>
+        <div class="cls-line">HuggingFaceEmbeddings + contrastive loss</div>
+        <div class="ans">用户问题和 SQL template 之间有 semantic gap，fine-tune bi-encoder 成本低（百条数据，单卡可跑）；生成模型 fine-tune 成本高但任务简单不值得</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;font-size:11px;color:var(--text2);margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+  RAG Pipeline LangChain Reference &nbsp;·&nbsp; AI Engineer Interview Prep &nbsp;·&nbsp; Confluence Q&amp;A Project
+</div>
+
+</div>
+</body>
+</html>

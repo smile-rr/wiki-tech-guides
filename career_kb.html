@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>职业知识库 · 16年经验深度梳理</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf9;--s:#ffffff;--s2:#f5f4f2;--s3:#eeecea;
+  --bd:#e4e0db;--bd2:#ccc8c2;
+  --tx:#1a1714;--tx2:#4a4540;--tx3:#9a948e;
+  --bl:#1e40af;--blbg:#eff4ff;--blbd:#c7d7fe;
+  --sw:230px;
+  --serif:'Lora',Georgia,serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+html{font-size:14px;line-height:1.65;color:var(--tx)}
+body{background:var(--bg);font-family:var(--sans)}
+
+/* ── HEADER ── */
+.hdr{position:sticky;top:0;z-index:100;background:rgba(250,250,249,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);padding:10px 20px;display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-mark{width:28px;height:28px;background:var(--tx);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.htit{font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap}
+.hsub{font-size:11px;color:var(--tx3);font-weight:400;margin-left:2px}
+.srch{flex:1;max-width:340px;position:relative;margin-left:auto}
+.srch input{width:100%;padding:6px 12px 6px 30px;border:1px solid var(--bd2);border-radius:20px;font-size:12px;font-family:var(--sans);background:var(--s2);color:var(--tx);outline:none;transition:all .15s}
+.srch input:focus{border-color:#a5b4fc;background:var(--s);box-shadow:0 0 0 3px rgba(165,180,252,.15)}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx3)}
+.stag{font-size:10px;padding:3px 10px;border-radius:20px;background:var(--s2);color:var(--tx2);border:1px solid var(--bd);white-space:nowrap;font-weight:500;flex-shrink:0}
+
+/* ── LAYOUT ── */
+.lay{display:flex;min-height:calc(100vh - 45px)}
+
+/* ── SIDEBAR ── */
+.sb{width:var(--sw);flex-shrink:0;position:sticky;top:45px;height:calc(100vh - 45px);overflow-y:auto;background:var(--s);border-right:1px solid var(--bd);padding:12px 0 20px}
+.sb::-webkit-scrollbar{width:3px}
+.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.nlbl{font-size:9.5px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;padding:10px 16px 4px;margin-top:6px}
+.nlbl:first-child{margin-top:0}
+.nl{display:flex;align-items:center;gap:8px;padding:5px 16px;font-size:12px;color:var(--tx2);cursor:pointer;transition:all .12s;border-left:2px solid transparent;line-height:1.4}
+.nl:hover{background:var(--s2);color:var(--tx)}
+.nl.active{background:var(--blbg);color:var(--bl);border-left-color:var(--bl);font-weight:500}
+.ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0;opacity:.7}
+.nl.active .ndot{opacity:1}
+
+/* ── MAIN ── */
+.main{flex:1;padding:24px 28px 80px;overflow-x:hidden;max-width:960px}
+.sec{margin-bottom:40px;scroll-margin-top:54px}
+.sec.hidden-sec{display:none}
+
+/* ── SECTION HEADER ── */
+.sch{display:flex;align-items:center;gap:10px;margin-bottom:6px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+.sdot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stit{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--tx);letter-spacing:-.01em}
+.intro-band{font-size:12.5px;color:var(--tx3);margin-bottom:14px;padding:10px 14px;border-radius:8px;background:var(--s2);border-left:3px solid var(--bd2);line-height:1.65;font-style:italic}
+
+/* ── ANCHORS ── */
+.anchors{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;padding:12px 14px;background:var(--s);border:1px solid var(--bd);border-radius:8px}
+.anchor-lbl{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.anchor-item{font-size:12px;color:var(--tx2);line-height:1.5;padding-left:14px;position:relative}
+.anchor-item::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--bd2)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;margin-bottom:12px;border-bottom:1px solid var(--bd);padding-bottom:0}
+.tab-btn{padding:6px 16px;font-size:12px;font-family:var(--sans);font-weight:500;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--tx3);cursor:pointer;transition:all .15s;margin-bottom:-1px;border-radius:4px 4px 0 0}
+.tab-btn:hover{color:var(--tx2)}
+.tab-btn.active{color:var(--bl);border-bottom-color:var(--bl);background:var(--blbg)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ── ACCORDION ── */
+.acc{border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:8px;transition:box-shadow .15s}
+.acc:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.acc-hdr{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--s2);cursor:pointer;user-select:none;transition:background .12s}
+.acc-hdr:hover{background:var(--s3)}
+.acc-hdr.open{background:#f0f4ff}
+.acc-arrow{font-size:9px;color:var(--tx3);transition:transform .2s;flex-shrink:0;margin-top:3px}
+.acc-hdr.open .acc-arrow{transform:rotate(90deg);color:var(--bl)}
+.acc-col{flex:1}
+.acc-htxt{font-size:13px;font-weight:500;color:var(--tx);line-height:1.4;margin-bottom:3px}
+.acc-fw{font-size:11px;color:var(--tx3);line-height:1.5;font-style:italic}
+.acc-body{display:none;background:var(--s)}
+.acc-body.open{display:block}
+.pts-wrap{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.pt{font-size:13px;color:var(--tx2);line-height:1.75;padding:12px 16px;border:1px solid var(--bd);border-left:3px solid #ddd6d0;border-radius:0 8px 8px 0;background:var(--s);transition:border-left-color .15s}
+.pt:hover{border-left-color:#a5b4fc}
+
+/* ── RESOURCE CARDS ── */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:9px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,box-shadow .15s}
+.card:hover{border-color:var(--bd2);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.ctop{display:flex;align-items:flex-start;gap:7px}
+.badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;flex-shrink:0;white-space:nowrap;margin-top:1px;border:1px solid transparent;font-family:var(--sans)}
+.ctit{font-size:12.5px;font-weight:500;color:var(--tx);line-height:1.4}
+.ctit a{color:inherit;text-decoration:none}
+.ctit a:hover{color:var(--bl)}
+.cdesc{font-size:11.5px;color:var(--tx2);line-height:1.45}
+.csrc{font-size:10.5px;color:var(--tx3)}
+.curl{font-size:10.5px;color:#8a8480;word-break:break-all;text-decoration:none}
+.curl:hover{color:var(--bl)}
+.b-book{background:#fef9ee;color:#92400e;border-color:#f5d896}
+.b-blog{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
+.b-paper{background:#f8f8f8;color:#3d3d3d;border-color:#d0d0d0}
+.b-framework{background:#eff6ff;color:#1e40af;border-color:#c7d7fe}
+
+/* ── MISC ── */
+.nr{display:none;text-align:center;padding:60px;color:var(--tx3);font-size:13px;font-family:var(--serif);font-style:italic}
+.btt{position:fixed;bottom:24px;right:24px;width:36px;height:36px;background:var(--tx);color:#fff;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .2s;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.btt.show{opacity:1}
+.btt:hover{background:#2d2926;transform:translateY(-1px)}
+/* ── READABILITY OVERRIDES ── */
+.acc-body{display:block!important}
+.acc{border:none!important;border-radius:0!important;box-shadow:none!important;margin-bottom:0!important}
+.acc+.acc{border-top:1px solid var(--bd)!important}
+.acc:hover{box-shadow:none!important}
+.acc-hdr{background:transparent!important;padding:16px 0 5px!important;cursor:default!important;gap:0!important}
+.acc-hdr:hover,.acc-hdr.open{background:transparent!important}
+.acc-arrow{display:none!important}
+.acc-htxt{font-size:13.5px!important;font-weight:600!important;color:var(--tx)!important;letter-spacing:-.01em}
+.pts-wrap{padding:4px 0 22px!important;gap:16px!important}
+.pt{font-size:13.5px!important;line-height:1.85!important;color:var(--tx2)!important;padding:0!important;background:transparent!important;border:none!important;border-radius:0!important}
+.pt:hover{border-left-color:transparent!important}
+.intro-txt{font-size:13px!important;line-height:1.72!important}
+
+.acc-col{gap:5px!important}
+.acc-fw{font-size:12px!important;line-height:1.65!important;color:var(--tx3)!important;margin-top:3px!important;font-style:italic}
+/* ── THREE-COLUMN LAYOUT ── */
+.content-area{flex:1;display:flex;align-items:flex-start;min-width:0;gap:0}
+.main{flex:1;max-width:720px;min-width:0}
+.toc-rail{width:190px;flex-shrink:0;position:sticky;top:45px;height:calc(100vh - 45px);overflow-y:auto;padding:14px 0 20px 14px;border-left:1px solid var(--bd);background:var(--s)}
+.toc-rail::-webkit-scrollbar{width:2px}.toc-rail::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.toc-head{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd);padding-right:14px}
+.toc-sec{display:block;font-size:11px;color:var(--tx3);text-decoration:none;padding:3px 0;line-height:1.4;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px;transition:color .12s}
+.toc-sec:hover{color:var(--tx2)}
+.toc-sec.active{color:var(--bl)!important;font-weight:600}
+.toc-notes{flex-direction:column;display:none}
+.toc-notes.open{display:flex}
+.toc-note{display:block;font-size:10.5px;color:var(--tx3);text-decoration:none;padding:2px 14px 2px 10px;line-height:1.4;cursor:pointer;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.toc-note:hover{color:var(--tx2)}
+.toc-note.active{color:var(--bl);border-left-color:var(--bl)}
+[id^="nh-"]{scroll-margin-top:60px}
+@media(max-width:1200px){.toc-rail{display:none}}
+/* ── GUIDE RAIL REDESIGN ── */
+.content-area{gap:40px!important}
+.toc-rail{background:transparent!important;border-left:none!important;padding:18px 0 20px 0!important}
+.guide-head{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);margin-bottom:14px}
+.guide-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:none}
+.guide-check{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s}
+.guide-check:hover{border-color:var(--bl)}
+.guide-item.done .guide-check{background:var(--bl);border-color:var(--bl);color:#fff}
+.guide-text{font-size:11.5px;color:var(--tx3);line-height:1.6;cursor:pointer;flex:1;transition:color .12s}
+.guide-text:hover{color:var(--tx2)}
+.guide-text strong{color:var(--tx2);font-weight:600}
+.guide-item.done .guide-text{opacity:.4;text-decoration:line-through;text-decoration-color:var(--bd2)}
+.guide-item.done .guide-text strong{color:inherit}
+/* ── RESPONSIVE 3-COLUMN GRID (overrides all previous layout rules) ── */
+.lay{display:grid!important;align-items:start!important;gap:0!important;
+     grid-template-columns:clamp(180px,16%,240px) 1fr clamp(220px,22%,320px)!important}
+.content-area{display:contents!important;flex:unset!important;gap:unset!important}
+.main{flex:unset!important;max-width:none!important;min-width:0!important;padding-right:36px!important}
+.toc-rail{width:unset!important;min-width:unset!important;flex-shrink:unset!important;
+          padding-left:22px!important;border-left:1px solid var(--bd)!important;
+          background:transparent!important}
+@media(max-width:1200px){
+  .toc-rail{display:none!important}
+  .lay{grid-template-columns:clamp(180px,16%,240px) 1fr!important}
+}
+/* ── RESIZE HANDLE ── */
+.toc-rail{position:relative!important}
+.resize-handle{position:absolute;left:-1px;top:0;bottom:0;width:8px;cursor:col-resize;
+  z-index:20;background:transparent;border-left:2px solid transparent;transition:border-color .15s,background .15s}
+.resize-handle:hover,.resize-handle.dragging{border-left-color:var(--bl);background:rgba(99,102,241,.07)}
+.guide-content{width:100%}
+/* === STICKY GUIDE FIX === */
+.toc-rail{
+  position:sticky!important;
+  top:45px!important;
+  height:calc(100vh - 45px)!important;
+  overflow-y:auto!important;
+  align-self:start!important;
+}
+.lay{align-items:start!important}
+
+.note-fig{margin:12px 0 16px;border:1px solid var(--bd);border-radius:8px;padding:12px;overflow:hidden;background:var(--s)}
+.note-fig svg{width:100%;height:auto;display:block;max-height:300px}
+.diag-link{display:inline-block;margin-top:8px;font-size:11px;color:var(--accent,#2563eb);text-decoration:none;opacity:.8}
+.diag-link:hover{opacity:1;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+    <div><div class="htit">职业知识库</div></div>
+  </div>
+  <span class="hsub">· 16 年经验系统整理 · 技术 / 交付 / 领导力 / 方法论</span>
+  <div class="srch">
+    <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="搜索任意关键词…">
+  </div>
+  <span class="stag" id="stag">加载中…</span>
+</div>
+
+<div class="lay">
+<nav class="sb" id="sb"><div id="nav"></div></nav>
+<div class="content-area"><main class="main">
+  <div id="cont"></div>
+  <div id="nr" class="nr">未找到相关内容，请换个关键词试试</div>
+</main><nav class="toc-rail" id="toc-rail"></nav></div>
+</div>
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+
+<!-- DIAGRAM TEMPLATES -->
+<div id="diag_ic_to_director" style="display:none"><svg viewBox="0 0 520 195" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">IC → Director：每次跨越，输出单位根本改变</text>
+<rect x="10" y="24" width="106" height="80" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="t" x="63" y="42" text-anchor="middle" fill="#334155">IC</text>
+<text class="sm" x="63" y="58" text-anchor="middle" fill="#64748b">输出：代码</text>
+<text class="sm" x="63" y="72" text-anchor="middle" fill="#64748b">设计方案</text>
+<text class="sm" x="63" y="84" text-anchor="middle" fill="#6b7280">个人贡献</text>
+<rect x="136" y="24" width="106" height="80" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="189" y="42" text-anchor="middle" fill="#1e40af">Tech Lead</text>
+<text class="sm" x="189" y="58" text-anchor="middle" fill="#3b82f6">输出：系统</text>
+<text class="sm" x="189" y="72" text-anchor="middle" fill="#3b82f6">技术方向</text>
+<text class="sm" x="189" y="84" text-anchor="middle" fill="#6b7280">+ 技术判断</text>
+<rect x="262" y="24" width="106" height="80" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="315" y="42" text-anchor="middle" fill="#14532d">EM</text>
+<text class="sm" x="315" y="58" text-anchor="middle" fill="#15803d">输出：团队</text>
+<text class="sm" x="315" y="72" text-anchor="middle" fill="#15803d">高效运转</text>
+<text class="sm" x="315" y="84" text-anchor="middle" fill="#6b7280">+ 人员管理</text>
+<rect x="388" y="24" width="122" height="80" rx="6" fill="#7c3aed"/>
+<text class="t" x="449" y="42" text-anchor="middle" fill="white">Director</text>
+<text class="sm" x="449" y="58" text-anchor="middle" fill="#ddd6fe">输出：能力</text>
+<text class="sm" x="449" y="72" text-anchor="middle" fill="#ddd6fe">组织持续产出</text>
+<text class="sm" x="449" y="84" text-anchor="middle" fill="#c4b5fd">+ 战略判断</text>
+<defs><marker id="pa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="116" y1="64" x2="136" y2="64" stroke="#374151" stroke-width="2" marker-end="url(#pa)"/>
+<line x1="242" y1="64" x2="262" y2="64" stroke="#374151" stroke-width="2" marker-end="url(#pa)"/>
+<line x1="368" y1="64" x2="388" y2="64" stroke="#374151" stroke-width="2" marker-end="url(#pa)"/>
+<rect x="10" y="120" width="106" height="64" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="sm" x="63" y="138" text-anchor="middle" fill="#6b7280">技术深度</text>
+<text class="sm" x="63" y="154" text-anchor="middle" fill="#6b7280">是核心竞争力</text>
+<rect x="136" y="120" width="106" height="64" rx="5" fill="#eff6ff" stroke="#bfdbfe"/>
+<text class="sm" x="189" y="138" text-anchor="middle" fill="#3b82f6">技术广度</text>
+<text class="sm" x="189" y="154" text-anchor="middle" fill="#3b82f6">+ 影响力</text>
+<rect x="262" y="120" width="106" height="64" rx="5" fill="#f0fdf4" stroke="#bbf7d0"/>
+<text class="sm" x="315" y="138" text-anchor="middle" fill="#15803d">人员管理</text>
+<text class="sm" x="315" y="154" text-anchor="middle" fill="#15803d">是核心技能</text>
+<rect x="388" y="120" width="122" height="64" rx="5" fill="#faf5ff" stroke="#ddd6fe"/>
+<text class="sm" x="449" y="138" text-anchor="middle" fill="#7c3aed">组织设计</text>
+<text class="sm" x="449" y="154" text-anchor="middle" fill="#7c3aed">战略叙事</text>
+<text class="sm" x="449" y="170" text-anchor="middle" fill="#6b7280">是核心技能</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="193" text-anchor="middle">晋升时机：已经在持续做下一级的工作 6-12 个月后，而非准备好了才开始做</text>
+</svg></div>
+<div id="diag_maker_manager" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Maker vs Manager 日程：两种时间结构不能混用</text>
+<rect x="10" y="24" width="230" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#1e40af">Maker Schedule（开发者）</text>
+<rect x="22" y="52" width="206" height="30" rx="4" fill="#2563eb"/>
+<text class="sm" x="125" y="71" text-anchor="middle" fill="white">深度工作块 4h+（9:00-13:00）</text>
+<rect x="22" y="88" width="90" height="22" rx="4" fill="#fca5a5"/>
+<text class="sm" x="67" y="103" text-anchor="middle" fill="#831843">会议（打断）</text>
+<rect x="118" y="88" width="110" height="22" rx="4" fill="#2563eb" opacity="0.5"/>
+<text class="sm" x="173" y="103" text-anchor="middle" fill="white">恢复 1h</text>
+<rect x="22" y="116" width="206" height="28" rx="4" fill="#1d4ed8"/>
+<text class="sm" x="125" y="134" text-anchor="middle" fill="white">深度工作块 3h（15:00-18:00）</text>
+<text class="sm" x="125" y="148" text-anchor="middle" fill="#6b7280">一个会议 = 半天生产力损失</text>
+<rect x="280" y="24" width="230" height="130" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#14532d">Manager Schedule（管理者）</text>
+<rect x="292" y="52" width="100" height="22" rx="4" fill="#16a34a"/>
+<text class="sm" x="342" y="66" text-anchor="middle" fill="white">1:1（30min）</text>
+<rect x="400" y="52" width="98" height="22" rx="4" fill="#059669"/>
+<text class="sm" x="449" y="66" text-anchor="middle" fill="white">团队站会</text>
+<rect x="292" y="80" width="206" height="22" rx="4" fill="#047857"/>
+<text class="sm" x="395" y="94" text-anchor="middle" fill="white">跨部门对齐（1h）</text>
+<rect x="292" y="108" width="100" height="22" rx="4" fill="#16a34a"/>
+<text class="sm" x="342" y="122" text-anchor="middle" fill="white">面试</text>
+<rect x="400" y="108" width="98" height="22" rx="4" fill="#059669"/>
+<text class="sm" x="449" y="122" text-anchor="middle" fill="white">战略规划</text>
+<text class="sm" x="395" y="148" text-anchor="middle" fill="#6b7280">时间自然碎片化，会议是工作本身</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="168" text-anchor="middle">EM 保护团队原则：把会议集中在上午前2h 或下午最后2h，保留中间整块给工程师</text>
+</svg></div>
+<div id="diag_tech_strategy" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">技术战略 vs 路线图：战略是取舍，路线图是计划</text>
+<rect x="10" y="24" width="230" height="130" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#831843">技术路线图（Roadmap）</text>
+<text class="sm" x="125" y="58" text-anchor="middle" fill="#be185d">Q1: 完成功能 A、B、C</text>
+<text class="sm" x="125" y="74" text-anchor="middle" fill="#be185d">Q2: 升级基础设施 X</text>
+<text class="sm" x="125" y="90" text-anchor="middle" fill="#be185d">Q3: 发布新版本</text>
+<text class="sm" x="125" y="110" text-anchor="middle" fill="#be185d">回答「下一季度做什么」</text>
+<text class="sm" x="125" y="124" text-anchor="middle" fill="#be185d">不回答「为什么是这个」</text>
+<rect x="280" y="24" width="230" height="130" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#14532d">技术战略（Strategy）</text>
+<text class="sm" x="395" y="58" text-anchor="middle" fill="#15803d">① 现状的诚实评估</text>
+<text class="sm" x="395" y="74" text-anchor="middle" fill="#15803d">② 3 年目标能力模型</text>
+<text class="sm" x="395" y="90" text-anchor="middle" fill="#15803d">③ 有取舍的路径选择</text>
+<text class="sm" x="395" y="110" text-anchor="middle" fill="#15803d">回答「为什么是这个方向」</text>
+<text class="sm" x="395" y="124" text-anchor="middle" fill="#15803d">显式说明放弃了什么</text>
+<rect x="80" y="165" width="360" height="22" rx="5" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="sm" x="260" y="180" text-anchor="middle" fill="#78350f">反向问题：「如果方向错了，最先看到什么信号？」—— 能回答才是真战略</text>
+</svg></div>
+<div id="diag_build_buy_partner" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Build / Buy / Partner：战略决策，不是技术决策</text>
+<rect x="10" y="24" width="155" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+<text class="t" x="87" y="42" text-anchor="middle" fill="#1e40af">Build 自建</text>
+<text class="sm" x="87" y="58" text-anchor="middle" fill="#3b82f6">核心差异化能力</text>
+<text class="sm" x="87" y="72" text-anchor="middle" fill="#3b82f6">团队有能力维护</text>
+<rect x="22" y="84" width="131" height="16" rx="3" fill="#bbf7d0"/><text class="sm" x="87" y="96" text-anchor="middle" fill="#14532d">✓ 完全掌控</text>
+<rect x="22" y="104" width="131" height="16" rx="3" fill="#fda4af"/><text class="sm" x="87" y="116" text-anchor="middle" fill="#831843">✗ 长期维护成本高</text>
+<text class="sm" x="87" y="138" text-anchor="middle" fill="#6b7280">问：5年后还愿意维护？</text>
+<rect x="183" y="24" width="155" height="130" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text class="t" x="260" y="42" text-anchor="middle" fill="#14532d">Buy 购买</text>
+<text class="sm" x="260" y="58" text-anchor="middle" fill="#15803d">Table Stakes 能力</text>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="#15803d">有成熟市场方案</text>
+<rect x="195" y="84" width="131" height="16" rx="3" fill="#bbf7d0"/><text class="sm" x="260" y="96" text-anchor="middle" fill="#14532d">✓ 快速上线</text>
+<rect x="195" y="104" width="131" height="16" rx="3" fill="#fda4af"/><text class="sm" x="260" y="116" text-anchor="middle" fill="#831843">✗ 供应商锁定风险</text>
+<text class="sm" x="260" y="138" text-anchor="middle" fill="#6b7280">问：退出路径是什么？</text>
+<rect x="356" y="24" width="155" height="130" rx="7" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+<text class="t" x="433" y="42" text-anchor="middle" fill="#78350f">Partner 合作</text>
+<text class="sm" x="433" y="58" text-anchor="middle" fill="#92400e">专业壁垒极高</text>
+<text class="sm" x="433" y="72" text-anchor="middle" fill="#92400e">监管/合规要求</text>
+<rect x="368" y="84" width="131" height="16" rx="3" fill="#bbf7d0"/><text class="sm" x="433" y="96" text-anchor="middle" fill="#14532d">✓ 专业能力外包</text>
+<rect x="368" y="104" width="131" height="16" rx="3" fill="#fda4af"/><text class="sm" x="433" y="116" text-anchor="middle" fill="#831843">✗ 合规责任无法外包</text>
+<text class="sm" x="433" y="138" text-anchor="middle" fill="#6b7280">问：核心知识留下了吗？</text>
+</svg></div>
+<div id="diag_conway" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Conway 定律：系统架构 = 组织沟通结构</text>
+<rect x="10" y="24" width="230" height="120" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#831843">组织：大前台+大后台</text>
+<rect x="22" y="52" width="206" height="32" rx="5" fill="#fda4af"/>
+<text class="sm" x="125" y="72" text-anchor="middle" fill="#831843">前端团队（所有UI）</text>
+<rect x="22" y="90" width="206" height="32" rx="5" fill="#f472b6"/>
+<text class="sm" x="125" y="110" text-anchor="middle" fill="white">后端团队（所有API）</text>
+<text class="sm" x="125" y="136" text-anchor="middle" fill="#be185d">→ 系统自然变成单体</text>
+<defs><marker id="ca" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="2" stroke-linecap="round"/></marker></defs>
+<line x1="240" y1="84" x2="280" y2="84" stroke="#374151" stroke-width="2" marker-end="url(#ca)"/>
+<rect x="280" y="24" width="230" height="120" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#14532d">组织：按领域拆分</text>
+<rect x="292" y="52" width="95" height="28" rx="5" fill="#16a34a"/>
+<text class="sm" x="339" y="70" text-anchor="middle" fill="white">订单团队（全栈）</text>
+<rect x="395" y="52" width="103" height="28" rx="5" fill="#059669"/>
+<text class="sm" x="446" y="70" text-anchor="middle" fill="white">用户团队（全栈）</text>
+<rect x="292" y="88" width="95" height="28" rx="5" fill="#047857"/>
+<text class="sm" x="339" y="106" text-anchor="middle" fill="white">支付团队（全栈）</text>
+<rect x="395" y="88" width="103" height="28" rx="5" fill="#065f46"/>
+<text class="sm" x="446" y="106" text-anchor="middle" fill="white">推荐团队（全栈）</text>
+<text class="sm" x="395" y="136" text-anchor="middle" fill="#14532d">→ 系统自然变成微服务</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="162" text-anchor="middle">Inverse Conway Maneuver：先调整团队结构，让组织形状驱动期望的架构演进</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="178" text-anchor="middle">Team Topologies：Stream-aligned / Platform / Enabling / Complicated Subsystem 四种团队类型</text>
+</svg></div>
+<div id="diag_influence" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Influence without Authority：五种实战手段</text>
+<rect x="10" y="24" width="92" height="120" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="56" y="42" text-anchor="middle" fill="#1e40af">共同</text>
+<text class="t" x="56" y="56" text-anchor="middle" fill="#1e40af">定义问题</text>
+<text class="sm" x="56" y="72" text-anchor="middle" fill="#3b82f6">不带方案</text>
+<text class="sm" x="56" y="86" text-anchor="middle" fill="#3b82f6">去找对方</text>
+<text class="sm" x="56" y="100" text-anchor="middle" fill="#6b7280">一起发现</text>
+<text class="sm" x="56" y="114" text-anchor="middle" fill="#6b7280">比签字有效</text>
+<rect x="116" y="24" width="92" height="120" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="162" y="42" text-anchor="middle" fill="#14532d">数据说话</text>
+<text class="sm" x="162" y="58" text-anchor="middle" fill="#15803d">先小范围</text>
+<text class="sm" x="162" y="72" text-anchor="middle" fill="#15803d">试点验证</text>
+<text class="sm" x="162" y="88" text-anchor="middle" fill="#15803d">用实际数字</text>
+<text class="sm" x="162" y="102" text-anchor="middle" fill="#6b7280">代替理论</text>
+<rect x="222" y="24" width="92" height="120" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="268" y="42" text-anchor="middle" fill="#78350f">激励对齐</text>
+<text class="sm" x="268" y="58" text-anchor="middle" fill="#92400e">让对方看到</text>
+<text class="sm" x="268" y="72" text-anchor="middle" fill="#92400e">为什么这件</text>
+<text class="sm" x="268" y="86" text-anchor="middle" fill="#92400e">事对他也重要</text>
+<text class="sm" x="268" y="102" text-anchor="middle" fill="#6b7280">非「帮你」</text>
+<rect x="328" y="24" width="92" height="120" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="374" y="42" text-anchor="middle" fill="#4c1d95">桥梁人物</text>
+<text class="sm" x="374" y="58" text-anchor="middle" fill="#6d28d9">找被双方</text>
+<text class="sm" x="374" y="72" text-anchor="middle" fill="#6d28d9">信任的第三方</text>
+<text class="sm" x="374" y="88" text-anchor="middle" fill="#6d28d9">建立初步共识</text>
+<text class="sm" x="374" y="102" text-anchor="middle" fill="#6b7280">再直接推动</text>
+<rect x="434" y="24" width="78" height="120" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="473" y="42" text-anchor="middle" fill="#831843">显式化</text>
+<text class="t" x="473" y="56" text-anchor="middle" fill="#831843">不作为</text>
+<text class="t" x="473" y="70" text-anchor="middle" fill="#831843">成本</text>
+<text class="sm" x="473" y="88" text-anchor="middle" fill="#be185d">不决策的</text>
+<text class="sm" x="473" y="102" text-anchor="middle" fill="#be185d">风险是什么</text>
+<text class="sm" x="473" y="116" text-anchor="middle" fill="#6b7280">非威胁</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="158" text-anchor="middle">矩阵组织中：直接指令无效，纯靠关系不稳定 → 影响力来自激励对齐 + 可信度积累</text>
+</svg></div>
+<div id="diag_kotter" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Kotter 8 步变革模型</text>
+<rect x="10" y="24" width="110" height="48" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="65" y="42" text-anchor="middle" fill="#831843">① 建立紧迫感</text>
+<text class="sm" x="65" y="58" text-anchor="middle" fill="#be185d">量化现状代价</text>
+<rect x="135" y="24" width="110" height="48" rx="6" fill="#fef3c7" stroke="#f59e0b"/>
+<text class="t" x="190" y="42" text-anchor="middle" fill="#92400e">② 引导联盟</text>
+<text class="sm" x="190" y="58" text-anchor="middle" fill="#d97706">找关键支持者</text>
+<rect x="260" y="24" width="110" height="48" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="315" y="42" text-anchor="middle" fill="#78350f">③ 战略愿景</text>
+<text class="sm" x="315" y="58" text-anchor="middle" fill="#92400e">3个月后的图景</text>
+<rect x="385" y="24" width="125" height="48" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="447" y="42" text-anchor="middle" fill="#14532d">④ 沟通愿景</text>
+<text class="sm" x="447" y="58" text-anchor="middle" fill="#15803d">反复传达意义</text>
+<defs><marker id="ka" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="120" y1="48" x2="135" y2="48" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<line x1="245" y1="48" x2="260" y2="48" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<line x1="370" y1="48" x2="385" y2="48" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<rect x="10" y="112" width="110" height="48" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="65" y="130" text-anchor="middle" fill="#1e40af">⑤ 消除障碍</text>
+<text class="sm" x="65" y="146" text-anchor="middle" fill="#3b82f6">移除阻碍因素</text>
+<rect x="135" y="112" width="110" height="48" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+<text class="t" x="190" y="130" text-anchor="middle" fill="#4c1d95">⑥ 短期胜利</text>
+<text class="sm" x="190" y="146" text-anchor="middle" fill="#6d28d9">快速可见的赢</text>
+<rect x="260" y="112" width="110" height="48" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="315" y="130" text-anchor="middle" fill="#831843">⑦ 乘胜追击</text>
+<text class="sm" x="315" y="146" text-anchor="middle" fill="#be185d">扩大变革范围</text>
+<rect x="385" y="112" width="125" height="48" rx="6" fill="#374151"/>
+<text class="t" x="447" y="130" text-anchor="middle" fill="white">⑧ 固化文化</text>
+<text class="sm" x="447" y="146" text-anchor="middle" fill="#9ca3af">新方式变惯例</text>
+<line x1="120" y1="136" x2="135" y2="136" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<line x1="245" y1="136" x2="260" y2="136" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<line x1="370" y1="136" x2="385" y2="136" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<line x1="447" y1="72" x2="447" y2="112" stroke="#374151" stroke-width="1.5" marker-end="url(#ka)"/>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="178" text-anchor="middle">最常失败的步骤：① 紧迫感不足（现状看起来还行）⑥ 没有早期可见的小胜利（动力衰减）</text>
+</svg></div>
+<div id="diag_dora" style="display:none"><svg viewBox="0 0 520 185" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">DORA Metrics：衡量软件交付能力的四个指标</text>
+<rect x="10" y="24" width="235" height="68" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="122" y="42" text-anchor="middle" fill="#14532d">Elite 级别（2024）</text>
+<text class="sm" x="122" y="58" text-anchor="middle" fill="#15803d">部署频率：每天多次 | Lead Time：&lt;1小时</text>
+<text class="sm" x="122" y="72" text-anchor="middle" fill="#15803d">MTTR：&lt;1小时 | 变更失败率：&lt;5%</text>
+<rect x="275" y="24" width="235" height="68" rx="6" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text class="t" x="392" y="42" text-anchor="middle" fill="#831843">Low 级别</text>
+<text class="sm" x="392" y="58" text-anchor="middle" fill="#be185d">部署频率：每月/每季 | Lead Time：周-月</text>
+<text class="sm" x="392" y="72" text-anchor="middle" fill="#be185d">MTTR：天-周 | 变更失败率：&gt;30%</text>
+<rect x="10" y="104" width="115" height="72" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="62" y="120" text-anchor="middle" fill="#334155">部署频率</text>
+<text class="sm" x="62" y="136" text-anchor="middle" fill="#64748b">多久部署一次</text>
+<text class="sm" x="62" y="150" text-anchor="middle" fill="#64748b">反映交付速度</text>
+<rect x="140" y="104" width="115" height="72" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="197" y="120" text-anchor="middle" fill="#334155">Lead Time</text>
+<text class="sm" x="197" y="136" text-anchor="middle" fill="#64748b">提交→生产时间</text>
+<text class="sm" x="197" y="150" text-anchor="middle" fill="#64748b">反映流程效率</text>
+<rect x="270" y="104" width="115" height="72" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="327" y="120" text-anchor="middle" fill="#334155">MTTR</text>
+<text class="sm" x="327" y="136" text-anchor="middle" fill="#64748b">故障恢复时间</text>
+<text class="sm" x="327" y="150" text-anchor="middle" fill="#64748b">反映稳定性</text>
+<rect x="400" y="104" width="110" height="72" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+<text class="t" x="455" y="120" text-anchor="middle" fill="#334155">变更失败率</text>
+<text class="sm" x="455" y="136" text-anchor="middle" fill="#64748b">变更引入故障</text>
+<text class="sm" x="455" y="150" text-anchor="middle" fill="#64748b">反映质量</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="186" text-anchor="middle">四指标相互制衡：不能通过降低部署频率来降低失败率（那是作弊），真改善需要测试+CI/CD</text>
+</svg></div>
+<div id="diag_tech_debt" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">技术债象限：Fowler 的精确定义</text>
+<rect x="10" y="28" width="490" height="8" rx="2" fill="#f1f5f9"/>
+<text class="sm" x="260" y="25" text-anchor="middle" fill="#6b7280">有意识 ←                                         → 无意识</text>
+<rect x="10" y="44" width="230" height="110" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="125" y="64" text-anchor="middle" fill="#14532d">有意 × 谨慎（真正的技术债）</text>
+<text class="sm" x="125" y="82" text-anchor="middle" fill="#15803d">「现在先快速上线，</text>
+<text class="sm" x="125" y="96" text-anchor="middle" fill="#15803d">之后再重构 DB 层」</text>
+<text class="sm" x="125" y="114" text-anchor="middle" fill="#6b7280">有意识的商业决策</text>
+<text class="sm" x="125" y="128" text-anchor="middle" fill="#6b7280">记录并设定偿还计划</text>
+<rect x="280" y="44" width="230" height="110" rx="7" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+<text class="t" x="395" y="64" text-anchor="middle" fill="#831843">无意 × 鲁莽（代码质量差）</text>
+<text class="sm" x="395" y="82" text-anchor="middle" fill="#be185d">「什么是分层架构？</text>
+<text class="sm" x="395" y="96" text-anchor="middle" fill="#be185d">我不知道也不在乎」</text>
+<text class="sm" x="395" y="114" text-anchor="middle" fill="#6b7280">技术能力不足造成</text>
+<text class="sm" x="395" y="128" text-anchor="middle" fill="#6b7280">不是债务，是烂代码</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="162" text-anchor="middle">删除过期 Feature Flag = 最容易被忽视的技术债偿还 | Boy Scout Rule：每次修改顺手改善周边代码</text>
+</svg></div>
+<div id="diag_platform_eng" style="display:none"><svg viewBox="0 0 520 175" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Platform Engineering：把基础设施做成内部产品</text>
+<rect x="10" y="24" width="490" height="38" rx="6" fill="#374151"/>
+<text class="t" x="260" y="38" text-anchor="middle" fill="white">Internal Developer Platform（IDP）</text>
+<text class="sm" x="260" y="54" text-anchor="middle" fill="#9ca3af">Backstage / 自研门户：服务目录 + 自助部署 + 可观测性 + 文档</text>
+<rect x="10" y="74" width="150" height="90" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="85" y="92" text-anchor="middle" fill="#1e40af">Golden Path</text>
+<text class="sm" x="85" y="108" text-anchor="middle" fill="#3b82f6">最常见场景的</text>
+<text class="sm" x="85" y="122" text-anchor="middle" fill="#3b82f6">默认正确路径</text>
+<text class="sm" x="85" y="138" text-anchor="middle" fill="#6b7280">CI/CD模板·服务框架</text>
+<rect x="185" y="74" width="150" height="90" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="260" y="92" text-anchor="middle" fill="#14532d">降低认知负荷</text>
+<text class="sm" x="260" y="108" text-anchor="middle" fill="#15803d">不需要理解底层</text>
+<text class="sm" x="260" y="122" text-anchor="middle" fill="#15803d">也能做出正确</text>
+<text class="sm" x="260" y="138" text-anchor="middle" fill="#6b7280">工程决策</text>
+<rect x="360" y="74" width="150" height="90" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="435" y="92" text-anchor="middle" fill="#78350f">平台即产品</text>
+<text class="sm" x="435" y="108" text-anchor="middle" fill="#92400e">内部用户=开发者</text>
+<text class="sm" x="435" y="122" text-anchor="middle" fill="#92400e">NPS 衡量满意度</text>
+<text class="sm" x="435" y="138" text-anchor="middle" fill="#6b7280">Platform Team 维护</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="168" text-anchor="middle">平台工程 vs DevOps：DevOps 是文化，平台工程是技术手段；两者互补，不矛盾</text>
+</svg></div>
+<div id="diag_strangler_fig" style="display:none"><svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Strangler Fig：逐步替换旧系统，不做大爆炸重写</text>
+<rect x="10" y="28" width="145" height="130" rx="7" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="82" y="46" text-anchor="middle" fill="#831843">旧系统（Legacy）</text>
+<rect x="22" y="56" width="121" height="20" rx="3" fill="#fda4af"/><text class="sm" x="82" y="70" text-anchor="middle" fill="#831843">模块A（迁移完成）</text>
+<rect x="22" y="80" width="121" height="20" rx="3" fill="#f472b6"/><text class="sm" x="82" y="94" text-anchor="middle" fill="white">模块B（迁移中）</text>
+<rect x="22" y="104" width="121" height="20" rx="3" fill="#ec4899"/><text class="sm" x="82" y="118" text-anchor="middle" fill="white">模块C（待迁移）</text>
+<rect x="22" y="128" width="121" height="20" rx="3" fill="#db2777"/><text class="sm" x="82" y="142" text-anchor="middle" fill="white">模块D（待迁移）</text>
+<rect x="190" y="60" width="140" height="56" rx="6" fill="#7c3aed"/>
+<text class="t" x="260" y="80" text-anchor="middle" fill="white">路由 Facade</text>
+<text class="sm" x="260" y="96" text-anchor="middle" fill="#ddd6fe">控制流量在新旧系统间分发</text>
+<defs><marker id="sa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="155" y1="93" x2="190" y2="88" stroke="#374151" stroke-width="1.5" marker-end="url(#sa)"/>
+<line x1="330" y1="88" x2="360" y2="88" stroke="#374151" stroke-width="1.5" marker-end="url(#sa)"/>
+<rect x="360" y="28" width="150" height="130" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="435" y="46" text-anchor="middle" fill="#14532d">新系统（New）</text>
+<rect x="372" y="56" width="126" height="20" rx="3" fill="#16a34a"/><text class="sm" x="435" y="70" text-anchor="middle" fill="white">模块A ✓ 已上线</text>
+<rect x="372" y="80" width="126" height="20" rx="3" fill="#4ade80"/><text class="sm" x="435" y="94" text-anchor="middle" fill="#14532d">模块B（部分流量）</text>
+<rect x="372" y="104" width="126" height="20" rx="3" fill="#bbf7d0" stroke="#16a34a"/><text class="sm" x="435" y="118" text-anchor="middle" fill="#14532d">模块C（开发中）</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="166" text-anchor="middle">关键：新功能只在新系统实现 | Big Bang 重写失败率极高（Netscape 教训）</text>
+<text style="font:10px sans-serif;fill:#6b7280" x="260" y="180" text-anchor="middle">Feature Flag 配合：同一代码库新旧逻辑并存，按百分比灰度放量</text>
+</svg></div>
+<div id="diag_two_door" style="display:none"><svg viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Two-way Door vs One-way Door：决策可逆性判断</text>
+<rect x="10" y="24" width="230" height="120" rx="7" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#14532d">Two-way Door（可逆）</text>
+<text class="sm" x="125" y="58" text-anchor="middle" fill="#15803d">试错成本低</text>
+<text class="sm" x="125" y="72" text-anchor="middle" fill="#15803d">可以快速撤回</text>
+<text class="sm" x="125" y="88" text-anchor="middle" fill="#15803d">→ 快速决策</text>
+<text class="sm" x="125" y="104" text-anchor="middle" fill="#15803d">→ 授权团队自主</text>
+<text class="sm" x="125" y="118" text-anchor="middle" fill="#6b7280">功能A/B测试·API设计·流程改进</text>
+<rect x="280" y="24" width="230" height="120" rx="7" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#831843">One-way Door（不可逆）</text>
+<text class="sm" x="395" y="58" text-anchor="middle" fill="#be185d">一旦做出很难撤回</text>
+<text class="sm" x="395" y="72" text-anchor="middle" fill="#be185d">代价高昂</text>
+<text class="sm" x="395" y="88" text-anchor="middle" fill="#be185d">→ 慎重、充分信息后决策</text>
+<text class="sm" x="395" y="104" text-anchor="middle" fill="#be185d">→ 高层参与</text>
+<text class="sm" x="395" y="118" text-anchor="middle" fill="#6b7280">架构选型·核心人员裁减·供应商绑定</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="154" text-anchor="middle">常见错误：把 Two-way Door 按 One-way Door 处理（过度分析，行动迟缓）</text>
+</svg></div>
+<div id="diag_hofstede" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">Hofstede 文化维度：理解跨文化行为差异</text>
+<rect x="10" y="28" width="490" height="24" rx="4" fill="#7c3aed"/>
+<text class="sm" x="260" y="44" text-anchor="middle" fill="white">权力距离（Power Distance）：高→下属不挑战上级 / 低→扁平文化，直接反馈</text>
+<rect x="10" y="56" width="490" height="24" rx="4" fill="#2563eb"/>
+<text class="sm" x="260" y="72" text-anchor="middle" fill="white">个人主义 vs 集体主义：西方偏个人 / 亚洲偏集体，影响激励方式</text>
+<rect x="10" y="84" width="490" height="24" rx="4" fill="#059669"/>
+<text class="sm" x="260" y="100" text-anchor="middle" fill="white">不确定性回避：高→需要详细流程 / 低→接受「边做边调整」的 Agile</text>
+<rect x="10" y="112" width="490" height="24" rx="4" fill="#d97706"/>
+<text class="sm" x="260" y="128" text-anchor="middle" fill="white">长期 vs 短期导向：长期→重视积累 / 短期→季度目标导向</text>
+<rect x="10" y="144" width="490" height="24" rx="4" fill="#dc2626"/>
+<text class="sm" x="260" y="160" text-anchor="middle" fill="white">高权力距离文化（中/印/马）：需要建立明确「挑战机制」，如1:1或匿名反馈渠道</text>
+</svg></div>
+<div id="diag_psych_safety" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">心理安全 × 高标准 = 学习区（Google Project Aristotle）</text>
+<text class="sm" x="10" y="105" fill="#374151" transform="rotate(-90,10,100)">心理安全 ↑</text>
+<line x1="30" y1="28" x2="30" y2="155" stroke="#374151" stroke-width="1.5"/>
+<line x1="30" y1="155" x2="510" y2="155" stroke="#374151" stroke-width="1.5"/>
+<text class="sm" x="270" y="168" text-anchor="middle" fill="#374151">绩效标准 →</text>
+<rect x="35" y="88" width="230" height="64" rx="6" fill="#fef9c3" stroke="#ca8a04"/>
+<text class="t" x="150" y="110" text-anchor="middle" fill="#78350f">舒适区</text>
+<text class="sm" x="150" y="126" text-anchor="middle" fill="#92400e">安全感高，但标准低</text>
+<text class="sm" x="150" y="140" text-anchor="middle" fill="#6b7280">无挑战，容易自满</text>
+<rect x="270" y="30" width="235" height="64" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="t" x="387" y="52" text-anchor="middle" fill="#14532d">学习区 ★</text>
+<text class="sm" x="387" y="68" text-anchor="middle" fill="#15803d">高安全 + 高标准</text>
+<text class="sm" x="387" y="82" text-anchor="middle" fill="#15803d">敢试错，追卓越</text>
+<rect x="35" y="30" width="230" height="55" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="150" y="50" text-anchor="middle" fill="#1e40af">冷漠区</text>
+<text class="sm" x="150" y="66" text-anchor="middle" fill="#3b82f6">低安全 + 低标准</text>
+<rect x="270" y="92" width="235" height="60" rx="6" fill="#fce7f3" stroke="#db2777"/>
+<text class="t" x="387" y="112" text-anchor="middle" fill="#831843">焦虑区</text>
+<text class="sm" x="387" y="126" text-anchor="middle" fill="#be185d">高标准但低安全感</text>
+<text class="sm" x="387" y="140" text-anchor="middle" fill="#be185d">怕犯错，不敢说</text>
+</svg></div>
+<div id="diag_managing_up" style="display:none"><svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg">
+<style>.t{font:600 11px sans-serif}.sm{font:10px sans-serif}</style>
+<text class="t" x="260" y="14" text-anchor="middle" fill="#111">向上管理：可预测性比完美表现更重要</text>
+<rect x="10" y="24" width="230" height="130" rx="7" fill="#dbeafe" stroke="#3b82f6"/>
+<text class="t" x="125" y="42" text-anchor="middle" fill="#1e40af">建立信任飞轮</text>
+<rect x="22" y="52" width="206" height="22" rx="4" fill="#2563eb"/>
+<text class="sm" x="125" y="67" text-anchor="middle" fill="white">① 承诺一件事 → 做到</text>
+<rect x="22" y="78" width="206" height="22" rx="4" fill="#3b82f6"/>
+<text class="sm" x="125" y="93" text-anchor="middle" fill="white">② 主动更新进展（不要等问）</text>
+<rect x="22" y="104" width="206" height="22" rx="4" fill="#60a5fa"/>
+<text class="sm" x="125" y="119" text-anchor="middle" fill="white">③ 遇障碍提前说（非截止前）</text>
+<rect x="22" y="130" width="206" height="16" rx="4" fill="#93c5fd"/>
+<text class="sm" x="125" y="142" text-anchor="middle" fill="#1e40af">→ 重复累积 = 可预测性</text>
+<rect x="280" y="24" width="230" height="130" rx="7" fill="#dcfce7" stroke="#16a34a"/>
+<text class="t" x="395" y="42" text-anchor="middle" fill="#14532d">带选项找上级</text>
+<rect x="292" y="52" width="206" height="30" rx="4" fill="#fce7f3" stroke="#db2777"/>
+<text class="sm" x="395" y="66" text-anchor="middle" fill="#831843">✗「我不知道怎么办」</text>
+<text class="sm" x="395" y="78" text-anchor="middle" fill="#be185d">把决策负担上移</text>
+<rect x="292" y="90" width="206" height="50" rx="4" fill="#dcfce7" stroke="#16a34a"/>
+<text class="sm" x="395" y="107" text-anchor="middle" fill="#14532d">✓「A/B 两个选项，我倾向 A，</text>
+<text class="sm" x="395" y="121" text-anchor="middle" fill="#14532d">原因 X/Y/Z，您怎么看？」</text>
+<text class="sm" x="395" y="136" text-anchor="middle" fill="#6b7280">展示判断力，只需确认</text>
+<text style="font:10px sans-serif;fill:#374151" x="260" y="164" text-anchor="middle">Radical Candor：直接挑战（Care Personally）+ 真实关心（Challenge Directly）= 理想状态</text>
+</svg></div>
+<!-- END DIAGRAM TEMPLATES -->
+<script>
+const D=[{"id":"eng_leadership","phase":"工程领导力","title":"工程领导力本质 · 角色转变 · 影响力层级","color":"#1e40af","bg":"#EFF6FF","intro":"从工程师到 Tech Lead 到 Engineering Manager 到 Director，每一次跨越都不是技术深度的增加，而是工作输出单位的根本转变。理解这个转变，是理解工程领导力的起点。","intro_lines":["▸ <strong>角色转变的本质</strong> — IC → TL → EM → Director 每次跨越的输出单位变化","▸ <strong>技术影响力 vs 组织影响力</strong> — 两条路径的定义和适用场景","▸ <strong>Maker vs Manager 的时间分配</strong> — Paul Graham 的经典框架在工程管理中的实践","▸ <strong>工程领导力的核心悖论</strong> — 越资深越需要「放弃」的东西"],"notes":[{"h":"角色跨越：输出单位的根本变化","pts":["每个阶段的核心输出不同：IC（Individual Contributor）的输出是代码和设计方案；Tech Lead 的输出是良好运行的系统和清晰的技术方向；Engineering Manager 的输出是高效运转的团队；Director 的输出是团队持续产出优质系统的组织能力。这意味着每次晋升，上一个层级的技术深度只是「准入门槛」，不是核心竞争力。晋升到 Director 后，写代码的时间必然减少——这不是损失，而是工作重心的主动转移。","Staff Engineer 路径（Individual Contributor Track）是另一条高阶路径：不走管理路线，而是通过技术影响力成为组织的技术方向引领者。Staff/Principal/Distinguished Engineer 的影响力来自技术判断力和跨团队的架构决策，而非管理权力。Will Larson 的《Staff Engineer》是这条路径的权威参考。两条路径没有高低，取决于个人优势和组织需求。","Director 级别的工作时间分配（参考模型）：40% 战略和方向（技术路线、OKR、与业务 stakeholder 对齐）、30% 人才管理（招聘、发展、绩效、文化）、20% 执行监督（项目风险识别、关键决策支持）、10% 对外影响力（行业参与、品牌建设）。这个分配意味着 Director 几乎不写代码，但必须保持足够深的技术判断力来评估工程决策。"],"img_key":"ic_to_director","img_link":"Engineering Management Levels","img_title":"https://en.wikipedia.org/wiki/Engineering_management"},{"h":"Maker vs Manager：时间结构的设计","pts":["Paul Graham 的 Maker Schedule vs Manager Schedule：开发者（Maker）需要长块的不间断时间（4+ 小时）才能进入深度工作状态，任何会议都是打断；管理者（Manager）的工作自然切分成 30-60 分钟的单元，会议是工作本身而非干扰。当工程 Manager 用 Manager Schedule 管理 IC 团队时，会造成巨大的生产力损耗——IC 的 deep work 时间被碎片化。好的 Engineering Manager 会刻意保护团队的 Maker 时间块，把会议集中在特定时段（上午前 2 小时或下午最后 2 小时），留出连续的专注时间给工程师。","工程领导力的核心悖论：越是资深的工程领导者，越需要主动放弃的东西越多。放弃对技术实现细节的控制（转为设方向和标准）；放弃亲自解决技术问题的满足感（转为培养团队解决问题的能力）；放弃对所有决策的知情权（转为建立让团队在边界内自主决策的信任）。无法完成这个「放弃」的工程师在晋升后往往成为微管理者，同时失去了 IC 时代的技术深度。"],"img_key":"maker_manager","img_link":"Maker's Schedule, Manager's Schedule","img_title":"https://paulgraham.com/makersschedule.html"}],"res":[{"tp":"书籍","tc":"b-book","t":"Staff Engineer — Will Larson","d":"技术 IC 高阶路径，Staff/Principal 的影响力模式","u":"https://staffeng.com/book","lv":"mid","s":"staffeng.com"},{"tp":"书籍","tc":"b-book","t":"The Manager's Path — Camille Fournier","d":"工程管理的完整路径，从 TL 到 VP 每个阶段的核心任务","u":"https://www.oreilly.com/library/view/the-managers-path/9781491973882/","lv":"entry","s":"oreilly.com"},{"tp":"博客","tc":"b-blog","t":"Maker's Schedule, Manager's Schedule — Paul Graham","d":"经典短文，解释为什么工程师和管理者的时间结构根本不同","u":"https://paulgraham.com/makersschedule.html","lv":"entry","s":"paulgraham.com"}]},{"id":"tech_strategy","phase":"工程领导力","title":"技术战略 · Vision Setting · Build/Buy/Partner","color":"#1e40af","bg":"#EFF6FF","intro":"技术战略不是路线图，而是「在约束下做有取舍的选择」的系统性判断。Director 级别最核心的输出之一是：在业务目标和技术现实之间，找到一条有说服力的前进路径。","intro_lines":["▸ <strong>技术战略的定义</strong> — 和 Roadmap 的区别，好的技术战略应该回答什么问题","▸ <strong>业务-技术对齐</strong> — 把技术投资翻译成业务语言，让非技术 stakeholder 理解","▸ <strong>Build / Buy / Partner</strong> — 三种模式的决策框架和适用条件","▸ <strong>技术债的战略处理</strong> — 什么时候偿还，什么时候接受，如何量化"],"notes":[{"h":"技术战略 vs 技术路线图","pts":["技术路线图（Roadmap）回答「接下来做什么」，技术战略回答「为什么是这个方向而不是其他，我们在构建什么核心能力」。一个好的技术战略需要回答三个问题：① 当前状态的诚实评估（技术债、团队能力、历史决策的约束）；② 目标状态的清晰描述（3 年后的能力模型）；③ 从当前到目标的有取舍的路径（选择不做什么和选择做什么同等重要）。Strategy 的词源是希腊语 strategos（将军），核心含义是「在有限资源下赢得战争」，而不是「列出所有想做的事」。","技术战略必须能回答「反向问题」：如果这个方向是错的，什么信号会最先出现？如果竞争对手选了另一条路且成功了，我们的解释是什么？能清晰回答这两个问题，说明战略有真实的判断，而不只是对现有计划的事后理性化。Wardley Mapping 是可视化技术战略的实用工具——把系统能力按「演进阶段」（Genesis/Custom/Product/Commodity）排列，识别哪些应该自建，哪些应该购买，哪些是真正的差异化。"],"img_key":"tech_strategy","img_link":"Technology Strategy","img_title":"https://en.wikipedia.org/wiki/Technology_strategy"},{"h":"Business-Technology Alignment：用业务语言说话","pts":["技术人晋升后最常见的失败模式：继续用技术语言向业务 stakeholder 汇报。Senior MD 和董事会关心的框架是：风险（这个技术决定的下行风险是什么）、成本（投入多少，什么时候回收，机会成本是什么）、竞争（这让我们比对手更强还是更弱）、合规（监管层面如何）。技术优雅性不在他们的考量框架里。","翻译框架——「因此链」：把技术问题转化为业务影响。例如：「我们的数据管道缺乏版本化管理」→「导致每次规则修改需要 2 周手工测试」→「导致监管报告的变更响应周期是行业均值的 3 倍」→「这是最近审计被点名的三个风险之一」。这个链条让任何非技术 stakeholder 都能理解技术问题的业务后果。反向也成立：当业务提出新需求时，用「因此链」反向推导出技术需要做什么。","OKR 与技术战略的整合：好的技术 OKR 不应该只有「交付 N 个功能」，而应该包含能力建设（这个季度之后团队能做以前做不到的什么）和质量指标（DORA Metrics：部署频率/Lead Time/MTTR/变更失败率）。技术 KR 和业务 KR 的映射关系需要显式建立——如果一个技术 KR 无法追溯到任何业务 KR，它要么是在偿还技术债（需要说清楚），要么是不应该做的事。"]},{"h":"Build / Buy / Partner 决策框架","pts":["Build（自建）：当这个能力是核心差异化优势，且团队有能力持续维护和演进时。自建的真实成本往往被低估：初始开发只是冰山一角，长期的维护/升级/人才招聘/技术债偿还才是大头。在决定 Build 之前，需要回答：「我们 5 年后还愿意维护这个系统吗？」","Buy（购买/SaaS）：当这个能力是「表格争杀」（Table Stakes，没有会输，有了不加分），且市场有成熟方案时。Buy 的隐患是供应商锁定（Vendor Lock-in）——越是核心系统，越需要考虑如果供应商涨价/停止支持/被收购时的退出路径。抽象层（Adapter Pattern）是降低锁定风险的工程手段，但有抽象维护成本。","Partner（合作/集成）：当能力需要但建立专业知识壁垒太高（监管/合规/金融特定领域），或规模经济要求超出自身体量时。Partner 关系的管理是独立的能力——合同条款/SLA 谈判/供应商绩效管理都需要专门的精力。外包（一种 Partner 模式）在金融科技里的风险：核心知识流向外部，人员流动带走系统理解，监管合规责任无法外包。"],"img_key":"build_buy_partner","img_link":"Build vs Buy","img_title":"https://en.wikipedia.org/wiki/Make_or_buy_decision"}],"res":[{"tp":"书籍","tc":"b-book","t":"Technology Strategy Patterns — Eben Hewitt","d":"技术战略的系统方法，Wardley Maps，架构即战略","u":"https://www.oreilly.com/library/view/technology-strategy-patterns/9781492040866/","lv":"mid","s":"oreilly.com"},{"tp":"博客","tc":"b-blog","t":"Wardley Maps — Simon Wardley","d":"技术能力演进可视化工具，免费在线书，战略规划实用框架","u":"https://medium.com/wardleymaps","lv":"mid","s":"medium.com"}]},{"id":"org_design","phase":"组织与文化","title":"组织设计 · Conway 定律 · 无权力影响","color":"#0f766e","bg":"#F0FDFA","intro":"组织结构决定系统架构，这不是比喻，是工程现实。理解 Conway 定律、Team Topologies 和无权力影响力，是在大型组织里推动技术变革的基础工具箱。","intro_lines":["▸ <strong>Conway 定律</strong> — 组织沟通结构如何映射为系统架构，逆向利用的方法","▸ <strong>Team Topologies</strong> — 四种团队类型和三种交互模式，用团队拓扑驱动架构","▸ <strong>Influence without Authority</strong> — 在矩阵组织中推动事情的实际方法","▸ <strong>变革管理</strong> — Kotter 8 步，为什么技术变革失败往往不是技术原因"],"notes":[{"h":"Conway 定律：组织即架构","pts":["Conway 定律（1968）：「设计系统的组织，其产出的设计等价于组织内的沟通结构」。工程实践含义：如果想要微服务架构，但团队是大前台+大后台的单体组织，技术架构会持续退化回单体（因为跨服务修改需要跨团队协调，成本太高，工程师会找捷径绕过边界）。反向应用（Inverse Conway Maneuver）：刻意设计团队结构来驱动期望的架构演进——先调整团队边界，让组织结构和架构边界对齐，架构自然向目标状态收敛。","Team Topologies（Matthew Skelton & Manuel Pais，2019）提供了更系统的团队设计框架：四种团队类型——Stream-aligned Team（直接对齐业务价值流，最常见）、Platform Team（为其他团队提供内部产品）、Enabling Team（帮助其他团队获得新能力，临时性）、Complicated Subsystem Team（处理高度专业化的子系统）。三种交互模式——Collaboration（紧密合作，适合探索期）、X-as-a-Service（服务化接口，适合稳定期）、Facilitating（使能辅导）。团队拓扑的目标是最小化认知负荷（Cognitive Load）——每个团队对需要了解的系统范围有清晰的边界。"],"img_key":"conway","img_link":"Conway's Law","img_title":"https://en.wikipedia.org/wiki/Conway%27s_law"},{"h":"Influence without Authority：矩阵组织的推动力","pts":["大型金融机构的矩阵组织里，大量工作需要协调不在汇报链里的团队（DevOps/Security/Compliance/其他 BU）。纯靠职位权力（Positional Power）不够，纯靠个人关系不稳定。有效的方式是激励对齐：把你的目标和对方的激励连接起来，让对方看到「这件事对我也重要」，而不是「我在帮你做事」。","实用手段：① 提前让 stakeholder 参与定义问题（共同发现问题比带着方案找人签字有效得多）；② 用数据和试点结果而非理论（先做一个小范围验证，用实际结果说话）；③ 找到组织里的桥梁人物（被双方信任的第三方）；④ 把「不行动」的成本显式化（不是威胁，是帮对方看到不决策的风险）。Joseph Grenny 的《Crucial Conversations》是处理高风险对话的工具书，Daniel Pink 的《To Sell Is Human》讲的是非销售场景的说服框架。","变革管理的失败清单（按频率排列）：① 没有建立足够的紧迫感（现状的代价没有被量化和可视化）；② 推进者低估了学习成本（新方式需要团队付出真实时间）；③ 关键反对者没有被处理（少数有影响力的人的消极态度快速扩散）；④ 缺乏早期可见的小胜利（变革太慢导致动力衰减）。Kotter 8 步框架（建立紧迫感→引导联盟→战略愿景→沟通愿景→消除障碍→短期胜利→乘胜追击→固化文化）是大型组织变革的经典参考。"],"img_key":"influence","img_link":"Influence without Authority","img_title":"https://www.amazon.com/Influence-Without-Authority-Allan-Cohen/dp/0471269778"}],"res":[{"tp":"书籍","tc":"b-book","t":"Team Topologies — Skelton & Pais","d":"用团队拓扑驱动架构，四种团队类型和三种交互模式","u":"https://teamtopologies.com/","lv":"mid","s":"teamtopologies.com"},{"tp":"书籍","tc":"b-book","t":"Leading Change — John Kotter","d":"变革管理经典，8 步框架，大型组织变革实操","u":"https://www.amazon.com/Leading-Change-John-P-Kotter/dp/1422186431","lv":"mid","s":"amazon.com"},{"tp":"书籍","tc":"b-book","t":"Crucial Conversations — Grenny et al.","d":"高风险对话的框架，说服与对齐的实操工具","u":"https://cruciallearning.com/crucial-conversations-book/","lv":"mid","s":"cruciallearning.com"}]},{"id":"eng_excellence","phase":"工程卓越","title":"工程卓越 · DORA Metrics · 技术债 · 平台思维","color":"#b45309","bg":"#FEF3C7","intro":"工程卓越不是「写出好代码」，而是建立让整个团队持续产出高质量系统的环境和流程。DORA Metrics、Platform Engineering 和技术债管理是衡量和提升工程卓越的核心框架。","intro_lines":["▸ <strong>DORA Metrics</strong> — 四个指标衡量软件交付能力，Elite/High/Medium/Low 分级","▸ <strong>技术债的本质与管理</strong> — Ward Cunningham 的原始定义，债务象限，战略处理方式","▸ <strong>平台工程</strong> — Internal Developer Platform，减少认知负荷，Golden Path","▸ <strong>工程文化建设</strong> — Psychological Safety，Blameless Postmortem，学习型组织"],"notes":[{"h":"DORA Metrics：衡量工程交付能力","pts":["DORA（DevOps Research and Assessment）的四个核心指标：① Deployment Frequency（部署频率，多久部署一次）；② Lead Time for Changes（从代码提交到生产的时间）；③ Mean Time to Restore（MTTR，故障恢复时间）；④ Change Failure Rate（变更导致故障的比例）。Elite 级别的标准（2023）：每日多次部署、< 1 小时 Lead Time、< 1 小时 MTTR、< 5% 失败率。这四个指标彼此相互验证——不能用降低部署频率来改善 Change Failure Rate（那是作弊），真正的改善需要提升测试覆盖率、部署流水线和监控能力。","SPACE 框架（2021，GitHub Research）是 DORA 的扩展：Satisfaction（开发者满意度）、Performance（系统性能）、Activity（工作量）、Communication（沟通协作）、Efficiency（流程效率）。SPACE 特别强调：不能只用单一维度（如产出量）衡量工程效率，需要多维度综合评估。开发者满意度和长期生产力有强相关性——这是 Developer Experience（DevEx）成为独立话题的背景。"],"img_key":"dora","img_link":"DORA Metrics","img_title":"https://dora.dev/"},{"h":"技术债的本质与战略处理","pts":["Ward Cunningham（技术债概念的提出者）的原始定义：技术债是「在当前信息不完整的情况下，为了快速推进而做出的次优设计选择，期望未来有更多信息时重构」——这是合理的业务决策，不是工程失败。被滥用的版本：把所有写得不好的代码都叫「技术债」，混淆了债务（有意识的取舍）和邋遢（无意识的质量问题）。Martin Fowler 的技术债象限：横轴（有意 vs 无意）× 纵轴（谨慎 vs 鲁莽），只有「有意谨慎的债务」才是真正的技术债。","技术债的战略处理：不是「有时间就还」（永远没有时间），而是把偿还成本计入功能开发的估算（「做这个功能需要先还这部分债，否则速度太慢」）。实用方法：① Boy Scout Rule（每次修改代码时，顺手改善附近的坏代码）；② 专项 Sprint（每个 Sprint 分配 15-20% 时间给技术改善）；③ 可见化（用 Architecture Decision Records 记录有意为之的债务，设定预期偿还时间）。技术债不还的真实代价：Developer Cognitive Load 上升，开发速度指数级下降，最终形成「技术债陷阱」（还债的代价大于重写）。"],"img_key":"tech_debt","img_link":"Technical Debt","img_title":"https://en.wikipedia.org/wiki/Technical_debt"},{"h":"平台工程：内部产品思维","pts":["Platform Engineering 的核心思想：把基础设施和工具平台当作内部产品来设计，用「减少开发者认知负荷」作为首要指标。Golden Path（黄金路径）是平台的核心价值交付：为最常见的开发场景提供一条「默认正确」的路径（CI/CD 模板、服务框架、监控接入、合规检查），让工程师在不需要理解所有底层细节的情况下也能做出正确的工程决策。","Internal Developer Platform（IDP）和 Backstage（Spotify 开源）：IDP 是开发者自助获取基础设施能力的入口，包括服务目录（所有微服务的可视化）、自助部署、可观测性接入、文档。Backstage 是目前最广泛采用的 IDP 框架，CNCF 孵化项目。平台工程 vs DevOps：DevOps 强调文化变革（Dev 和 Ops 共同负责），平台工程强调产品化基础设施（用产品思维降低 Dev 的运维负担）。两者不矛盾，平台工程是 DevOps 文化的技术实现路径。"],"img_key":"platform_eng","img_link":"Platform Engineering","img_title":"https://platformengineering.org/"}],"res":[{"tp":"书籍","tc":"b-book","t":"Accelerate — Forsgren, Humble & Kim","d":"DORA 研究成果，科学证明了什么工程实践提升交付能力","u":"https://itrevolution.com/accelerate-book/","lv":"mid","s":"itrevolution.com"},{"tp":"博客","tc":"b-blog","t":"Martin Fowler：技术债象限","d":"技术债的精确定义，有意/无意 × 谨慎/鲁莽 的四象限","u":"https://martinfowler.com/bliki/TechnicalDebtQuadrant.html","lv":"entry","s":"martinfowler.com"},{"tp":"文档","tc":"b-docs","t":"Backstage.io — Spotify 平台工程框架","d":"Internal Developer Platform 的开源实现，服务目录/自助部署","u":"https://backstage.io/","lv":"mid","s":"backstage.io"}]},{"id":"delivery","phase":"工程卓越","title":"高压交付 · 风险管理 · 监管项目","color":"#b45309","bg":"#FEF3C7","intro":"在监管驱动、高曝光、失败代价极高的项目里，工程交付不只是技术问题，而是风险管理、stakeholder 对齐和组织协调的综合挑战。这类项目是最能区分「技术管理者」和「工程领导者」的场景。","intro_lines":["▸ <strong>监管项目的特殊性</strong> — Consent Order/MAS/FCA 类项目的工程约束和交付逻辑","▸ <strong>多 Workstream 协调</strong> — 依赖管理、关键路径分析、风险可视化","▸ <strong>零中断交付策略</strong> — Feature Flag、蓝绿部署、Strangler Fig、渐进式迁移","▸ <strong>不确定性下的决策框架</strong> — Two-way Door vs One-way Door，决策可逆性"],"notes":[{"h":"监管驱动项目的工程管理特殊性","pts":["监管项目（Consent Order/MAS Notice/FCA Requirement）与普通商业项目的根本区别：① 截止日期不可协商（监管期限是硬约束，不是商业判断）；② 失败的代价不对称（监管处罚/声誉损失远超功能晚交付的代价）；③ 文档和可审计性是一等公民（不只是做到，还要能证明做到了）；④ 范围蔓延的来源不同（监管解读可能在执行过程中变化，需要频繁和合规/法务对齐）。","监管项目的工程策略：① 尽早建立可运行的最小版本（Proof of Compliance），用来和监管方确认理解一致，而不是完成后才发现方向偏差；② 把合规需求分解为可测试的技术要求（把「数据质量需要提升」翻译成「XX 字段的完整率需要达到 99.5%，通过 N 个自动化测试验证」）；③ 为每个需求建立可追溯的证据链（代码 → 测试 → CI 报告 → 合规报告），支持审计要求。"]},{"h":"零中断交付与渐进式迁移策略","pts":["Feature Flag（功能开关）是高风险场景下的核心工程实践：把功能发布和代码部署解耦，允许在生产环境对特定用户/百分比流量开启新功能，出现问题立即关闭而不需要回滚代码。LaunchDarkly 和 Unleash 是常见的企业级 Feature Flag 服务。Feature Flag 的技术债风险：长期存在的 flag 会增加代码复杂度（每个 flag 相当于两个代码路径），需要设定明确的过期日期。","Strangler Fig Pattern（Strangler 绞杀树模式，Martin Fowler）：逐步用新系统替代旧系统，而不是一次性重写。新功能只在新系统里实现，旧功能在新系统稳定后逐步迁移，旧系统像被绞杀树逐渐覆盖的大树一样慢慢萎缩。关键成功因素：在旧系统前放一个路由层（Facade），控制流量在新旧系统间的分发。「Big Bang 重写」失败率极高（Netscape/Basecamp 的教训），Strangler Fig 是处理遗留系统的工程金标准。"],"img_key":"strangler_fig","img_link":"Strangler Fig Pattern","img_title":"https://martinfowler.com/bliki/StranglerFigApplication.html"},{"h":"不确定性下的决策框架","pts":["Jeff Bezos 的 Two-way Door vs One-way Door 框架：One-way Door 是不可逆的决策（一旦做出很难撤回，如架构选型/供应商锁定/人员裁减），需要慎重、信息充分后再做；Two-way Door 是可逆的决策（试错成本低，可以快速迭代），应该快速做、授权团队自主决策。工程领导者的重要技能是区分这两类决策，避免把 Two-way Door 按 One-way Door 处理（过度分析导致行动迟缓），或把 One-way Door 按 Two-way Door 处理（轻率做出难以逆转的决策）。","OODA Loop（Observe-Orient-Decide-Act，Boyd）是高不确定性环境下的决策节奏框架，来自军事战略，在快速变化的技术和商业环境里有直接应用：快速观察现实（而非依赖预先计划），更新对局势的理解，做出当前信息下最好的决策，执行，然后立刻回到观察。OODA Loop 越快，在竞争中越有优势——这是为什么小团队快速迭代有时能击败大组织按计划执行的底层逻辑。"],"img_key":"two_door","img_link":"Two-way Door Decision","img_title":"https://www.amazon.com/Invent-Wander-Collected-Writings-Introduction/dp/1647820715"}],"res":[{"tp":"书籍","tc":"b-book","t":"Accelerate — Forsgren, Humble & Kim","d":"持续交付实践的科学依据，Feature Flag/CI/CD 的量化价值","u":"https://itrevolution.com/accelerate-book/","lv":"mid","s":"itrevolution.com"},{"tp":"博客","tc":"b-blog","t":"Strangler Fig Application — Martin Fowler","d":"遗留系统迁移模式的权威定义和实践指南","u":"https://martinfowler.com/bliki/StranglerFigApplication.html","lv":"entry","s":"martinfowler.com"}]},{"id":"people","phase":"人才与文化","title":"跨国团队 · 人才发展 · 工程文化","color":"#065f46","bg":"#ECFDF5","intro":"工程领导力最终体现在人的身上。跨文化团队管理、人才培养体系和心理安全文化建设，是高效工程组织的软性基础设施——它们是不可见的，但决定了硬性指标（DORA/交付速度/质量）是否可持续。","intro_lines":["▸ <strong>跨文化工程团队</strong> — Hofstede 文化维度，分布式协作的机制设计，时区与文化差异","▸ <strong>人才发展模型</strong> — 技术梯队设计，Mentoring vs Coaching vs Sponsoring 的区别","▸ <strong>心理安全与高效团队</strong> — Project Aristotle，Blameless Postmortem，错误文化","▸ <strong>工程师的职业发展</strong> — IC vs Management Track，晋升的判断标准"],"notes":[{"h":"跨文化工程团队的管理","pts":["Hofstede 的文化维度框架（6 个维度：权力距离/个人主义-集体主义/不确定性回避/长期-短期导向/放纵-约束/男性化-女性化）提供了理解跨文化行为差异的系统框架。对工程管理最相关的两个维度：① 权力距离（Power Distance）——高权力距离文化（如中国/印度/马来西亚）的团队成员不倾向于在会议上主动质疑上级决策，需要建立明确的「挑战机制」（One-on-One/匿名反馈/专门的 Devil's Advocate 角色）；② 不确定性回避（Uncertainty Avoidance）——高不确定性回避文化偏好详细的流程和规范，低不确定性回避文化更容易接受「边做边调整」的 Agile 方式。","分布式团队的机制设计：① 异步优先（Async-first）——把能异步处理的事情文档化，减少强依赖实时会议；② 写作文化（Writing Culture）——Decisions/ADRs/Meeting Notes 全部书面化，减少跨时区的信息不对称；③ 明确的工作协议（Team Working Agreement）——响应时间期望、可用时间窗口、会议规范，显式约定而非隐性期望；④ 意义感建设——分布式团队成员更难感受到整体项目的价值，领导者需要更主动地连接个人工作和整体目标。"],"img_key":"hofstede","img_link":"Hofstede's Cultural Dimensions","img_title":"https://en.wikipedia.org/wiki/Hofstede%27s_cultural_dimensions_theory"},{"h":"人才发展：Mentoring vs Coaching vs Sponsoring","pts":["三种人才发展方式的定义和区别：Mentoring（导师制）——有经验者向经验较少者分享知识和经历，关系通常是长期的，导师是主动给建议的；Coaching（教练）——通过提问帮助被辅导者自己找到答案，教练通常不需要领域专业知识，重点是帮助对方思考清楚；Sponsoring（赞助/倡导）——在会议室里为某人的晋升/机会主动发声，是最高价值的支持形式（特别是在被支持者不在场的时候）。研究（Catalyst/Center for Talent Innovation）显示，Sponsoring 是女性和少数族裔突破职业天花板最关键的因素，但是最被忽视的领导力行为。","技术梯队设计：明确的技术职级（Junior/Senior/Staff/Principal/Distinguished）需要配套清晰的「晋升标准」和「在这个级别的工作示例」，否则晋升决策依赖个人感觉，导致偏见和不一致。好的晋升标准：① 描述的是「在这个级别通常表现出的行为」而非「你需要做到才能晋升的清单」；② 区分「需要一直做到」和「偶尔展示就够了」的能力；③ 晋升到下一级不是把当前级别的事情做到极致，而是已经在做下一级的事情。"]},{"h":"心理安全：高效团队的基础","pts":["Google 的 Project Aristotle（2015）研究了 180 个团队，发现最能预测团队效能的单一因素是心理安全（Psychological Safety）——团队成员相信在这个团队里提出想法、提问、承认错误不会受到惩罚。高心理安全的团队：更愿意承认错误（更快学习）、更愿意提出创新想法（更多创新）、更愿意寻求帮助（更高效）。Amy Edmondson 是心理安全研究的先驱，她的框架：心理安全 + 高标准 = 学习区（最理想），缺少任一 = 舒适区或焦虑区。","Blameless Postmortem（无责事后复盘）是心理安全在工程实践中的具体体现：当系统故障发生时，复盘的目标是「理解系统性因素导致了什么，如何防止复发」，而不是「谁犯了错误」。Google SRE 和 Etsy 的工程文化将其标准化：5 Why 分析、时间线重建、Action Items、公开分享复盘报告。关键原则：人是系统的一部分，人会犯错是系统设计的输入，而不是个人失职。"],"img_key":"psych_safety","img_link":"Psychological Safety","img_title":"https://en.wikipedia.org/wiki/Psychological_safety"}],"res":[{"tp":"书籍","tc":"b-book","t":"The Culture Map — Erin Meyer","d":"跨文化管理的实践框架，8 个维度理解文化差异对工作的影响","u":"https://www.erinmeyer.com/book/","lv":"mid","s":"erinmeyer.com"},{"tp":"书籍","tc":"b-book","t":"The Fearless Organization — Amy Edmondson","d":"心理安全的研究基础和实践框架，Project Aristotle 背后","u":"https://fearlessorganization.com/","lv":"mid","s":"fearlessorganization.com"},{"tp":"报告","tc":"b-blog","t":"Google Project Aristotle 报告","d":"180 个团队的研究，心理安全是高效团队的核心因素","u":"https://rework.withgoogle.com/guides/understanding-team-effectiveness","lv":"entry","s":"rework.withgoogle.com"}]},{"id":"communication","phase":"人才与文化","title":"向上管理 · Stakeholder · 工程叙事","color":"#065f46","bg":"#ECFDF5","intro":"工程领导力有一半是技术判断，另一半是沟通和影响力。向上管理、Executive Presence 和工程叙事，是很多优秀工程师晋升到 Director 级别后需要系统性补课的能力。","intro_lines":["▸ <strong>向上管理</strong> — 和 CTO/Senior MD 工作的实际方法，期望对齐，信任建立","▸ <strong>Executive Presence</strong> — 在高层会议中的表现，简洁清晰的表达，处理困难问题","▸ <strong>工程叙事</strong> — 把技术工作的价值翻译为业务语言，从「做了什么」到「创造了什么价值」","▸ <strong>VJCI 叙事框架</strong> — Director 级别面试和汇报的叙事结构"],"notes":[{"h":"向上管理：和 Senior Leadership 有效工作","pts":["向上管理的本质是「管理期望和信息流」：确保你的上级随时有足够的信息来做决策，不需要你时能放心，需要你时能找到你。具体实践：① 定期书面更新（Weekly Written Update，Jeff Bezos 式的 6-pager 备忘录）替代信息零散的口头汇报；② 主动暴露风险（早期说「这个有风险，我的计划是 X」，比晚期说「我失败了」好无数倍）；③ 带着选项而非问题去找上级（「我面对 A/B 两个选择，我倾向 A，原因是 X/Y/Z，你怎么看」，比「我不知道怎么办」更显成熟）。","建立信任的飞轮：① 承诺一件事，做到；② 在做到之前主动更新进展；③ 如果遇到障碍，提前说而不是拖到截止日期。信任不是靠完美表现建立的，而是靠可预测性建立的——上级需要的是「我知道他会怎么反应」，而不是「他每次都能做出最优决策」。Kim Scott 的 Radical Candor 框架：在向上管理中保持「直接挑战 + 真实关心」，既不和稀泥（Ruinous Empathy），也不只批评（Obnoxious Aggression）。"],"img_key":"managing_up","img_link":"Managing Up","img_title":"https://en.wikipedia.org/wiki/Managing_up_and_managing_down"},{"h":"工程叙事：把技术价值翻译为业务价值","pts":["Director 级别向 Board/Executive Committee 汇报时，技术细节是障碍而非价值。有效的工程叙事结构：① 情境（Context）——为什么这件事现在重要，背景是什么；② 判断（Judgment）——面对几个选项，我们的核心判断依据是什么，我们放弃了什么；③ 行动（Action）——我们做了什么，由谁来做；④ 影响（Impact）——结果是什么，对业务/客户/风险的影响是什么，用数字表达。注意：这是 CJAI 框架，不是 STAR——核心差异在「判断」这一层，Director 级别的汇报需要展示判断力，而不只是描述行动。","技术 OKR 的叙事化：把「完成 N 个 API 端点」改写为「支持 X 产品能够在 Y 市场上线，预计带来 Z 收入」；把「减少 30% 的 Bug 数量」改写为「减少因技术问题导致的客户投诉，支持净推荐分提升目标」；把「升级基础设施」改写为「降低系统故障风险，避免潜在的监管处罚和声誉损失」。每一个技术工作都能找到它对业务目标的贡献路径，找不到的工作值得质疑是否应该做。"]}],"res":[{"tp":"书籍","tc":"b-book","t":"Radical Candor — Kim Scott","d":"直接反馈与真实关心，向上和向下管理的沟通框架","u":"https://www.radicalcandor.com/","lv":"entry","s":"radicalcandor.com"},{"tp":"书籍","tc":"b-book","t":"Thinking in Systems — Donella Meadows","d":"系统思维框架，理解复杂组织和技术系统的行为模式","u":"https://www.chelseagreen.com/product/thinking-in-systems/","lv":"mid","s":"chelseagreen.com"}]},{"id":"career_dev","phase":"职业发展","title":"职业发展框架 · Director 路径 · 个人品牌","color":"#7c3aed","bg":"#F5F3FF","intro":"职业发展不是等待机会，而是系统性地构建能力、可信度和可见度。从 Tech Lead 到 Director 的跨越，需要在三个维度上同时发力：能力（Competence）、人脉（Network）、叙事（Narrative）。","intro_lines":["▸ <strong>Director 晋升的核心维度</strong> — 能力/可信度/可见度的三角，哪个往往是瓶颈","▸ <strong>个人技术品牌</strong> — 写作/演讲/开源/社区，在组织外建立影响力","▸ <strong>学习策略</strong> — T 型人才 vs π 型人才，如何在快速变化的技术环境里保持相关性","▸ <strong>面试与定位</strong> — Director 级别面试的评估维度，差异化定位策略"],"notes":[{"h":"从 Tech Lead 到 Director：三角模型","pts":["晋升到 Director 级别需要在三个维度同时达标：Competence（能力，能否做 Director 的工作）、Credibility（可信度，周围的人是否相信你能做 Director 的工作）、Visibility（可见度，决策者是否知道你能做 Director 的工作）。技术背景的晋升候选人往往 Competence 足够，但 Credibility 和 Visibility 不够——因为技术工作者倾向于「做好事情自然会被发现」，而实际上需要主动管理叙事和曝光度。","晋升的时机判断：Lara Hogan（前 Etsy/Facebook 工程总监）的建议——当你开始做下一级别的工作，且持续了足够长时间（通常 6-12 个月），再提出晋升。等待别人来提拔是被动策略；但在还没有持续展示下一级能力时强行要求晋升，容易损害关系。「晋升谈话」的正确姿势：「我想往 Director 发展，我需要在哪些维度上成长，你愿意帮我规划吗？」而不是「我觉得我已经够资格了」。"]},{"h":"学习策略：在快速变化的技术环境里保持相关性","pts":["T 型人才 vs π 型人才：T 型是一个广泛的知识面（横线）加一个深度专业（竖线）；π 型是两个深度专业加广泛的知识面，适合技术+管理双轨的工程领导者。AI 时代对工程领导力的影响：① 单纯技术执行的价值下降（AI 可以替代部分编码和架构设计）；② 技术判断力和业务整合能力的价值上升（AI 工具的有效使用需要人的判断）；③ 人才管理和组织能力的价值不变（AI 不能管理人和文化）。这意味着工程 Director 的学习重心应该是：技术趋势判断（了解方向，不必深入实现）+ 业务领域知识 + 组织领导力。","结构化学习 vs 项目式学习：对高阶工程领导者，「在做中学」（Learning by Doing）的效率远高于课程学习。最有效的学习路径：① 主动承担超出当前能力的 Stretch Assignment；② 向有互补能力的人请教（不只是技术멘토，也包括业务멘토和职业教练）；③ 定期复盘（每季度写一篇给自己的「工作反思」，识别模式和盲点）；④ 向外输出（写技术博客/做分享，是最快发现自己理解盲区的方式）。"]}],"res":[{"tp":"书籍","tc":"b-book","t":"An Elegant Puzzle — Will Larson","d":"工程管理的系统性框架，组织设计/人才/流程的实践智慧","u":"https://press.stripe.com/an-elegant-puzzle","lv":"mid","s":"press.stripe.com"},{"tp":"博客","tc":"b-blog","t":"Lara Hogan 博客 — 工程领导力","d":"晋升/反馈/1:1/Engineering Management 的实践文章","u":"https://larahogan.me/blog/","lv":"mid","s":"larahogan.me"},{"tp":"书籍","tc":"b-book","t":"Multipliers — Liz Wiseman","d":"放大者 vs 消耗者领导风格，如何让团队超越自己","u":"https://thewisemancollective.com/books/multipliers/","lv":"mid","s":"thewisemancollective.com"}]}];
+const tcMap={'b-book':'书籍','b-blog':'文章/博客','b-paper':'论文','b-framework':'框架'};
+
+function render(){
+  const cont=document.getElementById('cont'),nav=document.getElementById('nav');
+  let curP='',tot=0;
+  D.forEach(s=>{
+    tot+=s.res.length;
+    // sidebar
+    if(s.phase!==curP){
+      curP=s.phase;
+      const lbl=document.createElement('div');lbl.className='nlbl';lbl.textContent=s.phase;nav.appendChild(lbl);
+    }
+    const a=document.createElement('a');a.className='nl';a.dataset.sec=s.id;a.onclick=()=>goto(s.id);
+    a.innerHTML=`<span class="ndot" style="background:${s.color}"></span>${s.title}`;
+    nav.appendChild(a);
+
+    // section
+    const div=document.createElement('div');div.className='sec';div.id=s.id;
+    const searchText=[s.title,s.intro,
+      ...(s.anchors||[]),
+      ...s.notes.flatMap(n=>[n.h,n.fw,...n.pts]),
+      ...s.res.map(r=>r.t+' '+r.d)
+    ].join(' ').toLowerCase();
+    div.dataset.search=searchText;
+
+    const tid=`t-${s.id}`;
+    const anchorsHTML=s.anchors&&s.anchors.length?`<div class="anchors"><div class="anchor-lbl">已知事实基础</div>${s.anchors.map(a=>`<div class="anchor-item">${a}</div>`).join('')}</div>`:'';
+
+    let notesHTML=`<div class="tab-pane active" id="${tid}-notes">`;
+    s.notes.forEach((n,ni)=>{
+      const _diag=n.img_key?document.getElementById('diag_'+n.img_key):null;
+      const _svg=_diag?_diag.innerHTML:'';
+      const _link=n.img_key&&n.img_link?`<a class="diag-link" href="${n.img_link}" target="_blank" rel="noopener">↗ ${n.img_title||'参考资料'}</a>`:'';
+      const _img=_svg?`<figure class="note-fig">${_svg}${_link}</figure>`:(_link?`<p>${_link}</p>`:'')
+      
+      const aid=`a-${s.id}-${ni}`;
+      const fwHtml=n.fw?`<div class="acc-fw">${n.fw}</div>`:'';
+      notesHTML+=`<div class="acc" id="nh-${s.id}-${ni}">
+<div class="acc-hdr" onclick="toggleAcc('${aid}',this)">
+  <span class="acc-arrow">▶</span>
+  <div class="acc-col"><div class="acc-htxt">${n.h}</div>${fwHtml}</div>
+</div>
+<div class="acc-body" id="${aid}">${_img}
+  <div class="pts-wrap">${n.pts.map(p=>`<div class="pt">${p}</div>`).join('')}</div>
+</div></div>`;
+    });
+    notesHTML+='</div>';
+
+    let resHTML=`<div class="tab-pane" id="${tid}-res"><div class="res-grid">`;
+    s.res.forEach(r=>{
+      const tcLabel=tcMap[r.tc]||r.tc;
+      resHTML+=`<div class="card">
+<div class="ctop"><span class="badge ${r.tc}">${tcLabel}</span>
+  <div class="ctit"><a href="${r.u}" target="_blank" rel="noopener">${r.t}</a></div>
+</div>
+<div class="cdesc">${r.d}</div>
+<a class="curl" href="${r.u}" target="_blank" rel="noopener">${r.u.replace(/https?:\/\//,'').split('/')[0]}</a>
+</div>`;
+    });
+    resHTML+='</div></div>';
+
+    div.innerHTML=`
+<div class="sch">
+  <span class="sdot" style="background:${s.color}"></span>
+  <span class="stit">${s.title}</span>
+</div>
+<div class="intro-band">${s.intro}</div>
+${anchorsHTML}
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('${tid}','notes',this)">🔍 深度探索</button>
+  <button class="tab-btn" onclick="switchTab('${tid}','res',this)">📚 参考资料 (${s.res.length})</button>
+</div>
+${notesHTML}${resHTML}`;
+    cont.appendChild(div);
+  });
+  document.getElementById('stag').textContent=`${D.length} 个维度 · ${tot} 个参考资料`;
+}
+
+function switchTab(tid,which,btn){
+  document.querySelectorAll(`#${tid}-notes,#${tid}-res`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${tid}-${which}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toggleAcc(id,hdr){
+  const body=document.getElementById(id),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  hdr.classList.toggle('open',!isOpen);
+}
+
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();
+  let m=0;
+  document.querySelectorAll('.sec').forEach(sec=>{
+    if(!q){sec.classList.remove('hidden-sec');m++;return;}
+    const hit=(sec.dataset.search||'').includes(q);
+    sec.classList.toggle('hidden-sec',!hit);
+    if(hit)m++;
+  });
+  document.getElementById('nr').style.display=m===0&&q?'block':'none';
+  document.getElementById('stag').textContent=q?`找到 ${m} 个维度`:`${D.length} 个维度`;
+});
+
+const obs={observe:()=>{}};
+function detectSection(){
+  const secs=[...document.querySelectorAll('.sec[id]')];
+  if(!secs.length)return;
+  const threshold=100;
+  let current=secs[0];
+  for(const s of secs){
+    const top=s.getBoundingClientRect().top;
+    if(top<=threshold)current=s;
+    else break;
+  }
+  const id=current.id;
+  document.querySelectorAll('.nl[data-sec]').forEach(l=>l.classList.toggle('active',l.dataset.sec===id));
+  updateGuide(id);
+}
+window.addEventListener('scroll',detectSection,{passive:true});
+
+window.addEventListener('scroll',()=>document.getElementById('btt').classList.toggle('show',scrollY>400));
+render();
+buildToc();
+setTimeout(detectSection,100);
+function buildToc(){
+  const rail=document.getElementById('toc-rail');
+  if(rail&&!document.getElementById('resize-handle')){
+    rail.innerHTML='<div class="resize-handle" id="resize-handle"></div><div class="guide-content" id="guide-content"></div>';
+    initResize();
+  }
+  updateGuide(D[0].id);
+}
+function updateGuide(id){
+  const rail=document.getElementById('guide-content')||document.getElementById('toc-rail');
+  if(!rail)return;
+  const s=D.find(x=>x.id===id);
+  if(!s)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const items=s.intro_lines&&s.intro_lines.length?s.intro_lines
+    :s.notes?s.notes.map(n=>n.h):[];
+  if(!items.length){rail.innerHTML='';return;}
+  let h='<span class="guide-head">本节要点</span>';
+  items.forEach((line,ni)=>{
+    const key='kb_'+fk+'_'+id+'_'+ni;
+    const done=localStorage.getItem(key)==='1';
+    h+=`<div class="guide-item${done?' done':''}" id="gi-${id}-${ni}">`;
+    h+=`<div class="guide-check" onclick="toggleDone('${fk}','${id}',${ni})">✓</div>`;
+    h+=`<div class="guide-text" onclick="gotoEl('nh-${id}-${ni}')">${line}</div>`;
+    h+='</div>';
+  });
+  rail.innerHTML=h;
+}
+function toggleDone(fk,sid,ni){
+  const key='kb_'+fk+'_'+sid+'_'+ni;
+  const done=localStorage.getItem(key)==='1';
+  done?localStorage.removeItem(key):localStorage.setItem(key,'1');
+  const el=document.getElementById('gi-'+sid+'-'+ni);
+  if(el)el.classList.toggle('done',!done);
+}
+function gotoEl(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function initResize(){
+  const handle=document.getElementById('resize-handle');
+  if(!handle)return;
+  const fk=location.pathname.split('/').pop().replace('.html','');
+  const stored=localStorage.getItem('toc-w-'+fk);
+  if(stored)setTocWidth(parseInt(stored));
+  let sx,sw;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    sx=e.clientX;
+    sw=document.getElementById('toc-rail').getBoundingClientRect().width;
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',endDrag);
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    handle.classList.add('dragging');
+  });
+  function onDrag(e){
+    setTocWidth(Math.max(160,Math.min(640,sw+(sx-e.clientX))));
+  }
+  function endDrag(){
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',endDrag);
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+    handle.classList.remove('dragging');
+    localStorage.setItem('toc-w-'+fk,
+      Math.round(document.getElementById('toc-rail').getBoundingClientRect().width));
+  }
+}
+function setTocWidth(w){
+  const lay=document.querySelector('.lay');
+  if(!lay)return;
+  const cols=window.getComputedStyle(lay).gridTemplateColumns.split(' ');
+  lay.style.setProperty('grid-template-columns',cols[0]+' 1fr '+w+'px','important');
+}
+</script>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style><a class="home-btn" href="index.html">← 主页</a>
+</body>
+</html>
