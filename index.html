@@ -13,7 +13,6 @@
 
 <div class="booklet">
 
-  <!-- 顶栏 -->
   <div class="booklet__bar">
     <a href="index.html" class="booklet__brand" aria-label="wiki tech home">
       <span>wiki</span><span class="dot">·</span><span class="mark">tech</span>
@@ -25,7 +24,6 @@
     </div>
   </div>
 
-  <!-- 板块卡片网格 (1 板块 = 1 卡片，内含子条目；按顺序，自动尺寸) -->
   <section class="sections" aria-label="板块">
 
     <article class="scard" style="--card-color: var(--pip-theory)">
@@ -37,10 +35,8 @@
       <div class="scard__entries">
         <a class="scard__entry" href="foundations.html">
           <span class="scard__title">AI / ML 基础体系</span>
-          <span class="scard__sub">数学直觉 · 传统 ML · 深度学习演进 · 选型框架</span>
         </a>
       </div>
-      <p class="scard__motto">数学是直觉，模型是语言。<br>理解本质才能正确使用。</p>
     </article>
 
     <article class="scard" style="--card-color: var(--pip-systems)">
@@ -52,10 +48,8 @@
       <div class="scard__entries">
         <a class="scard__entry" href="hpc_complete.html">
           <span class="scard__title">高性能底层 · OS · 网络 · Linux 内核</span>
-          <span class="scard__sub">sk_buff · DPDK · RDMA · eBPF · Cache · Raft</span>
         </a>
       </div>
-      <p class="scard__motto">理解硬件，才能写出真正高效的软件。</p>
     </article>
 
     <article class="scard" style="--card-color: var(--pip-engineering)">
@@ -67,18 +61,13 @@
       <div class="scard__entries">
         <a class="scard__entry" href="polyglot.html">
           <span class="scard__title">多语言工程</span>
-          <span class="scard__sub">Go · React · TypeScript · Python · Rust</span>
         </a>
         <a class="scard__entry" href="fullstack_complete.html">
           <span class="scard__title">全栈工程体系</span>
-          <span class="scard__sub">Java · Spring · K8s · Kafka · Spark / Flink · 前端</span>
         </a>
       </div>
-      <p class="scard__motto">选语言是选思维方式，选框架是选约束。</p>
     </article>
 
-    <!-- AI · LLM — 内容最多的板块，自动横跨两行 -->
-    <!-- 学习路径: 概览 → 参考架构 → 工程实战 → 工具链 → 资源 -->
     <article class="scard scard--lg" style="--card-color: var(--pip-ai)">
       <header class="scard__head">
         <span class="scard__num">04</span>
@@ -88,38 +77,29 @@
       <div class="scard__entries">
         <a class="scard__entry" href="ai_llm_complete.html">
           <span class="scard__title">AI 系统全景 · 多模态</span>
-          <span class="scard__sub">GPU · 训练 · 推理 · Transformer · Agent · RAG · 对齐</span>
         </a>
         <a class="scard__entry" href="ai-knowledge-ref.html">
           <span class="scard__title">AI 参考架构</span>
-          <span class="scard__sub">企业 AI 平台 · MCP · Spring AI · AI Gateway</span>
         </a>
         <a class="scard__entry" href="llm_interview_kb.html">
           <span class="scard__title">LLM 工程实战</span>
-          <span class="scard__sub">LangChain · LangGraph · QLoRA · vLLM · FastAPI</span>
         </a>
         <a class="scard__entry" href="rag_pipeline_langchain.html">
           <span class="scard__title">RAG Pipeline 手册</span>
-          <span class="scard__sub">切分 · 嵌入 · 检索 · 重排 · 生成 · 评估</span>
         </a>
         <a class="scard__entry" href="spring-ai-knowledge-map.html">
           <span class="scard__title">Spring AI 知识地图</span>
-          <span class="scard__sub">2026 · 模型接入 · 向量存储 · Function Calling</span>
         </a>
         <a class="scard__entry" href="ai_learning_roadmap.html">
           <span class="scard__title">AI 学习路径</span>
-          <span class="scard__sub">推荐学习顺序，按层次组织</span>
         </a>
         <a class="scard__entry" href="agentic-reading-list.html">
           <span class="scard__title">Agentic 阅读清单</span>
-          <span class="scard__sub">论文、博客与一手资料</span>
         </a>
         <a class="scard__entry" href="ai_video_guide.html">
           <span class="scard__title">AI 视频导航</span>
-          <span class="scard__sub">2025–2026 技术视频</span>
         </a>
       </div>
-      <p class="scard__motto">从调参到设计系统，AI 工程是下一个十年的基础设施。</p>
     </article>
 
     <article class="scard" style="--card-color: var(--pip-topics)">
@@ -131,18 +111,14 @@
       <div class="scard__entries">
         <a class="scard__entry" href="claude_qa_lifecycle.html">
           <span class="scard__title">Claude 请求全链路</span>
-          <span class="scard__sub">上下文 · 工具 · 子会话 · 推理过程</span>
         </a>
         <a class="scard__entry" href="memory_compact_harness.html">
           <span class="scard__title">记忆 · 压缩 · Harness</span>
-          <span class="scard__sub">长期记忆与会话压缩的运作机制</span>
         </a>
         <a class="scard__entry" href="session_erd.html">
           <span class="scard__title">会话数据模型</span>
-          <span class="scard__sub">Session ERD · 持久层关系图</span>
         </a>
       </div>
-      <p class="scard__motto">理解工具最好的方式，是拆解它。</p>
     </article>
 
     <article class="scard" style="--card-color: var(--pip-design)">
@@ -154,10 +130,8 @@
       <div class="scard__entries">
         <a class="scard__entry" href="uiux.html">
           <span class="scard__title">UI / UX 实战</span>
-          <span class="scard__sub">设计系统 · Figma · Vibe Design · 移动端</span>
         </a>
       </div>
-      <p class="scard__motto">设计的本质是决策的可见化。</p>
     </article>
 
     <article class="scard" style="--card-color: var(--pip-invest)">
@@ -169,10 +143,8 @@
       <div class="scard__entries">
         <a class="scard__entry" href="invest.html">
           <span class="scard__title">投资研究 · AI 辅助决策</span>
-          <span class="scard__sub">A 股 · 港股 · 美股 · 宏观 · 基本面 · 量化入门</span>
         </a>
       </div>
-      <p class="scard__motto">理解市场是理解人类社会最浓缩的方式。</p>
     </article>
 
     <article class="scard" style="--card-color: var(--pip-leadership)">
@@ -184,10 +156,8 @@
       <div class="scard__entries">
         <a class="scard__entry" href="career_kb.html">
           <span class="scard__title">工程领导力参考</span>
-          <span class="scard__sub">角色 · 技术战略 · 组织设计 · 工程卓越 · 人才</span>
         </a>
       </div>
-      <p class="scard__motto">技术是手段，组织是目的。</p>
     </article>
 
   </section>

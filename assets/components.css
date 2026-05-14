@@ -760,25 +760,6 @@
   letter-spacing: -0.003em;
   transition: color .12s;
 }
-.scard__sub {
-  display: block;
-  font-size: 11px;
-  color: var(--ink-3);
-  margin-top: 2px;
-  line-height: 1.4;
-}
-
-/* Section motto — fills empty space at card bottom with dashed separator */
-.scard__motto {
-  margin-top: auto;
-  padding-top: 8px;
-  border-top: 1px dashed var(--rule);
-  font-size: 11px;
-  font-style: italic;
-  color: var(--ink-4);
-  line-height: 1.4;
-  flex-shrink: 0;
-}
 
 /* ──────────────────────────────────────────────────────────────────────
    TOC (legacy fallback) — kept for sub-page article footers if needed.
