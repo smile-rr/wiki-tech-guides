@@ -319,7 +319,66 @@ pre code { padding: 0; background: none; }
   .topic-body { grid-template-rows: 1fr !important; padding: 0 20px 20px !important; }
 }
 </style>
+
+
+<!-- ── Migrated to shared template 2026-05 ── -->
+<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/components.css">
+<script src="assets/site.js" defer></script>
+<style>
+  /* Sub-page: minimal header + prose body */
+  .article-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-2);
+    margin-bottom: 36px;
+  }
+  .article-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition: color .12s;
+  }
+  .article-back:hover { color: var(--accent); }
+  .article-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--ink);
+  }
+  .article-body { max-width: 760px; }
+  .article-foot {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--ink-4);
+  }
+  .article-foot a { color: var(--accent); font-weight: 500; }
+  .article-foot a:hover { color: var(--accent-hover); }
+</style>
 </head>
+<body>
+
+<div class="booklet">
+  <div class="article-header">
+    <a class="article-back" href="index.html">← wiki · tech</a>
+    <h1>AI/LLM 深度知识参考 2026</h1>
+    <button class="theme-toggle" data-theme-toggle type="button" aria-label="切换主题"></button>
+  </div>
+
+  <div class="article-body">
+
 <body>
 
 <!-- Mobile sidebar toggle -->
@@ -2454,5 +2513,9 @@ window.addEventListener('beforeprint', () => {
   document.querySelectorAll('.deep').forEach(d => d.style.display = '');
 });
 </script>
+
+  </div>
+</div>
+
 </body>
 </html>
