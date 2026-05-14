@@ -8,13 +8,18 @@
 *.swp
 *~
 
-# Claude.ai page-export (not part of the wiki)
-AI_LLM Learning Roadmap_ Complete Study Guide 2025 _ Claude.html
-AI_LLM Learning Roadmap_ Complete Study Guide 2025 _ Claude_files/
-
 # Backups
-_*_legacy.html
 *.bak
 
-# Stale dupe folder
+# Legacy files
+_index_legacy.html
+
+# Claude.ai exports (not part of wiki)
+AI_LLM\ Learning\ Roadmap*
+AI_LLM\ Learning\ Roadmap*/**
+
+# Duplicated files
 files/
+enterprise_llm_2026.md
+keyboard-shortcuts-macos.pdf
+knowledge_maps.txt
