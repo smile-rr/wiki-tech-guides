@@ -27,7 +27,6 @@
     { label: 'Topics',      pip: 'topics',      items: [
       { href: 'claude_qa_lifecycle.html',  title: 'Claude Q/A Lifecycle',       sub: '请求全链路' },
       { href: 'memory_compact_harness.html', title: 'Memory · Compact · Harness', sub: '会话与上下文' },
-      { href: 'session_erd.html',          title: 'Session ERD',                sub: '会话数据模型' },
     ]},
     { label: 'Design',      pip: 'design',      items: [
       { href: 'uiux.html',                 title: 'UI / UX',                    sub: 'Figma · Vibe Design · 移动端' },
