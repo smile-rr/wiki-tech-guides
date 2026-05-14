@@ -33,7 +33,22 @@
   }
 
   /* HEADER */
-  header { padding: 10px 20px; border-bottom: 1px solid var(--border); }
+  header {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  header .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
 
   
 
@@ -292,7 +307,11 @@
 </head>
 <body>
 
-<header><h1>Agentic AI 开发与研究实践</h1></header>
+<header>
+  <div class="header-inner">
+    <h1>Agentic AI 开发与研究实践</h1>
+  </div>
+</header>
 
 <!-- RECOMMENDED READING ORDER -->
 <div class="reading-order">
