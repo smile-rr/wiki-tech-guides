@@ -60,16 +60,9 @@
   .legend-item { display:flex; align-items:center; gap:5px; }
 
   .footer { text-align:center; font-size:11px; color:#888; margin-top:28px; padding-top:16px; border-top:1px solid #e3e8f0; }
-</style>
-<style>
-.back-home{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#555;text-decoration:none;padding:4px 10px;border-radius:6px;border:1px solid #e5e5e5;transition:all .15s}
-.back-home:hover{color:#111;border-color:#bbb;background:#f5f5f5}
-.back-home svg{width:14px;height:14px}
-</style>
+<style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:var(--tx);color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style></style>
 </head>
 <body>
-<div style="position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e5e5e5;padding:8px 20px;"><a class="back-home" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>主页</a></div>
-
 
 <button class="print-btn no-print" onclick="window.print()">🖨 打印 / PDF</button>
 
@@ -603,5 +596,6 @@
 
 <div class="footer">整理自 Karpathy / DeepLearning.AI / LlamaIndex / CFA Institute / AWS / Snowflake 官方资源 · 2025 · Fidelity ISS AI 学习参考</div>
 </div>
+<a class="home-btn" href="index.html">← 主页</a>
 </body>
 </html>
