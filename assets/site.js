@@ -5,42 +5,43 @@
   // ── Single source of truth: navigation tree ─────────────────────────
   const NAV = [
     { label: 'Theory',      pip: 'theory',      items: [
-      { href: 'foundations.html',          title: 'Foundations',                sub: 'AI / ML 基础体系' },
+      { href: '../theory/foundations.html',          title: 'Foundations',                sub: 'AI / ML 基础体系' },
     ]},
     { label: 'Systems',     pip: 'systems',     items: [
-      { href: 'hpc_complete.html',         title: 'High-Performance Systems',   sub: 'OS · 网络 · Linux 内核' },
+      { href: '../systems/hpc_complete.html',         title: 'High-Performance Systems',   sub: 'OS · 网络 · Linux 内核' },
     ]},
     { label: 'Engineering', pip: 'engineering', items: [
-      { href: 'fullstack_complete.html',   title: 'Full-Stack',                 sub: 'Java · Spring · K8s · 大数据' },
-      { href: 'polyglot.html',             title: 'Polyglot',                   sub: 'Go · React · TS · Python · Rust' },
+      { href: '../engineering/fullstack_complete.html',   title: 'Full-Stack',                 sub: 'Java · Spring · K8s · 大数据' },
+      { href: '../engineering/polyglot.html',          title: 'Polyglot',                   sub: 'Go · React · TS · Python · Rust' },
     ]},
     { label: 'AI & LLM',    pip: 'ai',          items: [
-      { href: 'ai_llm_complete.html',      title: 'AI · LLM · Multimodal',      sub: 'GPU · 训练 · 推理 · Agent · RAG' },
-      { href: 'ai-knowledge-ref.html',     title: 'AI Reference Architecture',  sub: '企业 AI · MCP · Gateway' },
-      { href: 'llm_interview_kb.html',     title: 'LLM Engineering',            sub: 'LangChain · LangGraph · 微调' },
-      { href: 'rag_pipeline_langchain.html', title: 'RAG Pipeline',             sub: 'LangChain 完整参考' },
-      { href: 'spring-ai-knowledge-map.html', title: 'Spring AI',               sub: '知识地图 2026' },
-      { href: 'ai_learning_roadmap.html',  title: 'Learning Roadmap',           sub: '推荐学习路径' },
-      { href: 'agentic-reading-list.html', title: 'Agentic Reading List',       sub: '论文与博客' },
-      { href: 'ai_video_guide.html',       title: 'Video Guide',                sub: '2025 / 2026' },
+      { href: '../ai/ai_llm_complete.html',      title: 'AI · LLM · Multimodal',      sub: 'GPU · 训练 · 推理 · Agent · RAG' },
+      { href: '../ai/ai-knowledge-ref.html',     title: 'AI Reference Architecture',  sub: '企业 AI · MCP · Gateway' },
+      { href: '../ai/llm_interview_kb.html',    title: 'LLM Engineering',            sub: 'LangChain · LangGraph · 微调' },
+      { href: '../ai/rag_pipeline_langchain.html', title: 'RAG Pipeline',             sub: 'LangChain 完整参考' },
+      { href: '../ai/spring-ai-knowledge-map.html', title: 'Spring AI',               sub: '知识地图 2026' },
+      { href: '../ai/ai_learning_roadmap.html',  title: 'Learning Roadmap',           sub: '推荐学习路径' },
+      { href: '../ai/agentic-reading-list.html', title: 'Agentic Reading List',       sub: '论文与博客' },
+      { href: '../ai/ai_video_guide.html',       title: 'Video Guide',                sub: '2025 / 2026' },
     ]},
     { label: 'Topics',      pip: 'topics',      items: [
-      { href: 'claude_qa_lifecycle.html',  title: 'Claude Q/A Lifecycle',       sub: '请求全链路' },
-      { href: 'memory_compact_harness.html', title: 'Memory · Compact · Harness', sub: '会话与上下文' },
+      { href: '../topics/claude_qa_lifecycle.html',  title: 'Claude Q/A Lifecycle',       sub: '请求全链路' },
+      { href: '../topics/memory_compact_harness.html', title: 'Memory · Compact · Harness', sub: '会话与上下文' },
     ]},
     { label: 'Design',      pip: 'design',      items: [
-      { href: 'uiux.html',                 title: 'UI / UX',                    sub: 'Figma · Vibe Design · 移动端' },
+      { href: '../design/uiux.html',                 title: 'UI / UX',                    sub: 'Figma · Vibe Design · 移动端' },
     ]},
     { label: 'Investing',   pip: 'invest',      items: [
-      { href: 'invest.html',               title: 'Investing',                  sub: 'A股 · 港股 · 美股 · 量化' },
+      { href: '../invest/invest.html',               title: 'Investing',                  sub: 'A股 · 港股 · 美股 · 量化' },
     ]},
     { label: 'Leadership',  pip: 'leadership',  items: [
-      { href: 'career_kb.html',            title: 'Engineering Leadership',     sub: '角色 · 战略 · 组织' },
+      { href: '../leadership/career_kb.html',        title: 'Engineering Leadership',     sub: '角色 · 战略 · 组织' },
     ]},
   ];
 
   // ── Renderers ───────────────────────────────────────────────────────
   const currentFile = () => {
+    // Extract just the filename from path like /ai/foundations.html
     const p = location.pathname.split('/').pop() || 'index.html';
     return p === '' ? 'index.html' : p;
   };
@@ -52,7 +53,8 @@
     const here = currentFile();
     const sections = NAV.map(group => {
       const links = group.items.map(it => {
-        const isCurrent = it.href === here;
+        // Check if current page matches (compare just filename)
+        const isCurrent = it.href.endsWith(here);
         return `<a class="sidebar__link" href="${it.href}"${isCurrent ? ' aria-current="page"' : ''} data-title="${it.title.toLowerCase()} ${it.sub.toLowerCase()}">
           <span>${it.title}</span>
           ${it.sub ? `<span class="sub">${it.sub}</span>` : ''}
@@ -67,7 +69,7 @@
     }).join('');
 
     host.innerHTML = `
-      <a class="sidebar__brand" href="index.html" aria-label="wiki tech home">
+      <a class="sidebar__brand" href="${location.pathname.includes('/') ? '../index.html' : 'index.html'}" aria-label="wiki tech home">
         <span>wiki</span><span class="dot">·</span><span class="mark">tech</span>
         <span class="tag">Reference</span>
       </a>
@@ -141,7 +143,7 @@
     });
   };
 
-  // ── Theme toggle ────────────────────────────────────────────────────
+  // ── Theme toggle ───────────────────────────────────────────────────
   const KEY = 'wiki-tech:theme';
   const ICONS = {
     light: '<svg class="theme-toggle__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8h1.5M13 8h1.5M3.3 3.3l1.05 1.05M11.65 11.65l1.05 1.05M3.3 12.7l1.05-1.05M11.65 4.35l1.05-1.05"/></svg>',
