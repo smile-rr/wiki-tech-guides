@@ -33,10 +33,7 @@
   }
 
   /* HEADER */
-  header { text-align: center; padding: 1rem 0 0.8rem;
-    position: relative;
-    overflow: hidden;
-  }
+  header { padding: 8px 20px; border-bottom: 1px solid var(--border); }
 
   
 
@@ -46,9 +43,9 @@
     padding: 0 2rem;
   }
 
-  .eyebrow { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+  .eyebrow { font-size: 11px; color: var(--text-dim); }
 
-  h1 { font-size: 18px; font-weight: 600; color: var(--text); margin: 0; }
+  h1 { font-size: 22px; font-weight: 600; color: var(--text); margin: 0; display: inline; }
 
   h1 em {
     font-style: italic;
@@ -167,14 +164,7 @@
     margin-top: 3rem;
   }
 
-  .cat-header { text-align: center;
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.8rem;
-    border-bottom: 1px solid var(--border);
-  }
+  .cat-header { padding: 8px 20px; border-bottom: 1px solid var(--border); }
 
   .cat-num {
     font-family: 'IBM Plex Mono', monospace;
@@ -303,8 +293,7 @@
 <body>
 
 <header>
-  <div class="eyebrow">阅读清单 · 2024–2026</div>
-  <h1>Agentic AI 开发与研究实践</h1>
+  <div class="header-line"><span class="eyebrow">阅读清单 · 2024–2026</span> <h1>Agentic AI 开发与研究实践</h1></div>
 </header>
 
 <!-- RECOMMENDED READING ORDER -->
