@@ -661,8 +661,106 @@
 .feature__cta { display: none; }
 
 /* ──────────────────────────────────────────────────────────────────────
-   TOC — type hierarchy via H2 section + single-line entries.
-   Title (H3) inline with light sub explanation. Right side strictly aligned.
+   Section cards — every top-level section is a card. Sub-entries inside.
+   Auto-size by content. AI (8 entries) spans 2 rows. Grid auto-flow dense.
+   ────────────────────────────────────────────────────────────────────── */
+.sections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-flow: row dense;
+  align-items: start;
+  gap: 14px;
+  margin-top: var(--sp-4);
+}
+@media (max-width: 880px) { .sections { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .sections { grid-template-columns: 1fr; } }
+
+.scard {
+  position: relative;
+  padding: 14px 16px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--radius-md);
+  transition: border-color .12s, background .12s;
+  overflow: hidden;
+}
+.scard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--card-color, var(--accent));
+}
+.scard:hover { border-color: var(--card-color, var(--accent)); }
+
+/* Large variant — sections with many sub-entries (AI). Spans 2 rows. */
+.scard--lg { grid-row: span 2; }
+
+.scard__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--rule-2);
+}
+.scard__pip {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--card-color, var(--accent));
+  flex-shrink: 0;
+}
+.scard__name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 0;
+}
+.scard__count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-4);
+  letter-spacing: 0.06em;
+}
+
+.scard__entries { display: flex; flex-direction: column; }
+.scard__entry {
+  display: block;
+  padding: 7px 4px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+  transition: background .12s, padding-left .12s;
+}
+.scard__entry + .scard__entry { border-top: 1px solid var(--rule-2); }
+.scard__entry:hover {
+  background: var(--bg);
+  padding-left: 10px;
+}
+.scard__entry:hover .scard__title { color: var(--accent); }
+.scard__title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  letter-spacing: -0.003em;
+  transition: color .12s;
+}
+.scard__sub {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   TOC (legacy fallback) — kept for sub-page article footers if needed.
    ────────────────────────────────────────────────────────────────────── */
 .toc { margin-top: var(--sp-3); }
 .toc-section { margin-top: 18px; }
