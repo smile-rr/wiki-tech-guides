@@ -73,6 +73,265 @@ hr{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:14px 0
 </style>
 </head>
 <body>
+
+
+<div class="tabs">
+  <button class="tab active" onclick="show(0)">① Memory 生成时机</button>
+  <button class="tab" onclick="show(1)">② Compact 机制</button>
+  <button class="tab" onclick="show(2)">③ Harness Engineering</button>
+</div>
+
+<!-- ① MEMORY TIMING -->
+<div class="panel active" id="p0">
+<div class="sec">Short-term Memory 的生成与更新</div>
+
+<div class="tl">
+  <div class="tl-item">
+    <div class="tl-dot blue"></div>
+    <div class="tl-title">每条消息落库后（t1 同步）</div>
+    <div class="tl-body">user/assistant 消息写入 messages 表同时，<b>同步写入 Redis</b>（RPUSH）。这是 working memory 的实时更新，每轮对话都发生，延迟 &lt;1ms，不需要额外 LLM call。</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot blue"></div>
+    <div class="tl-title">工具调用完成后（t3/t5 同步）</div>
+    <div class="tl-body">tool_use + tool_result 写入 messages 表的同时写入 Redis。agent 下一轮能"记住"工具执行结果，靠的就是这两条 Redis 记录。</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot amber"></div>
+    <div class="tl-title">emit_state 工具调用后（每轮 LLM call 结束）</div>
+    <div class="tl-body">从 response 的 tool_use block 里提取 emit_state 的 input，写入 <code>Redis agent_state:{session_id}</code>。这是状态层的实时更新，下次 call 的 system[1] 从这里读。是<b>应用代码提取，不是额外 LLM call</b>。</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot amber"></div>
+    <div class="tl-title">Session 超阈值后（t9 异步，含 LLM call）</div>
+    <div class="tl-body">token_count 超过阈值（如 6000/8K window 的 75%）时触发 Compact，用一次额外 LLM call 生成 working memory 的压缩版，存入 session_context 表和 Redis。下文详述。</div>
+  </div>
+</div>
+
+<hr>
+<div class="sec">Long-term Memory 的生成时机（三个触发点）</div>
+
+<div class="tl">
+  <div class="tl-item">
+    <div class="tl-dot green"></div>
+    <div class="tl-title">触发点 1：Assistant 回复包含用户信息后（异步，含 LLM call）</div>
+    <div class="tl-body">
+      用一个极轻量的 LLM call（判断是否包含值得记忆的内容）：<br>
+      — 用户表达明确偏好：「我不喜欢经停」→ 触发<br>
+      — 用户说明个人信息：「我的会员号是...」→ 触发<br>
+      — 助手确认了重要决策：「好的，以后都优先国航」→ 触发<br>
+      — 普通问答、闲聊 → 不触发，跳过<br>
+      触发后再用一次 LLM call 提取结构化记忆，写入 user_memories + pgvector。
+    </div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot green"></div>
+    <div class="tl-title">触发点 2：Session 结束时（异步，含 LLM call）</div>
+    <div class="tl-body">用户关闭对话或超时后，对整个 session 做一次"记忆蒸馏"，提取本次 session 产生的新偏好/事实/决策，增量写入 long-term memory。这是最稳的触发点，不影响在线延迟。</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot purple"></div>
+    <div class="tl-title">触发点 3：用户显式操作（同步，含 LLM call）</div>
+    <div class="tl-body">用户点击「记住这个」按钮，或说「以后都记住XXX」。立即触发记忆写入。这类记忆 importance 分值设最高（1.0），RAG 检索时优先返回。</div>
+  </div>
+</div>
+
+<div class="note warn"><b>Long-term memory 生成是昂贵操作，不能每轮都触发。</b> 实践中用一个极小的分类模型（FastText/规则）先判断"这条对话是否含有值得记忆的内容"，命中率约 10-20%，只有命中才进入 LLM 提取流程。每次 LLM call 都生成 long-term memory 是常见的过度设计错误。</div>
+</div>
+
+<!-- ② COMPACT -->
+<div class="panel" id="p1">
+<div class="sec">Compact 是什么：一次专用系统指令的额外 LLM Call</div>
+<div class="note info"><b>直接回答：是的，compact 是一次额外的 LLM call</b>，有独立的 system prompt，目的是把当前 working memory（messages 历史）压缩成摘要，替换掉原始历史，让后续 call 的 token 消耗保持可控。</div>
+
+<div class="sec">Compact 的完整流程</div>
+<div class="flow-h">
+  <div class="fh-box fh-amber"><div class="fhb-t">触发检测</div><div class="fhb-s">token_count > 阈值（如 6000/8K）</div></div>
+  <div class="fh-arr">→</div>
+  <div class="fh-box fh-blue"><div class="fhb-t">Compact LLM Call</div><div class="fhb-s">专用 system prompt<br>发全量历史</div></div>
+  <div class="fh-arr">→</div>
+  <div class="fh-box fh-green"><div class="fhb-t">得到摘要</div><div class="fhb-s">结构化 summary<br>含关键决策/进度</div></div>
+  <div class="fh-arr">→</div>
+  <div class="fh-box fh-pu"><div class="fhb-t">替换历史</div><div class="fhb-s">Redis 清空旧历史<br>写入摘要</div></div>
+  <div class="fh-arr">→</div>
+  <div class="fh-box fh-gray"><div class="fhb-t">正常继续</div><div class="fhb-s">下次 call 以摘要<br>为起点</div></div>
+</div>
+
+<div class="sec">Compact 专用 system prompt（与业务 prompt 完全不同）</div>
+<div class="cw"><span class="cm">// compact_system_prompt.txt（专用，不含业务逻辑）</span>
+COMPACT_SYSTEM = <span class="s">"""
+你的任务是将以下对话历史压缩成结构化摘要。
+
+输出必须包含以下字段（JSON格式）：
+- task: 用户的原始任务目标
+- context: 关键背景信息（用户偏好、约束条件）
+- progress: 已完成的步骤列表
+- tried: 已尝试过的方案及结果
+- current_state: 当前所处阶段
+- pending: 还未完成的子任务
+- key_facts: 对话中确认的重要事实
+
+要求：
+1. 保留所有工具调用结果中的具体数据（航班号、价格、时间等）
+2. 保留用户明确表达的偏好和拒绝
+3. 删除思考过程、礼貌用语、重复内容
+4. 输出必须让接手的 Agent 能无缝继续任务
+"""</span>
+
+<span class="cm">// compact call 的 request 结构</span>
+compact_request = {
+    <span class="k">"model"</span>: <span class="s">"qwen2.5-7b-instruct"</span>,   <span class="cm">// 可以用更小更快的模型</span>
+    <span class="k">"max_tokens"</span>: <span class="n">1024</span>,
+    <span class="k">"messages"</span>: [
+        { <span class="k">"role"</span>: <span class="s">"system"</span>, <span class="k">"content"</span>: COMPACT_SYSTEM },
+        { <span class="k">"role"</span>: <span class="s">"user"</span>,   <span class="k">"content"</span>:
+          <span class="s">"请压缩以下对话历史：\n\n"</span> + format_messages(full_history) }
+    ]
+    <span class="cm">// 注意：不带 tools，这是纯摘要任务</span>
+}</div>
+
+<div class="sec">Compact 输出样例 → 成为下次 call 的 system[1]</div>
+<div class="cw"><span class="cm">// compact LLM call 的 response.content[0].text</span>
+{
+  <span class="k">"task"</span>: <span class="s">"预订明天北京→上海商务舱 + 上海酒店"</span>,
+  <span class="k">"context"</span>: <span class="s">"用户偏好国航·商务舱·市区5星酒店·不接受经停超2h"</span>,
+  <span class="k">"progress"</span>: [
+    <span class="s">"已查直飞：无余票（CA1234 候补·MU5678 满舱）"</span>,
+    <span class="s">"已查中转：找到3方案，用户选择了方案B（PEK→CTU→SHA，总时长4.5h）"</span>
+  ],
+  <span class="k">"tried"</span>: [<span class="s">"search_flights直飞"</span>, <span class="s">"search_transfer中转"</span>],
+  <span class="k">"current_state"</span>: <span class="s">"机票已确认，待查酒店"</span>,
+  <span class="k">"pending"</span>: [<span class="s">"查上海市区5星酒店4月18日1晚"</span>],
+  <span class="k">"key_facts"</span>: [<span class="s">"出发日期4月18日"</span>, <span class="s">"预算机票&lt;10000"</span>, <span class="s">"已选方案B总价¥8400"</span>]
+}
+
+<span class="cm">// 这个 JSON 被序列化后注入下次 call 的 system[1]：</span>
+<span class="s">"【Agent状态·Compacted】{上面的JSON}"</span></div>
+
+<hr>
+<div class="sec">Compact vs AutoCompact 的区别</div>
+<div class="grid2">
+  <div class="card">
+    <div class="card-hd">Manual Compact（主动压缩）</div>
+    <div class="card-body">应用代码在合适时机主动触发，时机可控，压缩前 context 还宽裕，摘要质量高。<br><br>推荐在 <b>60-70% 阈值</b>时触发，模型视野还清晰，能做高质量摘要。<br><br>可以带"压缩重点"参数：compress(focus="机票部分")</div>
+  </div>
+  <div class="card">
+    <div class="card-hd">AutoCompact（被动压缩）</div>
+    <div class="card-body">推理框架（vLLM 等）或应用在 context 接近上限时自动触发，通常 <b>80-90% 阈值</b>。<br><br>此时 context 已拥挤，模型处于"lost in middle"状态，<b>摘要质量低于 Manual Compact</b>。<br><br>是 safety net，不是首选策略。</div>
+  </div>
+</div>
+<div class="note warn"><b>Compact 有信息损失。</b> 摘要是有损压缩，工具调用的原始 JSON、用户的措辞细节会丢失。实践中：保留工具结果里的具体数字（航班号、价格），丢弃思考过程和礼貌用语。关键决策数据宁可冗余也不能丢。</div>
+</div>
+
+<!-- ③ HARNESS ENGINEERING -->
+<div class="panel" id="p2">
+<div class="sec">三个时代：关注点的根本性转移</div>
+
+<div class="era">
+  <div class="era-hd" style="background:#E6F1FB">
+    <div class="era-num" style="background:#185FA5;color:#fff">1</div>
+    <div class="era-title">Prompt Engineering</div>
+    <div class="era-sub" style="color:#185FA5">2022–2023 · 单次 call 时代</div>
+  </div>
+  <div class="era-body">
+    <div class="era-row"><div class="era-label">核心问题</div><div class="era-val">怎么写 prompt 让模型给出想要的答案</div></div>
+    <div class="era-row"><div class="era-label">工作内容</div><div class="era-val">调 system prompt 措辞、few-shot 例子、CoT 指令、温度参数。一个问题发一次 call，收到回答就完事。</div></div>
+    <div class="era-row"><div class="era-label">心智模型</div><div class="era-val">模型是函数：输入 → 输出。工程师负责精心构造输入。</div></div>
+    <div class="era-row"><div class="era-label">主要挑战</div><div class="era-val">prompt 敏感性（换个词结果完全不同）、格式不稳定、幻觉</div></div>
+    <div class="era-tags">
+      <span class="badge b-bl">few-shot</span>
+      <span class="badge b-bl">CoT</span>
+      <span class="badge b-bl">温度调参</span>
+      <span class="badge b-bl">角色扮演</span>
+      <span class="badge b-bl">格式约束</span>
+    </div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-hd" style="background:#E1F5EE">
+    <div class="era-num" style="background:#0F6E56;color:#fff">2</div>
+    <div class="era-title">Context Management</div>
+    <div class="era-sub" style="color:#0F6E56">2023–2024 · RAG + 多轮时代</div>
+  </div>
+  <div class="era-body">
+    <div class="era-row"><div class="era-label">核心问题</div><div class="era-val">context window 是稀缺资源，怎么管理放什么进去</div></div>
+    <div class="era-row"><div class="era-label">工作内容</div><div class="era-val">RAG 向量检索、文档 chunking 策略、sliding window、prompt caching、多轮历史截断、知识库构建。开始有"哪些信息值得放进 context"的优先级思考。</div></div>
+    <div class="era-row"><div class="era-label">心智模型</div><div class="era-val">context window 是有限的工作台：精心挑选放上去的东西比精心措辞更重要。</div></div>
+    <div class="era-row"><div class="era-label">主要挑战</div><div class="era-val">lost-in-the-middle、检索召回率、token 成本、历史截断丢失关键信息</div></div>
+    <div class="era-tags">
+      <span class="badge b-te">RAG</span>
+      <span class="badge b-te">向量数据库</span>
+      <span class="badge b-te">Chunking</span>
+      <span class="badge b-te">Reranker</span>
+      <span class="badge b-te">KV Cache</span>
+      <span class="badge b-te">滑动窗口</span>
+    </div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-hd" style="background:#EEEDFE">
+    <div class="era-num" style="background:#534AB7;color:#fff">3</div>
+    <div class="era-title">Harness Engineering</div>
+    <div class="era-sub" style="color:#534AB7">2024–至今 · Agentic 时代</div>
+  </div>
+  <div class="era-body">
+    <div class="era-row"><div class="era-label">核心问题</div><div class="era-val">LLM 是推理引擎，需要整套执行环境才能可靠运行</div></div>
+    <div class="era-row"><div class="era-label">工作内容</div><div class="era-val">
+      设计整个"harness"（驾驭层）：<br>
+      · <b>状态机</b>：emit_state 追踪任务进度，不靠 messages 隐式传递<br>
+      · <b>记忆架构</b>：long/short memory 分层，各有生成时机和存储<br>
+      · <b>Compact 策略</b>：主动压缩，而不是等 context 溢出<br>
+      · <b>工具编排</b>：决策流、降级方案、tool search、defer_loading<br>
+      · <b>多模型路由</b>：意图分类用 FastText，摘要用小模型，推理用大模型<br>
+      · <b>可观测性</b>：Langfuse traces，每次 LLM call 有 span，成本可审计<br>
+      · <b>可靠性</b>：工具失败重试、graceful degradation、人工干预点<br>
+    </div></div>
+    <div class="era-row"><div class="era-label">心智模型</div><div class="era-val">LLM 是不可靠的推理引擎，Harness 是让它可靠运行的基础设施。工程师的工作从"写 prompt"变成"设计执行环境"。</div></div>
+    <div class="era-row"><div class="era-label">主要挑战</div><div class="era-val">状态一致性、多步任务失败恢复、并发 session 隔离、成本与质量平衡</div></div>
+    <div class="era-tags">
+      <span class="badge b-pu">状态机</span>
+      <span class="badge b-pu">emit_state</span>
+      <span class="badge b-pu">Compact</span>
+      <span class="badge b-pu">Memory 分层</span>
+      <span class="badge b-pu">多模型路由</span>
+      <span class="badge b-pu">可观测性</span>
+      <span class="badge b-pu">降级策略</span>
+      <span class="badge b-pu">人工干预点</span>
+    </div>
+  </div>
+</div>
+
+<hr>
+<div class="sec">三个时代的"问题粒度"对比</div>
+<div class="cw"><span class="cm">// Prompt Engineering 时代的问题：</span>
+<span class="s">"怎么让模型输出 JSON 格式而不是自然语言？"</span>
+<span class="s">"加一句 'think step by step' 效果更好吗？"</span>
+<span class="s">"few-shot 要放几个例子？"</span>
+
+<span class="cm">// Context Management 时代的问题：</span>
+<span class="s">"检索出来的 chunk 质量太差，要改 chunk 大小还是改 embedding 模型？"</span>
+<span class="s">"prompt cache 命中率只有 60%，是因为 system prompt 每次都变了？"</span>
+<span class="s">"长对话后模型开始忘记前面的内容，滑动窗口要设多大？"</span>
+
+<span class="cm">// Harness Engineering 时代的问题：</span>
+<span class="s">"查不到直飞时，agent 自动切中转是对的，但如何在中转也失败时优雅降级？"</span>
+<span class="s">"compact 后模型丢失了用户 3 轮前确认的预算上限，摘要格式要改什么？"</span>
+<span class="s">"emit_state 工具被模型遗漏调用了，需要在 app 层加强制检查逻辑？"</span>
+<span class="s">"session 并发高时 Redis 的 agent_state key 有没有竞态问题？"</span>
+<span class="s">"long-term memory 每次都触发导致成本翻 3 倍，分类器阈值要怎么调？"</span></div>
+
+<div class="note ok"><b>Harness Engineering 的本质转变：</b> 从"让模型表现更好"转向"让模型在不可靠的情况下仍然能可预期地运行"。工程师的职责从提示词设计师变成了 AI 系统的基础设施工程师——需要考虑状态管理、失败恢复、成本控制、可观测性，这些在 prompt engineering 时代根本不是问题。</div>
+</div>
+
+<script>
+function show(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+}
+</script>
+
 <a class="home-btn" href="index.html">← 主页</a>
 </body>
 </html>
