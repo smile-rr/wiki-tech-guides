@@ -2379,15 +2379,14 @@ function onScroll() {
   if (currentDomain !== null && currentDomain !== lastActiveDomain) {
     lastActiveDomain = currentDomain;
 
-    // Clear all active states
-    navGroups.forEach(g => {
-      g.querySelector('.nav-group-title').classList.remove('active');
+    // Deactivate previous group, activate current
+    navGroups.forEach((g, i) => {
+      g.querySelector('.nav-group-title').classList.toggle('active', i === currentDomain);
     });
 
-    // Activate + auto-open current nav group
+    // Ensure current nav group is open
     const activeGroup = navGroups[currentDomain];
     if (activeGroup) {
-      activeGroup.querySelector('.nav-group-title').classList.add('active');
       activeGroup.querySelector('.nav-items').classList.add('open');
 
       // Scroll sidebar to keep active visible
