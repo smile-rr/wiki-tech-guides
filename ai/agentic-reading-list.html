@@ -303,6 +303,21 @@
     color: var(--dim);
     letter-spacing: 0.05em;
   }
+
+  /* ── MOBILE ── */
+  @media(max-width:640px){
+    header .header-inner{padding:0 16px}
+    header h1{font-size:18px}
+    .subtitle{font-size:.8rem;gap:1rem}
+    .feed, .grid{grid-template-columns:1fr!important}
+    .card{padding:14px}
+    .card-body{padding:12px}
+    .tag-list{flex-wrap:wrap}
+    main{padding:20px 12px}
+    footer{padding:1.5rem 1rem}
+    pre{font-size:11px;padding:10px;overflow-x:auto}
+    table{font-size:12px;display:block;overflow-x:auto}
+  }
 </style>
 </head>
 <body>

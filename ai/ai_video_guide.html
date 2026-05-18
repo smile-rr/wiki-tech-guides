@@ -315,8 +315,14 @@ h1 span { color: var(--accent-cyan); }
   footer span { color: var(--accent-cyan); }
 
   @media (max-width: 600px) {
-    header, main, .nav, footer { padding-left: 20px; padding-right: 20px; }
+    header, main, .nav, footer { padding-left: 16px; padding-right: 16px; }
     .cards, .channels { grid-template-columns: 1fr; }
+    .nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:4px}
+    .nav-pill{white-space:nowrap;font-size:11px;padding:5px 10px}
+    h1{font-size:18px}
+    .card{padding:14px}
+    pre{font-size:11px;padding:10px;overflow-x:auto}
+    table{display:block;overflow-x:auto;font-size:11px}
   }
 </style>
 </head>
