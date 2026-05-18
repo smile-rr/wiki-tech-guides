@@ -635,7 +635,7 @@
     font-size: 14px;
     box-shadow: var(--shadow);
     transition: all 0.2s;
-    z-index: 100;
+    z-index: 300;
   }
   .back-top:hover { color: var(--accent); border-color: var(--accent); }
 
@@ -2449,7 +2449,7 @@ app = FastAPI()
 </div><!-- .container -->
 </div><!-- .main-content -->
 
-<a class="back-top" href="#" title="返回顶部">↑</a>
+<a class="back-top" id="backTop" href="#" title="返回顶部" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑</a>
 
 <script>
   // ── Card toggle ──
@@ -2517,6 +2517,16 @@ app = FastAPI()
   document.querySelectorAll('.section').forEach((s, i) => {
     s.style.animationDelay = `${i * 0.06}s`;
   });
+
+  // ── Expand all cards & sidebar sections by default ──
+  document.querySelectorAll('.card').forEach(c => c.classList.add('open'));
+  document.querySelectorAll('.sidebar-section').forEach(s => s.classList.add('open'));
+
+  // ── Back-to-top scroll listener ──
+  const bt = document.getElementById('backTop');
+  if (bt) {
+    window.addEventListener('scroll', () => bt.classList.toggle('show', scrollY > 400), { passive: true });
+  }
 </script>
 <style>.home-btn{position:fixed;bottom:22px;left:22px;padding:6px 14px;background:#0f172a;color:#fff;border-radius:7px;font-size:12px;text-decoration:none;opacity:.8;transition:all .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.18)}.home-btn:hover{opacity:1;transform:translateY(-1px)}</style><a class="home-btn" href="../index.html">← 主页</a>
 </body>
